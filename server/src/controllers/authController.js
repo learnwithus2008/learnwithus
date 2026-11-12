@@ -5,7 +5,7 @@ function setSessionCookie(res, sessionToken, expiresAt) {
   res.cookie(config.cookieName, sessionToken, {
     httpOnly: true,
     secure: config.cookieSecure,
-    sameSite: "lax",
+    sameSite: config.cookieSameSite,
     expires: new Date(expiresAt)
   });
 }
@@ -14,7 +14,7 @@ function clearSessionCookie(res) {
   res.clearCookie(config.cookieName, {
     httpOnly: true,
     secure: config.cookieSecure,
-    sameSite: "lax"
+    sameSite: config.cookieSameSite
   });
 }
 

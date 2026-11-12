@@ -30,14 +30,24 @@ export const userRepository = {
 
   async create(userData, dbClient = null) {
     const q = dbClient ? dbClient.query.bind(dbClient) : query;
-    const { name, email, passwordHash, stage, language, avatar, bio } = userData;
+    const { name, email, passwordHash, stage, language, avatar, bio, role, accountStatus } = userData;
     const res = await q(
       `
-      INSERT INTO users (full_name, email, password_hash, learning_stage, preferred_language, avatar, bio)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO users (full_name, email, password_hash, learning_stage, preferred_language, avatar, bio, role, account_status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *;
       `,
-      [name, email.toLowerCase(), passwordHash, stage, language, avatar || "snake_blue", bio || ""]
+      [
+        name,
+        email.toLowerCase(),
+        passwordHash,
+        stage || "young",
+        language || "english",
+        avatar || "snake_blue",
+        bio || "",
+        role || "student",
+        accountStatus || "active"
+      ]
     );
     return res.rows[0];
   },
@@ -68,6 +78,14 @@ export const userRepository = {
       fields.push(`avatar = $${idx++}`);
       values.push(updates.avatar);
     }
+    if (updates.role !== undefined) {
+      fields.push(`role = $${idx++}`);
+      values.push(updates.role);
+    }
+    if (updates.accountStatus !== undefined || updates.status !== undefined) {
+      fields.push(`account_status = $${idx++}`);
+      values.push(updates.accountStatus || updates.status);
+    }
     if (updates.passwordHash !== undefined) {
       fields.push(`password_hash = $${idx++}`);
       values.push(updates.passwordHash);
@@ -94,5 +112,56 @@ export const userRepository = {
     const q = dbClient ? dbClient.query.bind(dbClient) : query;
     await q("DELETE FROM users WHERE id = $1", [id]);
     return true;
+  },
+
+  /**
+   * Bulk delete all users at one time
+   * Safely excludes the active administrator if excludeAdminId is provided
+   */
+  async deleteAll({ excludeAdminId = null, role = null } = {}, dbClient = null) {
+    const q = dbClient ? dbClient.query.bind(dbClient) : query;
+    let sql = "DELETE FROM users WHERE 1=1";
+    const params = [];
+
+    if (excludeAdminId) {
+      params.push(excludeAdminId);
+      sql += ` AND id != $${params.length}`;
+    }
+
+    if (role && role !== "all") {
+      params.push(role);
+      sql += ` AND role = $${params.length}`;
+    }
+
+    sql += " RETURNING id, full_name, email, role;";
+    const res = await q(sql, params);
+    return {
+      deletedCount: res.rowCount || res.rows.length,
+      deletedUsers: res.rows
+    };
+  },
+
+  /**
+   * Bulk delete a specified list of user IDs
+   */
+  async bulkDelete(userIds = [], excludeAdminId = null, dbClient = null) {
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return { deletedCount: 0, deletedUsers: [] };
+    }
+    const q = dbClient ? dbClient.query.bind(dbClient) : query;
+    let sql = "DELETE FROM users WHERE id = ANY($1::uuid[])";
+    const params = [userIds];
+
+    if (excludeAdminId) {
+      params.push(excludeAdminId);
+      sql += ` AND id != $${params.length}`;
+    }
+
+    sql += " RETURNING id, full_name, email, role;";
+    const res = await q(sql, params);
+    return {
+      deletedCount: res.rowCount || res.rows.length,
+      deletedUsers: res.rows
+    };
   }
 };

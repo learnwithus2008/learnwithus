@@ -74,17 +74,17 @@ export default function GlobalWordMeaningModal() {
   if (isMinimized) {
     return (
       <div id="tour-floating-dictionary-minimized" className="floating-dock-dictionary animate-in">
-        <div className="flex items-center gap-2 p-1.5 pl-3 rounded-2xl bg-white dark:bg-[#101b2d] text-slate-800 dark:text-white shadow-xl hover:shadow-2xl transition cursor-pointer border border-slate-200 dark:border-[#23344d] hover:border-[#168BFF]">
+        <div className="flex items-center gap-2 p-1.5 pl-3 rounded-2xl bg-white dark:bg-[#102B50] text-[#102B50] dark:text-white shadow-xl hover:shadow-2xl transition cursor-pointer border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800]">
           <div
             onClick={restoreDictionary}
             className="flex items-center gap-2 text-xs font-bold select-none pr-1"
           >
-            <BookOpen size={16} className="text-[#168BFF] shrink-0" />
+            <BookOpen size={16} className="text-[#0756A5] dark:text-[#FFB800] shrink-0" />
             <span className="truncate max-w-[140px] sm:max-w-[200px]">
               {query ? `Word: ${query}` : "Python Dictionary"}
             </span>
             {result && (
-              <span className="w-2 h-2 rounded-full bg-[#168BFF] animate-pulse shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-[#FFB800] animate-pulse shrink-0" />
             )}
           </div>
           <button
@@ -121,21 +121,21 @@ export default function GlobalWordMeaningModal() {
       aria-labelledby="dictionary-floating-title"
     >
       {/* A. Window Header */}
-      <div className="bg-slate-100 dark:bg-[#0a101c] text-slate-900 dark:text-white px-3 sm:px-4 py-2.5 sm:py-3 shrink-0 flex items-center justify-between border-b border-slate-200 dark:border-[#23344d]">
+      <div className="bg-[#F3F7FC] dark:bg-[#102B50] text-[#102B50] dark:text-white px-3 sm:px-4 py-2.5 sm:py-3 shrink-0 flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#1E3A5F]">
         <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-          <div className="w-7 h-7 rounded-xl bg-blue-50 dark:bg-[#14233a] border border-blue-200 dark:border-[#23344d] text-[#168BFF] flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-xl bg-white dark:bg-[#0C1B30] border border-[#E2E8F0] dark:border-[#1E3A5F] text-[#0756A5] dark:text-[#FFB800] flex items-center justify-center shrink-0">
             <BookOpen size={15} />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <h3 id="dictionary-floating-title" className="text-xs sm:text-sm font-extrabold leading-tight tracking-tight truncate max-w-[150px] xs:max-w-[200px] sm:max-w-none text-slate-900 dark:text-[#f8fafc]">
+              <h3 id="dictionary-floating-title" className="text-xs sm:text-sm font-extrabold leading-tight tracking-tight truncate max-w-[150px] xs:max-w-[200px] sm:max-w-none text-[#102B50] dark:text-white">
                 Word Meaning Dictionary
               </h3>
-              <span className="text-[10px] text-blue-600 dark:text-[#60a5fa] font-mono font-bold border border-blue-200 dark:border-[#23344d] px-1.5 py-0.2 rounded bg-blue-50 dark:bg-[#14233a] hidden sm:inline-block">
+              <span className="text-[10px] text-[#0756A5] dark:text-[#FFB800] font-mono font-bold border border-[#E2E8F0] dark:border-[#1E3A5F] px-1.5 py-0.2 rounded bg-white dark:bg-[#0C1B30] hidden sm:inline-block">
                 ⌘K
               </span>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-[#94a3b8] truncate font-medium mt-0.5">
+            <p className="text-[10px] sm:text-[11px] text-[#64748B] dark:text-slate-400 truncate font-medium mt-0.5">
               {query ? `Term: "${query}"` : "Instant Multi-Lingual Explanations"}
             </p>
           </div>
@@ -224,13 +224,13 @@ export default function GlobalWordMeaningModal() {
       </div>
 
       {/* D. Footer Status Bar */}
-      <div className="px-3.5 py-1.5 bg-slate-100 dark:bg-[#0a101c] border-t border-slate-200 dark:border-[#23344d] flex items-center justify-between text-[10px] text-slate-500 dark:text-[#94a3b8] shrink-0">
+      <div className="px-3.5 py-1.5 bg-[#F3F7FC] dark:bg-[#102B50] border-t border-[#E2E8F0] dark:border-[#1E3A5F] flex items-center justify-between text-[10px] text-[#64748B] dark:text-slate-400 shrink-0">
         <span className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#168BFF]" />
-          <span>Stage: <strong className="text-[#168BFF] capitalize">{activeStage}</strong></span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#0756A5]" />
+          <span>Stage: <strong className="text-[#0756A5] dark:text-[#FFB800] capitalize">{activeStage}</strong></span>
         </span>
         <span className="font-semibold">
-          Language: <strong className="text-[#168BFF] uppercase">{activeLanguage}</strong>
+          Language: <strong className="text-[#0756A5] dark:text-[#FFB800] uppercase">{activeLanguage}</strong>
         </span>
       </div>
     </div>

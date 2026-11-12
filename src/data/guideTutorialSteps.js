@@ -24,9 +24,9 @@ export const GUIDE_STEPS = [
     placement: "bottom",
     title: "Welcome to Python Adaptive! 🐍",
     description:
-      "Python Adaptive helps you learn programming from scratch with lessons customized to your age and native language. Take this quick tour to discover all features, navigation tabs, and profile settings.",
+      "Learn Python with lessons tailored to your age and native language. Let's take a quick 1-minute tour!",
     mobileDescription:
-      "Welcome to Python Adaptive! Take this quick tour to learn what each navigation tab contains, how to toggle themes, use notes, and change your profile name.",
+      "Learn Python tailored to your age and language. Here's a quick tour of what you can do!",
     targetLabel: "Interactive Hero"
   },
   {
@@ -36,12 +36,17 @@ export const GUIDE_STEPS = [
     mobileSelector: "#tour-nav-mobile-auth",
     fallbackSelector: "#tour-home-hero",
     placement: "bottom",
-    title: "Profile & Change Name 👤",
+    title: "Profile & Stats 👤",
     description:
-      "Sign In or Sign Up to sync your progress. To change your profile name: click this profile icon, then click 'Edit Name' (Settings ⚙️) inside the modal to update your Display Name, bio, or avatar anytime!",
+      "Track your learning streak, earned XP, certificates, and customize your profile anytime.",
     mobileDescription:
-      "To change your profile name: tap this account icon in the top header, then tap 'Edit Name' (⚙️) inside the profile modal to update your Display Name and bio!",
-    targetLabel: "Profile & Change Name"
+      "Track your streak, earned XP, certificates, and view your profile anytime.",
+    loggedOutTitle: "Sign In & Profile 🔐",
+    loggedOutDescription:
+      "Sign in or register here (or via the Profile tab) to save your learning streak, sync XP, and view your profile.",
+    loggedOutMobileDescription:
+      "Sign in or register here (or via the Profile tab) to track your streak, sync XP, and view your profile.",
+    targetLabel: "Profile & Stats"
   },
   {
     id: "nav-item-home",
@@ -50,11 +55,11 @@ export const GUIDE_STEPS = [
     mobileSelector: "#bottom-nav-home",
     fallbackSelector: "#tour-nav-dock",
     placement: "top",
-    title: "Home Tab 🏠",
+    title: "Home Dashboard 🏠",
     description:
-      "Home is your learning headquarters: view your active age stage and language settings, access featured beginner lessons, and launch your daily study routine.",
+      "Your learning hub. View your streak, active settings, and pick up right where you left off.",
     mobileDescription:
-      "Home Tab: Contains your learning dashboard, active age stage and native language preferences, quick links to featured lessons, and your daily learning stats.",
+      "Your learning hub. Check your streak, settings, and jump right into lessons.",
     targetLabel: "Home Tab"
   },
   {
@@ -64,11 +69,11 @@ export const GUIDE_STEPS = [
     mobileSelector: "#bottom-nav-learn",
     fallbackSelector: "#tour-nav-dock",
     placement: "top",
-    title: "Learn Tab (Curriculum) 📖",
+    title: "Curriculum & Lessons 📖",
     description:
-      "Learn contains the complete Python curriculum: 19 structured sections with 120 interactive lessons, topic search bar, and keywords from basics to AI.",
+      "Explore 19 structured sections with 198 bite-sized lessons from basic syntax to modern AI.",
     mobileDescription:
-      "Learn Tab: Contains the full curriculum of 19 sections and 120 lessons. Search any topic, browse categories from Python Basics to OOP, and read interactive lessons.",
+      "Browse 19 structured sections with 198 interactive lessons from basics to AI.",
     targetLabel: "Learn Tab"
   },
   {
@@ -78,11 +83,11 @@ export const GUIDE_STEPS = [
     mobileSelector: "#bottom-nav-practice",
     fallbackSelector: "#tour-nav-dock",
     placement: "top",
-    title: "Practice Tab (Quizzes) 💻",
+    title: "Practice & Quizzes 💻",
     description:
-      "Practice contains interactive coding quizzes, output prediction tests, and code exercises with instant feedback to test and reinforce what you learn.",
+      "Sharpen your coding skills with interactive challenges and instant quiz feedback.",
     mobileDescription:
-      "Practice Tab: Contains interactive quizzes and coding challenges. Test your understanding with instant feedback, multiple choice, and code output predictions.",
+      "Test your Python skills with fun quizzes, code puzzles, and instant feedback.",
     targetLabel: "Practice Tab"
   },
   {
@@ -92,11 +97,11 @@ export const GUIDE_STEPS = [
     mobileSelector: "#bottom-nav-projects",
     fallbackSelector: "#tour-nav-dock",
     placement: "top",
-    title: "Projects Tab (Real Apps) 🛠️",
+    title: "Hands-on Projects 🛠️",
     description:
-      "Projects contains full hands-on Python applications: build calculators, web scrapers, data tools, and games with full source code and walkthroughs.",
+      "Build real Python apps—like games, tools, and web scrapers—with step-by-step guides.",
     mobileDescription:
-      "Projects Tab: Contains real-world Python applications with step-by-step guides and full source code to build real portfolio-ready apps.",
+      "Build real apps like games and web scrapers with complete source code.",
     targetLabel: "Projects Tab"
   },
   {
@@ -106,11 +111,11 @@ export const GUIDE_STEPS = [
     mobileSelector: "#bottom-nav-about",
     fallbackSelector: "#tour-nav-dock",
     placement: "top",
-    title: "About Tab (Methodology) ℹ️",
+    title: "Adaptive Learning ℹ️",
     description:
-      "About explains our adaptive learning methodology, age-specific pedagogy, research backing, and platform mission for accessible education.",
+      "Learn how our adaptive engine personalizes explanations for 5 age groups and 4 languages.",
     mobileDescription:
-      "About Tab: Explains how Python Adaptive personalizes explanations across 5 age levels, native language translations, and our educational mission.",
+      "Discover how lessons adapt to your age level and mother tongue.",
     targetLabel: "About Tab"
   },
   {
@@ -120,39 +125,37 @@ export const GUIDE_STEPS = [
     mobileSelector: "#tour-nav-mobile-theme",
     fallbackSelector: "#tour-home-hero",
     placement: "bottom",
-    title: "Theme Toggle (Light & Dark) 🌗",
+    title: "Light & Dark Mode 🌗",
     description:
-      "Switch between immersive Dark Mode and crisp Light Mode anytime with one click. Your theme choice is remembered across visits for comfortable day and night studying.",
+      "Switch between Dark and Light mode anytime for comfortable day or night reading.",
     mobileDescription:
-      "Tap the Sun/Moon icon in the top header to toggle between Dark Mode and Light Mode anytime for comfortable reading.",
+      "Tap to switch between Dark and Light mode anytime for easy reading.",
     targetLabel: "Theme Toggle"
   },
   {
     id: "nav-study-notes",
     screen: "home",
-    selector: "#tour-nav-notes",
-    mobileSelector: "#tour-floating-notepad",
+    selector: "#tour-floating-notepad",
     fallbackSelector: ".floating-dock-notepad",
-    placement: "bottom",
-    title: "Study Notes (Notepad) 📝",
+    placement: "left",
+    title: "Study Notepad 📝",
     description:
-      "Open your personal Study Notepad anytime (or press Alt+N) to jot down key takeaways, save code snippets, and review revision points as you study. Your notes are saved automatically.",
+      "Jot down takeaways and code snippets as you study. Your notes save automatically.",
     mobileDescription:
-      "Tap the floating Notepad button (bottom-right) anytime to write personal study notes, code tips, and lesson reminders as you learn.",
+      "Write personal study notes and code tips as you learn. Saved automatically.",
     targetLabel: "Study Notes (Alt+N)"
   },
   {
     id: "nav-tools-dict",
     screen: "home",
-    selector: "#tour-nav-dict",
-    mobileSelector: "#tour-floating-tools",
+    selector: "#tour-floating-tools",
     fallbackSelector: ".floating-dock-dictionary",
-    placement: "bottom",
-    title: "Word Meaning (Dictionary) 📖",
+    placement: "left",
+    title: "Word Dictionary 📖",
     description:
-      "Never get confused by programming jargon! Press ⌘K or click any highlighted word in a lesson to see instant, plain-language definitions in both English and your native language.",
+      "Tap any highlighted term (or press ⌘K) for simple definitions in English, Telugu, or Hindi.",
     mobileDescription:
-      "Tap the floating Word Meaning button anytime (or tap underlined terms in lessons) to see confusing programming jargon explained in simple, plain words.",
+      "Tap any technical term for a simple explanation in your native language.",
     targetLabel: "Word Meaning (⌘K)"
   },
   {
@@ -162,11 +165,11 @@ export const GUIDE_STEPS = [
     mobileSelector: "#tour-home-stage-btn",
     fallbackSelector: "#tour-nav-mobile-stage",
     placement: "bottom",
-    title: "Adaptive Age Stage 🎯",
+    title: "Learning Stage 🎯",
     description:
-      "Change how concepts are explained across 5 age groups, from Kid to Working Professional. Real-world stories and code examples update instantly to match your level.",
+      "Switch between 5 age levels (Kid to Pro). Real-world examples adapt instantly to your level.",
     mobileDescription:
-      "Tap 'Change' next to Current Learning Stage to switch between 5 age levels (Kid to Working Pro). Real-world examples adapt instantly to your level.",
+      "Switch between 5 age levels (Kid to Pro) to match how concepts are explained.",
     targetLabel: "Age Stage Selector"
   },
   {
@@ -176,11 +179,11 @@ export const GUIDE_STEPS = [
     mobileSelector: "#tour-home-lang-btn",
     fallbackSelector: "#tour-nav-mobile-lang",
     placement: "bottom",
-    title: "Multi-Language Engine 🗣️",
+    title: "Multi-Language 🗣️",
     description:
-      "Switch explanation languages between English, English+Telugu, Telugu, and Hindi. You get friendly native explanations while standard Python syntax stays intact.",
+      "Get explanations in your mother tongue while standard Python code stays clean.",
     mobileDescription:
-      "Tap 'Change' next to Explanation Language to switch between English, English+Telugu, Telugu, and Hindi while standard Python code stays intact.",
+      "Read explanations in your native language while Python code stays standard.",
     targetLabel: "Language Switcher"
   },
   {
@@ -191,9 +194,9 @@ export const GUIDE_STEPS = [
     placement: "left",
     title: "You're All Set! 🎉",
     description:
-      "You now know what each navigation tab contains, how to toggle themes, take study notes, look up words, and update your profile name. Enjoy learning Python!",
+      "You're ready to start your Python journey! Start with Lesson 1 or jump into any topic you like.",
     mobileDescription:
-      "You're all set! Now you know what Home, Learn, Practice, Projects, and About contain, how to use notes, and where to change your profile name. Enjoy learning!",
+      "You're ready! Start with Lesson 1 or pick any topic to begin coding.",
     targetLabel: "Finish Guide"
   }
 ];

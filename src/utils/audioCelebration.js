@@ -66,3 +66,46 @@ export function playSuccessChime() {
     // ignore
   }
 }
+
+/**
+ * Subtle paper page flutter sound for digital book page turns
+ * Lightweight Web Audio synthesis with low-pass filtered noise
+ */
+export function playPageFlipSound() {
+  if (typeof window === 'undefined') return;
+  try {
+    const isMuted = localStorage.getItem('lwu_book_sound') === 'muted';
+    if (isMuted) return;
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const bufferSize = Math.floor(ctx.sampleRate * 0.08); // 80ms paper flutter
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.5;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(2400, ctx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.075);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0005, ctx.currentTime + 0.08);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    noise.start();
+    noise.stop(ctx.currentTime + 0.085);
+  } catch {
+    // AudioContext blocked or not supported
+  }
+}

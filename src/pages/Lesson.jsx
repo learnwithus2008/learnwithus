@@ -34,7 +34,7 @@ export default function Lesson({
         </p>
         <button
           onClick={onBack || onBackToLearn}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#168BFF] text-white font-semibold text-sm cursor-pointer border-none"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-semibold text-sm cursor-pointer border-none"
         >
           <ArrowLeft size={16} />
           Return to Learn Page
@@ -70,49 +70,49 @@ export default function Lesson({
           </div>
 
           {/* Lock Icon */}
-          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-gradient-to-tr from-[#168BFF] to-[#0876E8] text-white flex items-center justify-center shadow-lg shadow-blue-500/30 relative z-10">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-[#0756A5] text-white flex items-center justify-center shadow-lg relative z-10">
             <Lock size={34} />
           </div>
 
           {/* Title & Topic Details */}
           <div className="space-y-2 max-w-xl mx-auto relative z-10">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-[#168BFF] dark:text-[#60a5fa]">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-[#0756A5] dark:text-[#FFB800]">
               {topic.sectionTitle} • Topic #{topic.topicNumber}
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#102B50] dark:text-white tracking-tight">
               "{topic.title}"
             </h1>
-            <p className="text-sm sm:text-base text-slate-600 dark:text-[#94a3b8] leading-relaxed pt-1">
+            <p className="text-sm sm:text-base text-[#64748B] dark:text-slate-300 leading-relaxed pt-1">
               Except for the first 2 free preview lessons, all other Python lessons can only be read once you log in or have an account.
             </p>
           </div>
 
           {/* Value Proposition Pills */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-left pt-2 relative z-10">
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#14233a] border border-slate-200 dark:border-[#23344d]">
-              <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-slate-900 dark:text-white mb-1">
-                <BookOpen size={16} className="text-[#168BFF]" />
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F]">
+              <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-[#102B50] dark:text-white mb-1">
+                <BookOpen size={16} className="text-[#0756A5] dark:text-[#FFB800]" />
                 <span>Full Access</span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-[#64748B] dark:text-slate-400">
                 Unlock all 120 lessons across 19 curriculum sections.
               </p>
             </div>
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#14233a] border border-slate-200 dark:border-[#23344d]">
-              <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-slate-900 dark:text-white mb-1">
-                <Sparkles size={16} className="text-[#168BFF]" />
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F]">
+              <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-[#102B50] dark:text-white mb-1">
+                <Sparkles size={16} className="text-[#FFB800]" />
                 <span>Interactive Runner</span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-[#64748B] dark:text-slate-400">
                 Run live Python code in-browser with instant outputs.
               </p>
             </div>
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#14233a] border border-slate-200 dark:border-[#23344d]">
-              <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-slate-900 dark:text-white mb-1">
-                <ShieldCheck size={16} className="text-[#168BFF]" />
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F]">
+              <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-[#102B50] dark:text-white mb-1">
+                <ShieldCheck size={16} className="text-[#16A34A]" />
                 <span>Free Forever</span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-[#64748B] dark:text-slate-400">
                 Accounts are completely free with zero subscription fees.
               </p>
             </div>
@@ -148,20 +148,20 @@ export default function Lesson({
           </div>
 
           {/* Free Lessons Available Banner */}
-          <div className="pt-4 border-t border-slate-100 dark:border-[#1e3252] max-w-lg mx-auto relative z-10">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+          <div className="pt-4 border-t border-[#E2E8F0] dark:border-[#1E3A5F] max-w-lg mx-auto relative z-10">
+            <p className="text-xs text-[#64748B] dark:text-slate-400 mb-2">
               Want to preview first? The first 2 lessons are free to read without signing in:
             </p>
             <div className="flex items-center justify-center gap-2 flex-wrap">
               <button
                 onClick={() => onSelectTopic(freeLesson1.id)}
-                className="text-xs font-bold text-[#168BFF] hover:underline bg-slate-100 dark:bg-[#14233a] px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#23344d] cursor-pointer"
+                className="text-xs font-bold text-[#0756A5] dark:text-[#FFB800] hover:text-[#FFB800] bg-[#F3F7FC] dark:bg-[#102B50] px-3 py-1.5 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] cursor-pointer"
               >
                 1. {freeLesson1.title} →
               </button>
               <button
                 onClick={() => onSelectTopic(freeLesson2.id)}
-                className="text-xs font-bold text-[#168BFF] hover:underline bg-slate-100 dark:bg-[#14233a] px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#23344d] cursor-pointer"
+                className="text-xs font-bold text-[#0756A5] dark:text-[#FFB800] hover:text-[#FFB800] bg-[#F3F7FC] dark:bg-[#102B50] px-3 py-1.5 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] cursor-pointer"
               >
                 2. {freeLesson2.title} →
               </button>

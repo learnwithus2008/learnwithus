@@ -8,7 +8,13 @@ const LOCAL_API_URL = "http://localhost:5000/api";
 const CLOUD_API_URL = "https://pythonlearning-z8bu.onrender.com/api";
 
 function resolveBaseUrl() {
-  const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL;
+  const envUrl =
+    (typeof import.meta !== "undefined" && import.meta.env
+      ? import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL
+      : null) ||
+    (typeof process !== "undefined" && process.env
+      ? process.env.VITE_API_BASE_URL || process.env.VITE_API_URL
+      : null);
   if (envUrl) {
     const clean = envUrl.replace(/\/+$/, "");
     return clean.endsWith("/api") ? clean : `${clean}/api`;

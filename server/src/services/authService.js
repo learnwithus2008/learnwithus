@@ -36,6 +36,8 @@ export async function buildFullUserProfile(userId, dbClient = null) {
     id: user.id,
     name: user.full_name,
     email: user.email,
+    role: user.role || "student",
+    accountStatus: user.account_status || "active",
     stage: user.learning_stage,
     language: user.preferred_language,
     avatar: user.avatar,
@@ -48,7 +50,10 @@ export async function buildFullUserProfile(userId, dbClient = null) {
       longestStreak: rewards.longest_streak,
       completedTopics,
       bookmarkedTopics: bookmarks,
-      quizScores
+      quizScores,
+      doubtCredits: rewards.doubt_credits !== undefined && rewards.doubt_credits !== null ? rewards.doubt_credits : 10,
+      freeDoubtsTotal: rewards.free_doubts_total !== undefined && rewards.free_doubts_total !== null ? rewards.free_doubts_total : 10,
+      doubtsUsed: rewards.doubts_used || 0
     }
   };
 }
@@ -121,6 +126,13 @@ export const authService = {
     if (!user) {
       const err = new Error("No account found with this email or username.");
       err.statusCode = 404;
+      throw err;
+    }
+
+    // Check account status
+    if (user.account_status === "suspended") {
+      const err = new Error("Your account has been suspended by an administrator. Please contact support.");
+      err.statusCode = 403;
       throw err;
     }
 

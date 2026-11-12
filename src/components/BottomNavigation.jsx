@@ -1,11 +1,14 @@
 import React from "react";
-import { Home, BookOpen, Code2, FolderGit2, Info } from "lucide-react";
+import { Home, BookOpen, Code2, FolderGit2, Info, Mail, ShieldCheck, User } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 /**
  * BottomNavigation component for mobile & tablet screens (< 1024px).
  * Replaces old mobile drawer/hamburger button with a modern, thumb-friendly bottom bar.
  */
 export default function BottomNavigation({ currentPage, onNavigate }) {
+  const { currentUser } = useAuth();
+
   const navTabs = [
     {
       id: "home",
@@ -36,7 +39,30 @@ export default function BottomNavigation({ currentPage, onNavigate }) {
       label: "About",
       icon: Info,
       isActive: currentPage === "about"
-    }
+    },
+    {
+      id: "contact",
+      label: "Contact",
+      icon: Mail,
+      isActive: currentPage === "contact"
+    },
+    ...(currentUser?.role === "admin"
+      ? [
+          {
+            id: "admin",
+            label: "Admin",
+            icon: ShieldCheck,
+            isActive: currentPage === "admin"
+          }
+        ]
+      : [
+          {
+            id: "profile",
+            label: "Profile",
+            icon: User,
+            isActive: currentPage === "profile"
+          }
+        ])
   ];
 
   return (
@@ -45,7 +71,7 @@ export default function BottomNavigation({ currentPage, onNavigate }) {
       aria-label="Mobile Bottom Navigation"
       className="app-bottom-nav"
     >
-      <div className="w-full h-full max-w-md mx-auto flex items-center justify-around px-2">
+      <div className="w-full h-full max-w-md mx-auto flex items-center justify-around px-0.5 sm:px-2">
         {navTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = tab.isActive;
@@ -61,34 +87,34 @@ export default function BottomNavigation({ currentPage, onNavigate }) {
               }}
               aria-label={tab.label}
               aria-current={isActive ? "page" : undefined}
-              className={`relative flex flex-col items-center justify-center flex-1 h-full py-1 group cursor-pointer border-none bg-transparent transition-all duration-200 active:scale-95 select-none ${
+              className={`relative flex flex-col items-center justify-center flex-1 h-full py-1 group cursor-pointer border-none bg-transparent transition-all duration-200 active:scale-95 select-none min-w-0 ${
                 isActive
-                  ? "text-[#168BFF] dark:text-[#60B7FF]"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                  ? "text-[#0756A5] dark:text-[#60A5FA]"
+                  : "text-[#102B50] dark:text-slate-300 hover:text-[#0756A5] dark:hover:text-[#FFB800]"
               }`}
             >
               {/* Active top glowing accent indicator bar */}
               {isActive && (
-                <span className="absolute top-0 w-8 h-1 rounded-b-full bg-gradient-to-r from-blue-600 via-[#168BFF] to-cyan-400 shadow-[0_2px_8px_rgba(22,139,255,0.7)] animate-in" />
+                <span className="absolute top-0 w-9 h-1 rounded-b-full bg-[#0756A5] dark:bg-[#FFB800] shadow-[0_2px_8px_rgba(7,86,165,0.4)] animate-in" />
               )}
 
               {/* Icon Container with active highlight pill */}
               <div
-                className={`p-1.5 rounded-xl transition-all duration-200 ${
+                className={`p-1 sm:p-1.5 rounded-xl transition-all duration-200 ${
                   isActive
-                    ? "bg-blue-500/15 dark:bg-blue-500/20 text-[#168BFF] dark:text-[#60B7FF] scale-110 shadow-xs"
-                    : "group-hover:bg-slate-100 dark:group-hover:bg-[#14233a]"
+                    ? "bg-[#0756A5]/10 dark:bg-[#0756A5]/25 text-[#0756A5] dark:text-[#60A5FA] scale-110 shadow-xs"
+                    : "text-[#0756A5] dark:text-slate-300 group-hover:bg-[#FFB800]/20 group-hover:text-[#102B50] dark:group-hover:text-[#FFB800]"
                 }`}
               >
-                <Icon size={20} strokeWidth={isActive ? 2.3 : 1.8} />
+                <Icon size={18} strokeWidth={isActive ? 2.4 : 2.2} />
               </div>
 
               {/* Tab label */}
               <span
-                className={`text-[10px] sm:text-[11px] font-bold tracking-tight mt-0.5 leading-none transition-colors duration-200 ${
+                className={`text-[9px] xs:text-[10px] sm:text-[11px] font-bold tracking-tight mt-0.5 leading-none truncate max-w-full text-center px-0.5 transition-colors duration-200 ${
                   isActive
-                    ? "text-[#168BFF] dark:text-[#60B7FF]"
-                    : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                    ? "text-[#0756A5] dark:text-[#60A5FA]"
+                    : "text-[#102B50] dark:text-slate-300 group-hover:text-[#0756A5] dark:group-hover:text-[#FFB800]"
                 }`}
               >
                 {tab.label}

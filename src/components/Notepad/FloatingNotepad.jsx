@@ -254,19 +254,19 @@ export default function FloatingNotepad() {
   if (isMinimized) {
     return (
       <div className="floating-dock-notepad animate-in">
-        <div className="flex items-center gap-2 p-1.5 pl-3 rounded-2xl bg-white dark:bg-[#101b2d] text-slate-800 dark:text-white shadow-xl hover:shadow-2xl transition cursor-pointer border border-slate-200 dark:border-[#23344d] hover:border-[#168BFF]">
+        <div className="flex items-center gap-2 p-1.5 pl-3 rounded-2xl bg-white dark:bg-[#102B50] text-[#102B50] dark:text-white shadow-xl hover:shadow-2xl transition cursor-pointer border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800]">
           <div
             onClick={restoreNotepad}
             className="flex items-center gap-2 text-xs font-bold select-none pr-1"
           >
-            <StickyNote size={16} className="text-[#168BFF] shrink-0" />
+            <StickyNote size={16} className="text-[#0756A5] dark:text-[#FFB800] shrink-0" />
             <span className="truncate max-w-[140px] sm:max-w-[200px]">
               {activeTab === "topic"
                 ? `Notes: ${currentTopicTitle}`
                 : "Python Scratchpad"}
             </span>
             {noteContent.trim() && (
-              <span className="w-2 h-2 rounded-full bg-[#168BFF] animate-pulse shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-[#FFB800] animate-pulse shrink-0" />
             )}
           </div>
           <button
@@ -300,21 +300,21 @@ export default function FloatingNotepad() {
       {/* ============================================================ */}
       {/* 1. NOTEPAD HEADER WITH TABS & CONTROLS */}
       {/* ============================================================ */}
-      <div className="bg-slate-100 dark:bg-[#0a101c] text-slate-900 dark:text-white px-3 sm:px-4 py-2.5 sm:py-3 shrink-0 flex items-center justify-between border-b border-slate-200 dark:border-[#23344d]">
+      <div className="bg-[#F3F7FC] dark:bg-[#102B50] text-[#102B50] dark:text-white px-3 sm:px-4 py-2.5 sm:py-3 shrink-0 flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#1E3A5F]">
         <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-          <div className="w-7 h-7 rounded-xl bg-blue-50 dark:bg-[#14233a] border border-blue-200 dark:border-[#23344d] text-[#168BFF] flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-xl bg-white dark:bg-[#0C1B30] border border-[#E2E8F0] dark:border-[#1E3A5F] text-[#0756A5] dark:text-[#FFB800] flex items-center justify-center shrink-0">
             <StickyNote size={15} />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <h3 className="text-xs sm:text-sm font-extrabold leading-tight tracking-tight truncate max-w-[150px] xs:max-w-[200px] sm:max-w-none text-slate-900 dark:text-[#f8fafc]">
+              <h3 className="text-xs sm:text-sm font-extrabold leading-tight tracking-tight truncate max-w-[150px] xs:max-w-[200px] sm:max-w-none text-[#102B50] dark:text-white">
                 Python Study Notepad
               </h3>
-              <span className="text-[10px] text-blue-600 dark:text-[#60a5fa] font-mono font-bold border border-blue-200 dark:border-[#23344d] px-1.5 py-0.2 rounded bg-blue-50 dark:bg-[#14233a] hidden sm:inline-block">
+              <span className="text-[10px] text-[#0756A5] dark:text-[#FFB800] font-mono font-bold border border-[#E2E8F0] dark:border-[#1E3A5F] px-1.5 py-0.2 rounded bg-white dark:bg-[#0C1B30] hidden sm:inline-block">
                 Alt+N
               </span>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-[#94a3b8] truncate font-medium mt-0.5">
+            <p className="text-[10px] sm:text-[11px] text-[#64748B] dark:text-slate-400 truncate font-medium mt-0.5">
               {activeTab === "topic"
                 ? `Topic: ${currentTopicTitle}`
                 : "Global Learning Scratchpad"}
@@ -373,19 +373,19 @@ export default function FloatingNotepad() {
       {/* ============================================================ */}
       {/* 2. TAB SWITCHER (Topic Notes vs General Scratchpad) */}
       {/* ============================================================ */}
-      <div className="flex bg-slate-50 dark:bg-[#0c1422] p-1 sm:p-1.5 border-b border-slate-200 dark:border-[#23344d] shrink-0 gap-1 sm:gap-1.5">
+      <div className="flex bg-[#F3F7FC] dark:bg-[#0C1B30] p-1 sm:p-1.5 border-b border-[#E2E8F0] dark:border-[#1E3A5F] shrink-0 gap-1 sm:gap-1.5">
         <button
           onClick={() => setActiveTab("topic")}
           className={`flex-1 py-1.5 px-2 sm:px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border ${
             activeTab === "topic"
-              ? "bg-white dark:bg-[#14233a] text-slate-900 dark:text-white shadow-xs border-[#168BFF]"
-              : "text-slate-600 dark:text-[#94a3b8] hover:text-slate-900 dark:hover:text-white bg-transparent border-transparent"
+              ? "bg-white dark:bg-[#102B50] text-[#102B50] dark:text-white shadow-xs border-[#0756A5]"
+              : "text-[#64748B] dark:text-slate-400 hover:text-[#102B50] dark:hover:text-white bg-transparent border-transparent"
           }`}
         >
-          <BookOpen size={13} className="shrink-0 text-[#168BFF]" />
+          <BookOpen size={13} className="shrink-0 text-[#0756A5] dark:text-[#FFB800]" />
           <span className="truncate">This Lesson Notes</span>
           {activeTab !== "topic" && (
-            <span className="text-[10px] text-blue-600 dark:text-[#60a5fa] font-mono shrink-0">
+            <span className="text-[10px] text-[#0756A5] dark:text-[#FFB800] font-mono shrink-0">
               •
             </span>
           )}
@@ -395,11 +395,11 @@ export default function FloatingNotepad() {
           onClick={() => setActiveTab("scratchpad")}
           className={`flex-1 py-1.5 px-2 sm:px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border ${
             activeTab === "scratchpad"
-              ? "bg-white dark:bg-[#14233a] text-slate-900 dark:text-white shadow-xs border-[#168BFF]"
-              : "text-slate-600 dark:text-[#94a3b8] hover:text-slate-900 dark:hover:text-white bg-transparent border-transparent"
+              ? "bg-white dark:bg-[#102B50] text-[#102B50] dark:text-white shadow-xs border-[#0756A5]"
+              : "text-[#64748B] dark:text-slate-400 hover:text-[#102B50] dark:hover:text-white bg-transparent border-transparent"
           }`}
         >
-          <FileText size={13} className="shrink-0 text-[#168BFF]" />
+          <FileText size={13} className="shrink-0 text-[#0756A5] dark:text-[#FFB800]" />
           <span className="truncate">General Scratchpad</span>
         </button>
       </div>
@@ -407,50 +407,50 @@ export default function FloatingNotepad() {
       {/* ============================================================ */}
       {/* 3. FORMATTING TOOLBAR (Responsive 1-line flex layout) */}
       {/* ============================================================ */}
-      <div className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-slate-50 dark:bg-[#0c1422] border-b border-slate-200 dark:border-[#23344d] flex items-center justify-between gap-1 shrink-0">
+      <div className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#F3F7FC] dark:bg-[#0C1B30] border-b border-[#E2E8F0] dark:border-[#1E3A5F] flex items-center justify-between gap-1 shrink-0">
         <div className="flex items-center gap-1 overflow-x-auto scrollbar-none py-0.5 min-w-0">
           <button
             onClick={() => handleInsertSnippet("bullet")}
-            className="px-2 py-1 rounded-lg bg-white dark:bg-[#14233a] border border-slate-200 dark:border-[#23344d] hover:border-[#168BFF] text-slate-700 hover:text-slate-900 dark:text-[#cbd5e1] dark:hover:text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition shadow-2xs shrink-0"
+            className="px-2 py-1 rounded-lg bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] hover:bg-[#FFB800] text-[#102B50] hover:text-[#102B50] dark:text-white dark:hover:text-[#102B50] text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition shadow-2xs shrink-0"
             title="Add Bullet Point"
           >
-            <List size={12} className="shrink-0 text-[#168BFF]" />
+            <List size={12} className="shrink-0 text-[#0756A5]" />
             <span className="hidden sm:inline">Bullet</span>
           </button>
 
           <button
             onClick={() => handleInsertSnippet("bold")}
-            className="px-2 py-1 rounded-lg bg-white dark:bg-[#14233a] border border-slate-200 dark:border-[#23344d] hover:border-[#168BFF] text-slate-700 hover:text-slate-900 dark:text-[#cbd5e1] dark:hover:text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition shadow-2xs shrink-0"
+            className="px-2 py-1 rounded-lg bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] hover:bg-[#FFB800] text-[#102B50] hover:text-[#102B50] dark:text-white dark:hover:text-[#102B50] text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition shadow-2xs shrink-0"
             title="Add Bold Highlight"
           >
-            <Bold size={12} className="shrink-0 text-[#168BFF]" />
+            <Bold size={12} className="shrink-0 text-[#0756A5]" />
             <span className="hidden sm:inline">Bold</span>
           </button>
 
           <button
             onClick={() => handleInsertSnippet("code")}
-            className="px-2 py-1 rounded-lg bg-white dark:bg-[#14233a] border border-slate-200 dark:border-[#23344d] hover:border-[#168BFF] text-slate-700 hover:text-slate-900 dark:text-[#cbd5e1] dark:hover:text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition shadow-2xs shrink-0"
+            className="px-2 py-1 rounded-lg bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] hover:bg-[#FFB800] text-[#102B50] hover:text-[#102B50] dark:text-white dark:hover:text-[#102B50] text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition shadow-2xs shrink-0"
             title="Add Python Code Block"
           >
-            <Code2 size={12} className="shrink-0 text-[#168BFF]" />
+            <Code2 size={12} className="shrink-0 text-[#0756A5]" />
             <span className="hidden sm:inline">Code</span>
           </button>
 
           <button
             onClick={() => handleInsertSnippet("todo")}
-            className="px-2 py-1 rounded-lg bg-white dark:bg-[#14233a] border border-slate-200 dark:border-[#23344d] hover:border-[#168BFF] text-slate-700 hover:text-slate-900 dark:text-[#cbd5e1] dark:hover:text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition shadow-2xs shrink-0"
+            className="px-2 py-1 rounded-lg bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] hover:bg-[#FFB800] text-[#102B50] hover:text-[#102B50] dark:text-white dark:hover:text-[#102B50] text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition shadow-2xs shrink-0"
             title="Add Checklist Item"
           >
-            <CheckSquare size={12} className="shrink-0 text-[#168BFF]" />
+            <CheckSquare size={12} className="shrink-0 text-[#0756A5]" />
             <span className="hidden sm:inline">Checklist</span>
           </button>
 
           <button
             onClick={handleInsertTemplate}
-            className="px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-[#2563eb]/20 text-[#168BFF] dark:text-[#93c5fd] border border-blue-200 dark:border-[#3b82f6]/40 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition shadow-2xs shrink-0"
+            className="px-2 py-1 rounded-lg bg-white dark:bg-[#102B50] hover:bg-[#FFB800] text-[#0756A5] hover:text-[#102B50] dark:text-[#FFB800] dark:hover:text-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] text-[11px] font-bold flex items-center gap-1 cursor-pointer transition shadow-2xs shrink-0"
             title="Insert Structured Study Template"
           >
-            <Sparkles size={12} className="shrink-0 text-[#168BFF]" />
+            <Sparkles size={12} className="shrink-0 text-[#FFB800]" />
             <span className="hidden sm:inline">Template</span>
           </button>
         </div>
@@ -529,9 +529,9 @@ export default function FloatingNotepad() {
       {/* ============================================================ */}
       {/* 6. FOOTER STATUS BAR */}
       {/* ============================================================ */}
-      <div className="px-3.5 py-1.5 bg-slate-100 dark:bg-[#0a101c] border-t border-slate-200 dark:border-[#23344d] flex items-center justify-between text-[10px] text-slate-500 dark:text-[#94a3b8] shrink-0">
+      <div className="px-3.5 py-1.5 bg-[#F3F7FC] dark:bg-[#102B50] border-t border-[#E2E8F0] dark:border-[#1E3A5F] flex items-center justify-between text-[10px] text-[#64748B] dark:text-slate-400 shrink-0">
         <span className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#168BFF]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#0756A5]" />
           <span>Auto-saved in browser</span>
         </span>
         <div className="flex items-center gap-3">

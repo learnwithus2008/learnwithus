@@ -12,13 +12,13 @@ export default function PageBackButton({
   return (
     <button
       onClick={onBack}
-      className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-[#FFFFFF] bg-white dark:bg-[#0C1B30] hover:bg-slate-100 dark:hover:bg-[#102541] border border-slate-200 dark:border-[#183657] hover:border-[#168BFF] dark:hover:border-[#168BFF] transition-all cursor-pointer shadow-xs hover:shadow-sm active:scale-95 group shrink-0 ${className}`}
+      className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-[#102B50] dark:text-white hover:text-[#102B50] bg-white dark:bg-[#102B50] hover:bg-[#FFB800] dark:hover:bg-[#FFB800] dark:hover:text-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] dark:hover:border-[#FFB800] transition-all cursor-pointer shadow-xs hover:shadow-sm active:scale-95 group shrink-0 ${className}`}
       title={fallbackDestination ? `Back to ${fallbackDestination}` : "Go back to previous page"}
       aria-label="Go back"
     >
       <ArrowLeft
         size={15}
-        className="text-[#168BFF] dark:text-[#60B7FF] group-hover:-translate-x-0.5 transition-transform shrink-0"
+        className="text-[#0756A5] dark:text-[#FFB800] group-hover:text-[#102B50] group-hover:-translate-x-0.5 transition-all shrink-0"
       />
       <span>{label}</span>
       {fallbackDestination && (

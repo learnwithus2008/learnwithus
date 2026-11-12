@@ -5,6 +5,7 @@ import { testAuth } from "./auth.test.js";
 import { testProgress } from "./progress.test.js";
 import { testBookmarks } from "./bookmarks.test.js";
 import { testSecurity } from "./security.test.js";
+import { testAdmin } from "./admin.test.js";
 
 async function runAllTests() {
   console.log("=================================================");
@@ -34,6 +35,10 @@ async function runAllTests() {
     console.log("\n--- SUITE 4: Security & Parameterization ---");
     const securityResults = await testSecurity();
     results.push(...securityResults);
+
+    console.log("\n--- SUITE 5: Admin Panel & User Status Management ---");
+    const adminResults = await testAdmin();
+    results.push(...adminResults);
   } finally {
     await pool.end();
   }

@@ -1,5 +1,3 @@
-import { CURRICULUM_BLUEPRINT } from './curriculumBlueprint.js';
-import { getTopicContent } from './topicKnowledgeBase.js';
 import { SECTIONS, allTopics } from '../../src/data/allTopics.js';
 import { practiceData } from '../../src/data/practiceData.js';
 import { projectsData } from '../../src/data/projectsData.js';

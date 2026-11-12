@@ -28,6 +28,7 @@ import { LEARNING_STAGES, getStageById } from "../../data/learningStages";
 import { LEARNING_LANGUAGES, getLanguageById } from "../../data/learningLanguages";
 import { AVATAR_OPTIONS } from "../../services/authService";
 import { useBodyScrollLock } from "../../utils/scrollLock";
+import CertificateModal from "../CertificateModal";
 
 export default function AuthModal({ onSelectTopic }) {
   const {
@@ -91,6 +92,7 @@ export default function AuthModal({ onSelectTopic }) {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showCertificate, setShowCertificate] = useState(false);
 
   // Sync profile edit fields when user logs in
   useEffect(() => {
@@ -273,7 +275,7 @@ export default function AuthModal({ onSelectTopic }) {
         onWheel={(e) => e.stopPropagation()}
       >
         {/* Header Ribbon / Banner */}
-        <div className="relative px-4 sm:px-6 pt-5 sm:pt-6 pb-4 bg-gradient-to-r from-[#2563eb] to-[#3b82f6] text-white shrink-0">
+        <div className="relative px-4 sm:px-6 pt-5 sm:pt-6 pb-4 bg-gradient-to-r from-[#002D62] via-[#0056B3] to-[#00A3FF] text-white shrink-0 border-b border-amber-300/25">
           <button
             onClick={closeAuthModal}
             className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer border-none"
@@ -382,7 +384,7 @@ export default function AuthModal({ onSelectTopic }) {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder="alex@example.com or Alex Johnson"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF] transition"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition"
                   />
                 </div>
               </div>
@@ -395,7 +397,7 @@ export default function AuthModal({ onSelectTopic }) {
                   <button
                     type="button"
                     onClick={() => setAuthModalMode("forgot")}
-                    className="text-[11px] font-bold text-[#168BFF] dark:text-[#60B7FF] hover:underline bg-transparent border-none cursor-pointer p-0"
+                    className="text-[11px] font-bold text-[#00A3FF] dark:text-[#60B7FF] hover:underline bg-transparent border-none cursor-pointer p-0"
                   >
                     Forgot password?
                   </button>
@@ -411,7 +413,7 @@ export default function AuthModal({ onSelectTopic }) {
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF] transition"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition"
                   />
                   <button
                     type="button"
@@ -429,7 +431,7 @@ export default function AuthModal({ onSelectTopic }) {
                     type="checkbox"
                     checked={loginRemember}
                     onChange={(e) => setLoginRemember(e.target.checked)}
-                    className="rounded text-[#168BFF] focus:ring-[#168BFF] w-4 h-4 cursor-pointer"
+                    className="rounded text-[#00A3FF] focus:ring-[#00A3FF] w-4 h-4 cursor-pointer"
                   />
                   <span>Remember my session</span>
                 </label>
@@ -438,7 +440,7 @@ export default function AuthModal({ onSelectTopic }) {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#168BFF] to-[#0876E8] hover:from-[#0876E8] hover:to-[#0560c2] text-white font-bold text-sm shadow-md shadow-blue-500/25 transition cursor-pointer border-none flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#00A3FF] to-[#0876E8] hover:from-[#0876E8] hover:to-[#0560c2] text-white font-bold text-sm shadow-md shadow-blue-500/25 transition cursor-pointer border-none flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isLoading ? (
                   <RefreshCw size={16} className="animate-spin" />
@@ -509,7 +511,7 @@ export default function AuthModal({ onSelectTopic }) {
                     value={signupName}
                     onChange={(e) => setSignupName(e.target.value)}
                     placeholder="e.g. John Doe"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF] transition"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition"
                   />
                 </div>
               </div>
@@ -530,7 +532,7 @@ export default function AuthModal({ onSelectTopic }) {
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
                     placeholder="john@example.com"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF] transition"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition"
                   />
                 </div>
               </div>
@@ -551,7 +553,7 @@ export default function AuthModal({ onSelectTopic }) {
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
                     placeholder="At least 6 characters"
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF] transition"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition"
                   />
                   <button
                     type="button"
@@ -599,7 +601,7 @@ export default function AuthModal({ onSelectTopic }) {
                     value={signupConfirmPassword}
                     onChange={(e) => setSignupConfirmPassword(e.target.value)}
                     placeholder="Re-enter password"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF] transition"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition"
                   />
                 </div>
               </div>
@@ -613,7 +615,7 @@ export default function AuthModal({ onSelectTopic }) {
                   <select
                     value={signupStage}
                     onChange={(e) => setSignupStage(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#168BFF] cursor-pointer"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#00A3FF] cursor-pointer"
                   >
                     {LEARNING_STAGES.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -630,7 +632,7 @@ export default function AuthModal({ onSelectTopic }) {
                   <select
                     value={signupLanguage}
                     onChange={(e) => setSignupLanguage(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#168BFF] cursor-pointer"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#00A3FF] cursor-pointer"
                   >
                     {LEARNING_LANGUAGES.map((l) => (
                       <option key={l.id} value={l.id}>
@@ -654,7 +656,7 @@ export default function AuthModal({ onSelectTopic }) {
                       onClick={() => setSignupAvatar(a.id)}
                       className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg transition cursor-pointer border ${
                         signupAvatar === a.id
-                          ? "bg-[#168BFF] border-[#60B7FF] text-white shadow-md scale-110"
+                          ? "bg-[#00A3FF] border-[#60B7FF] text-white shadow-md scale-110"
                           : "bg-slate-100 dark:bg-[#102541] border-slate-200 dark:border-[#183657] text-[#D2DEEC] hover:scale-105"
                       }`}
                       title={a.label}
@@ -669,7 +671,7 @@ export default function AuthModal({ onSelectTopic }) {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#168BFF] to-[#0876E8] hover:from-[#0876E8] hover:to-[#0560c2] text-white font-bold text-sm shadow-md shadow-blue-500/25 transition cursor-pointer border-none flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#00A3FF] to-[#0876E8] hover:from-[#0876E8] hover:to-[#0560c2] text-white font-bold text-sm shadow-md shadow-blue-500/25 transition cursor-pointer border-none flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isLoading ? (
                   <RefreshCw size={16} className="animate-spin" />
@@ -703,7 +705,7 @@ export default function AuthModal({ onSelectTopic }) {
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="Enter your registered email"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF] transition"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition"
                   />
                 </div>
               </div>
@@ -723,7 +725,7 @@ export default function AuthModal({ onSelectTopic }) {
                     value={forgotNewPassword}
                     onChange={(e) => setForgotNewPassword(e.target.value)}
                     placeholder="Enter at least 6 characters"
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF] transition"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition"
                   />
                 </div>
               </div>
@@ -739,7 +741,7 @@ export default function AuthModal({ onSelectTopic }) {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#168BFF] to-[#0876E8] hover:from-[#0876E8] hover:to-[#0560c2] text-white font-bold text-xs shadow-md transition cursor-pointer border-none flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#00A3FF] to-[#0876E8] hover:from-[#0876E8] hover:to-[#0560c2] text-white font-bold text-xs shadow-md transition cursor-pointer border-none flex items-center justify-center gap-1.5"
                 >
                   {isLoading ? <RefreshCw size={14} className="animate-spin" /> : "Save New Password"}
                 </button>
@@ -844,6 +846,16 @@ export default function AuthModal({ onSelectTopic }) {
                   </span>
                 </div>
               </div>
+
+              {/* Official Credential Certificate Trigger */}
+              <button
+                type="button"
+                onClick={() => setShowCertificate(true)}
+                className="w-full py-2.5 px-3 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-2 cursor-pointer border-none"
+              >
+                <Award size={15} className="text-[#FFB800]" />
+                <span>View Official Certificate of Achievement</span>
+              </button>
 
               {/* Edit Profile Form (Expanded on Settings toggle) */}
               {isEditingProfile ? (
@@ -1011,6 +1023,16 @@ export default function AuthModal({ onSelectTopic }) {
           )}
         </div>
       </div>
+
+      {/* Official Certificate Modal */}
+      {currentUser && (
+        <CertificateModal
+          isOpen={showCertificate}
+          onClose={() => setShowCertificate(false)}
+          studentName={currentUser.name}
+          completedCount={(currentUser.stats?.completedTopics || []).length}
+        />
+      )}
     </div>
   );
 }

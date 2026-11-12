@@ -103,7 +103,7 @@ export default function GuideCompletionModal() {
           </div>
           <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#102541]/80 border border-slate-200 dark:border-[#183657]">
             <div className="text-[10px] uppercase font-bold text-slate-400">Curriculum</div>
-            <div className="text-xs font-extrabold text-slate-800 dark:text-white mt-0.5">120 Lessons Available</div>
+            <div className="text-xs font-extrabold text-slate-800 dark:text-white mt-0.5">198 Lessons Available</div>
           </div>
         </div>
 

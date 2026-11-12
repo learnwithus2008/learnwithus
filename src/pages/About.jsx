@@ -2,6 +2,7 @@ import React from "react";
 import { LEARNING_STAGES } from "../data/learningStages";
 import PageBackButton from "../components/PageBackButton";
 import { PageHelpButton } from "../components/GuideTutorial/ContextualPageGuidance";
+import BrandLogo, { LearnWithUsTagline } from "../components/BrandLogo";
 import { BookOpen, CheckCircle, ShieldCheck, Zap, Sparkles, Heart, ArrowRight } from "lucide-react";
 
 export default function About({ onNavigate, onBack }) {
@@ -19,14 +20,15 @@ export default function About({ onNavigate, onBack }) {
 
       {/* Page Header */}
       <div className="text-center max-w-2xl mx-auto mb-12">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#168BFF] to-[#0876E8] text-white flex items-center justify-center font-extrabold text-2xl mx-auto mb-4 shadow-md shadow-blue-500/25 font-mono">
-          Py
+        <div className="flex flex-col items-center justify-center mb-4">
+          <BrandLogo variant="mark" size="xl" />
+          <LearnWithUsTagline size="md" className="mt-3" />
         </div>
-        <h1 className="heading-hero text-slate-900 dark:text-white mb-3">
-          About Python Learning
+        <h1 className="heading-hero text-[#102B50] dark:text-white mb-3">
+          About Learn With Us
         </h1>
-        <p className="body-large text-slate-600 dark:text-[#D2DEEC] leading-relaxed">
-          The Age-Based Adaptive Python Learning Platform — the same core Python curriculum, taught through analogies and examples designed for every stage of life.
+        <p className="body-large text-[#64748B] dark:text-[#CBD5E1] leading-relaxed">
+          <span className="text-[#0756A5] font-bold">Learn. Practice. Grow.</span> — A beginner-friendly Python learning platform where students learn programming through simple explanations, examples, quizzes, coding exercises, projects and progress tracking.
         </p>
       </div>
 
@@ -50,62 +52,87 @@ export default function About({ onNavigate, onBack }) {
           ))}
         </div>
 
-        <div className="p-5 bg-blue-50 dark:bg-[#102541] rounded-2xl border border-blue-200 dark:border-[#183657] text-slate-900 dark:text-white font-bold text-center text-sm sm:text-base shadow-2xs">
+        <div className="p-5 bg-[#F3F7FC] dark:bg-[#102B50] rounded-2xl border border-[#E2E8F0] dark:border-[#1E3A5F] text-[#102B50] dark:text-white font-bold text-center text-sm sm:text-base shadow-2xs">
           "The learner's age determines the teaching approach, not their coding potential."
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4 pt-4">
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-[#102541] border border-slate-200 dark:border-[#183657]">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-1.5">
-              <CheckCircle size={18} className="text-[#168BFF]" />
-              100% Free & Open Access
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition">
+            <h3 className="text-base font-bold text-[#102B50] dark:text-white flex items-center gap-2 mb-1.5">
+              <CheckCircle size={18} className="text-[#16A34A]" />
+              Free Access & Zero Paywalls
             </h3>
-            <p className="text-sm text-slate-600 dark:text-[#D2DEEC] m-0 leading-relaxed">
-              No logins, accounts, paywalls, or distracting popups.
+            <p className="text-sm text-[#64748B] dark:text-slate-300 m-0 leading-relaxed">
+              Start reading preview lessons immediately; create a free learner account to save bookmarks, submit quizzes, and track XP with zero paywalls.
             </p>
           </div>
 
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-[#102541] border border-slate-200 dark:border-[#183657]">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-1.5">
-              <CheckCircle size={18} className="text-[#168BFF]" />
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition">
+            <h3 className="text-base font-bold text-[#102B50] dark:text-white flex items-center gap-2 mb-1.5">
+              <CheckCircle size={18} className="text-[#16A34A]" />
               Complete 19-Section Curriculum
             </h3>
-            <p className="text-sm text-slate-600 dark:text-[#D2DEEC] m-0 leading-relaxed">
+            <p className="text-sm text-[#64748B] dark:text-slate-300 m-0 leading-relaxed">
               198 comprehensive topics from syntax to OOP, APIs, databases, data analysis, machine learning, and AI.
             </p>
           </div>
 
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-[#102541] border border-slate-200 dark:border-[#183657]">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-1.5">
-              <CheckCircle size={18} className="text-[#168BFF]" />
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition">
+            <h3 className="text-base font-bold text-[#102B50] dark:text-white flex items-center gap-2 mb-1.5">
+              <CheckCircle size={18} className="text-[#16A34A]" />
               Hands-On Practice Sandbox
             </h3>
-            <p className="text-sm text-slate-600 dark:text-[#D2DEEC] m-0 leading-relaxed">
+            <p className="text-sm text-[#64748B] dark:text-slate-300 m-0 leading-relaxed">
               Interactive code editor with model solutions and output verification.
             </p>
           </div>
 
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-[#102541] border border-slate-200 dark:border-[#183657]">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-1.5">
-              <CheckCircle size={18} className="text-[#168BFF]" />
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition">
+            <h3 className="text-base font-bold text-[#102B50] dark:text-white flex items-center gap-2 mb-1.5">
+              <CheckCircle size={18} className="text-[#16A34A]" />
               Real-World Projects
             </h3>
-            <p className="text-sm text-slate-600 dark:text-[#D2DEEC] m-0 leading-relaxed">
+            <p className="text-sm text-[#64748B] dark:text-slate-300 m-0 leading-relaxed">
               25 projects spanning fun games to production-grade microservices.
             </p>
           </div>
         </div>
       </div>
 
-      {/* CTA */}
-      <div className="text-center py-6">
-        <button
-          onClick={() => onNavigate("learn")}
-          className="btn-vibrant-primary"
-        >
-          <span>Start Exploring Topics Now</span>
-          <ArrowRight size={18} />
-        </button>
+      {/* CTA & Policies */}
+      <div className="text-center py-6 space-y-4">
+        <div>
+          <button
+            onClick={() => onNavigate("learn")}
+            className="btn-vibrant-primary"
+          >
+            <span>Start Exploring Topics Now</span>
+            <ArrowRight size={18} />
+          </button>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-4 text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 pt-4">
+          <button
+            onClick={() => { onNavigate("contact"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            className="hover:text-blue-600 dark:hover:text-[#60B7FF] transition bg-transparent border-none cursor-pointer"
+          >
+            Contact Support & Team
+          </button>
+          <span>•</span>
+          <button
+            onClick={() => { onNavigate("privacy"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            className="hover:text-blue-600 dark:hover:text-[#60B7FF] transition bg-transparent border-none cursor-pointer"
+          >
+            Privacy Policy
+          </button>
+          <span>•</span>
+          <button
+            onClick={() => { onNavigate("terms"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            className="hover:text-blue-600 dark:hover:text-[#60B7FF] transition bg-transparent border-none cursor-pointer"
+          >
+            Terms of Service
+          </button>
+        </div>
       </div>
     </div>
   );

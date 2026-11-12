@@ -5,24 +5,34 @@ import Footer from "./components/Footer";
 import StageSelectorModal from "./components/StageSelectorModal";
 import LanguageSelectorModal from "./components/LanguageSelectorModal";
 import Home from "./pages/Home";
-import Learn from "./pages/Learn";
-import Lesson from "./pages/Lesson";
-import Practice from "./pages/Practice";
-import Projects from "./pages/Projects";
-import About from "./pages/About";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
+const Learn = React.lazy(() => import("./pages/Learn"));
+const Lesson = React.lazy(() => import("./pages/Lesson"));
+const Practice = React.lazy(() => import("./pages/Practice"));
+const Projects = React.lazy(() => import("./pages/Projects"));
+const About = React.lazy(() => import("./pages/About"));
+const Admin = React.lazy(() => import("./pages/Admin"));
+const SignIn = React.lazy(() => import("./pages/SignIn"));
+const SignUp = React.lazy(() => import("./pages/SignUp"));
+const PrivacyPolicy = React.lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = React.lazy(() => import("./pages/TermsOfService"));
+const Contact = React.lazy(() => import("./pages/Contact"));
+const Profile = React.lazy(() => import("./pages/Profile"));
 import { getStoredStage, saveStage } from "./data/learningStages";
 import { getStoredLanguage, saveLanguage } from "./data/learningLanguages";
 import { DictionaryProvider } from "./context/DictionaryContext";
 import { NotepadProvider } from "./context/NotepadContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { FontSizeProvider } from "./context/FontSizeContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { DoubtProvider } from "./context/DoubtContext";
+import AskDoubtModal from "./components/Doubt/AskDoubtModal";
+import DoubtToast from "./components/Doubt/DoubtToast";
 import AuthModal from "./components/Auth/AuthModal";
 import GlobalWordMeaningModal from "./components/WordMeaning/GlobalWordMeaningModal";
 import FloatingDictionaryButton from "./components/FloatingDictionaryButton";
 import FloatingNotepad from "./components/Notepad/FloatingNotepad";
 import FloatingNotepadButton from "./components/FloatingNotepadButton";
+import BrandLogo from "./components/BrandLogo";
 import { GuideTutorialProvider } from "./context/GuideTutorialContext";
 import GuideTutorialModal from "./components/GuideTutorial/GuideTutorialModal";
 import GuideWelcomeModal from "./components/GuideTutorial/GuideWelcomeModal";
@@ -30,7 +40,7 @@ import GuideExplorerModal from "./components/GuideTutorial/GuideExplorerModal";
 import GuideCompletionModal from "./components/GuideTutorial/GuideCompletionModal";
 import ContextualPageGuidance from "./components/GuideTutorial/ContextualPageGuidance";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, ShieldCheck, Eye } from "lucide-react";
 
 // Route resolution helpers for URL hash & history synchronization
 function getRouteFromLocation() {
@@ -50,6 +60,11 @@ function getRouteFromLocation() {
   if (hash.startsWith("#/practice")) return { page: "practice", topicId: "what-is-python" };
   if (hash.startsWith("#/projects")) return { page: "projects", topicId: "what-is-python" };
   if (hash.startsWith("#/about")) return { page: "about", topicId: "what-is-python" };
+  if (hash.startsWith("#/privacy")) return { page: "privacy", topicId: "what-is-python" };
+  if (hash.startsWith("#/terms")) return { page: "terms", topicId: "what-is-python" };
+  if (hash.startsWith("#/contact")) return { page: "contact", topicId: "what-is-python" };
+  if (hash.startsWith("#/profile")) return { page: "profile", topicId: "what-is-python" };
+  if (hash.startsWith("#/admin")) return { page: "admin", topicId: "what-is-python" };
   if (hash.startsWith("#/signup") || hash.startsWith("#/register")) {
     return { page: "signup", topicId: "what-is-python" };
   }
@@ -66,6 +81,11 @@ function getHashForRoute(page, topicId) {
   if (page === "practice") return "#/practice";
   if (page === "projects") return "#/projects";
   if (page === "about") return "#/about";
+  if (page === "privacy") return "#/privacy";
+  if (page === "terms") return "#/terms";
+  if (page === "contact") return "#/contact";
+  if (page === "profile") return "#/profile";
+  if (page === "admin") return "#/admin";
   if (page === "signup" || page === "register") return "#/signup";
   if (page === "signin" || page === "login" || page === "auth") return "#/signin";
   return "#/home";
@@ -101,10 +121,22 @@ function MainAppShell({
   const initialRoute = React.useRef(getRouteFromLocation()).current;
   const [currentPage, setCurrentPage] = useState(initialRoute.page);
   const [selectedTopicId, setSelectedTopicId] = useState(initialRoute.topicId);
-  
+  const [appPreviewMode, setAppPreviewMode] = useState(false);
+
   // In-session navigation stack to track previous pages
   const navHistoryRef = useRef([{ page: initialRoute.page, topicId: initialRoute.topicId }]);
   const [historyDepth, setHistoryDepth] = useState(1);
+
+  // Admin App Preview mode toggles
+  const handleOpenAppPreview = () => {
+    setAppPreviewMode(true);
+    navigateTo("home");
+  };
+
+  const handleExitAppPreview = () => {
+    setAppPreviewMode(false);
+    navigateTo("admin");
+  };
 
   // Initialize or synchronize browser history entry on initial mount
   useEffect(() => {
@@ -115,12 +147,25 @@ function MainAppShell({
     }
   }, []);
 
-  // If user becomes authenticated while on signin or signup, redirect them to home
+  // If user becomes authenticated while on signin or signup, redirect them appropriately
   useEffect(() => {
     if (isAuthenticated && (currentPage === "signin" || currentPage === "signup")) {
-      navigateTo("home", undefined, true);
+      if (currentUser?.role === "admin" && !appPreviewMode) {
+        navigateTo("admin", undefined, true);
+      } else {
+        navigateTo("home", undefined, true);
+      }
     }
-  }, [isAuthenticated, currentPage]);
+  }, [isAuthenticated, currentPage, currentUser?.role, appPreviewMode]);
+
+  // Admin routing guard: Admins default to admin console unless explicitly previewing app
+  useEffect(() => {
+    if (!isLoadingSession && isAuthenticated && currentUser?.role === "admin" && !appPreviewMode) {
+      if (currentPage !== "admin") {
+        navigateTo("admin", undefined, true);
+      }
+    }
+  }, [isLoadingSession, isAuthenticated, currentUser?.role, appPreviewMode, currentPage]);
 
   // If unauthenticated user tries to directly hash navigate to practice or projects
   useEffect(() => {
@@ -153,6 +198,9 @@ function MainAppShell({
       let targetPage = route.page;
       if (targetPage === "login" || targetPage === "auth") targetPage = "signin";
       if (targetPage === "register") targetPage = "signup";
+      if (targetPage === "admin") {
+        setAppPreviewMode(false);
+      }
 
       if (navHistoryRef.current.length > 1) {
         navHistoryRef.current.pop();
@@ -189,11 +237,11 @@ function MainAppShell({
     if (page === "login" || page === "auth") targetPage = "signin";
     if (page === "register") targetPage = "signup";
 
-    // Protect practice and projects if not authenticated
-    if (!isAuthenticated && (targetPage === "practice" || targetPage === "projects")) {
+    // Protect practice, projects, and profile if not authenticated
+    if (!isAuthenticated && (targetPage === "practice" || targetPage === "projects" || targetPage === "profile")) {
       openAuthModal(
         "login",
-        `Sign in required to access ${targetPage === "practice" ? "Interactive Practice" : "Projects"}. Please sign in to continue!`
+        `Sign in required to access ${targetPage === "profile" ? "your Learner Profile" : targetPage === "practice" ? "Interactive Practice" : "Projects"}. Please sign in to continue!`
       );
       targetPage = "signin";
     }
@@ -266,13 +314,11 @@ function MainAppShell({
   // While checking PostgreSQL session on startup
   if (isLoadingSession) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#050B14] text-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#102B50] text-white">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#168BFF] to-[#0876E8] flex items-center justify-center text-white text-xl font-bold font-mono shadow-lg shadow-blue-500/25 animate-pulse border border-[#168BFF]/40">
-            <span className="text-white">Py</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#91A6BF]">
-            <RefreshCw size={14} className="animate-spin text-[#168BFF]" />
+          <BrandLogo variant="mark" size="lg" />
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+            <RefreshCw size={14} className="animate-spin text-[#FFB800]" />
             <span>Connecting to Learning Engine...</span>
           </div>
         </div>
@@ -301,21 +347,51 @@ function MainAppShell({
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#050B14] text-slate-900 dark:text-white selection:bg-[#168BFF]/30 selection:text-white font-sans antialiased relative transition-colors duration-200 w-full overflow-x-hidden">
-      {/* Navbar with Stage, Language, Theme, Dictionary & Auth Controls */}
-      <Navbar
-        currentPage={currentPage}
-        setCurrentPage={handleNavigate}
-        onSelectTopic={handleSelectTopic}
-        selectedStage={selectedStage}
-        onSelectStage={handleStageChange}
-        onOpenStageModal={() => setStageModalOpen(true)}
-        selectedLanguage={selectedLanguage}
-        onSelectLanguage={handleLanguageChange}
-        onOpenLanguageModal={() => setLanguageModalOpen(true)}
-        onBack={handleBack}
-        canGoBack={canGoBack}
-      />
+    <div className="min-h-screen flex flex-col bg-[#F3F7FC] dark:bg-[#0A1E38] text-[#102B50] dark:text-white selection:bg-[#0756A5]/25 selection:text-[#102B50] dark:selection:text-white font-sans antialiased relative transition-colors duration-200 w-full overflow-x-hidden">
+      {/* Admin App Preview Persistent Banner */}
+      {currentUser?.role === "admin" && appPreviewMode && (
+        <div className="bg-gradient-to-r from-indigo-950 via-slate-950 to-blue-950 text-white px-3 sm:px-6 py-2.5 border-b border-indigo-500/30 flex items-center justify-between text-xs font-semibold sticky top-0 z-50 shadow-md backdrop-blur-md">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="flex h-2.5 w-2.5 relative shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="font-extrabold text-indigo-300 uppercase tracking-wider shrink-0">Admin App Preview</span>
+              <span className="text-slate-300 hidden md:inline truncate">• You are viewing and interacting with the app as a learner</span>
+            </div>
+          </div>
+          <button
+            onClick={handleExitAppPreview}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition shadow-md shadow-indigo-600/30 cursor-pointer border border-indigo-400/40 active:scale-95 shrink-0"
+            title="Exit App Preview & Return to Admin Console"
+          >
+            <ShieldCheck size={14} className="shrink-0" />
+            <span className="hidden xs:inline">Exit Preview & Return to Admin</span>
+            <span className="xs:hidden">Exit Preview</span>
+          </button>
+        </div>
+      )}
+
+      {/* Navbar with Stage, Language, Theme, Dictionary & Auth Controls - learner pages only */}
+      {(currentPage !== "admin" || appPreviewMode) && (
+        <Navbar
+          currentPage={currentPage}
+          setCurrentPage={handleNavigate}
+          onSelectTopic={handleSelectTopic}
+          selectedStage={selectedStage}
+          onSelectStage={handleStageChange}
+          onOpenStageModal={() => setStageModalOpen(true)}
+          selectedLanguage={selectedLanguage}
+          onSelectLanguage={handleLanguageChange}
+          onOpenLanguageModal={() => setLanguageModalOpen(true)}
+          onBack={handleBack}
+          canGoBack={canGoBack}
+          appPreviewMode={appPreviewMode}
+          onToggleAppPreview={handleOpenAppPreview}
+          onReturnToAdmin={handleExitAppPreview}
+        />
+      )}
 
       {/* Stage Selector Modal */}
       <StageSelectorModal
@@ -338,7 +414,20 @@ function MainAppShell({
 
       {/* Main Content Area across all pages */}
       <ErrorBoundary>
-        <main className="flex-1 w-full min-w-0 flex flex-col pb-20 lg:pb-0">
+        <main className={`flex-1 w-full min-w-0 flex flex-col ${currentPage === "admin" && !appPreviewMode ? "" : "pb-20 lg:pb-0"}`}>
+        <React.Suspense
+          fallback={
+            <div className="flex-1 w-full min-h-[60vh] flex flex-col items-center justify-center p-8">
+              <div className="relative w-14 h-14 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full border-4 border-blue-500/20 animate-ping" />
+                <div className="w-10 h-10 rounded-full border-4 border-[#0756A5] border-t-transparent animate-spin" />
+              </div>
+              <p className="mt-4 text-xs font-semibold tracking-wider uppercase text-slate-500 dark:text-slate-400">
+                Loading Interactive Content...
+              </p>
+            </div>
+          }
+        >
         {currentPage === "home" && (
           <Home
             onNavigate={handleNavigate}
@@ -407,32 +496,83 @@ function MainAppShell({
             onBack={handleBack}
           />
         )}
+
+        {currentPage === "privacy" && (
+          <PrivacyPolicy
+            onNavigate={handleNavigate}
+            onBack={handleBack}
+          />
+        )}
+
+        {currentPage === "terms" && (
+          <TermsOfService
+            onNavigate={handleNavigate}
+            onBack={handleBack}
+          />
+        )}
+
+        {currentPage === "contact" && (
+          <Contact
+            onNavigate={handleNavigate}
+            onBack={handleBack}
+          />
+        )}
+
+        {currentPage === "profile" && (
+          <Profile
+            onNavigate={handleNavigate}
+            onSelectTopic={handleSelectTopic}
+            onBack={handleBack}
+          />
+        )}
+
+        {currentPage === "admin" && (
+          <Admin
+            onNavigateHome={handleOpenAppPreview}
+            onNavigateTopic={(topicId) => {
+              setAppPreviewMode(true);
+              handleSelectTopic(topicId);
+            }}
+            onOpenAppPreview={handleOpenAppPreview}
+          />
+        )}
+        </React.Suspense>
         </main>
       </ErrorBoundary>
 
       {/* Global Word Meaning Dictionary Modal & Floating Search Trigger */}
       <GlobalWordMeaningModal />
-      <FloatingDictionaryButton />
+      <AskDoubtModal />
+      <DoubtToast />
+      {(currentUser?.role !== "admin" || appPreviewMode) && <FloatingDictionaryButton />}
 
       {/* Global Floating Notepad Widget & Floating Trigger */}
       <FloatingNotepad />
-      <FloatingNotepadButton />
+      {(currentUser?.role !== "admin" || appPreviewMode) && <FloatingNotepadButton />}
 
       {/* Global Website Guide Tutorial Modal, Welcome Modal, Explorer Modal, Completion Modal & Contextual Guidance */}
-      <GuideTutorialModal />
-      <GuideWelcomeModal />
-      <GuideExplorerModal />
-      <GuideCompletionModal />
-      <ContextualPageGuidance />
+      {(currentUser?.role !== "admin" || appPreviewMode) && (
+        <>
+          <GuideTutorialModal />
+          <GuideWelcomeModal />
+          <GuideExplorerModal />
+          <GuideCompletionModal />
+          <ContextualPageGuidance />
+        </>
+      )}
 
-      {/* Footer */}
-      <Footer onNavigate={handleNavigate} />
+      {/* Footer - only shown for learners or in preview mode, keeping Admin Console clean */}
+      {(currentUser?.role !== "admin" || appPreviewMode) && (
+        <Footer onNavigate={handleNavigate} />
+      )}
 
       {/* Mobile Bottom Navigation Bar (Small Screens < 1024px) */}
-      <BottomNavigation
-        currentPage={currentPage}
-        onNavigate={handleNavigate}
-      />
+      {(currentUser?.role !== "admin" || appPreviewMode) && (
+        <BottomNavigation
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+        />
+      )}
     </div>
   );
 }
@@ -455,24 +595,28 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <AuthProvider onSyncStage={handleSelectStage} onSyncLanguage={handleSelectLanguage}>
-        <DictionaryProvider selectedLanguage={selectedLanguage} selectedStage={selectedStage}>
-          <NotepadProvider>
-            <GuideTutorialProvider>
-              <MainAppShell
-                selectedStage={selectedStage}
-                handleSelectStage={handleSelectStage}
-                selectedLanguage={selectedLanguage}
-                handleSelectLanguage={handleSelectLanguage}
-                stageModalOpen={stageModalOpen}
-                setStageModalOpen={setStageModalOpen}
-                languageModalOpen={languageModalOpen}
-                setLanguageModalOpen={setLanguageModalOpen}
-              />
-            </GuideTutorialProvider>
-          </NotepadProvider>
-        </DictionaryProvider>
-      </AuthProvider>
+      <FontSizeProvider>
+        <AuthProvider onSyncStage={handleSelectStage} onSyncLanguage={handleSelectLanguage}>
+          <DoubtProvider>
+            <DictionaryProvider selectedLanguage={selectedLanguage} selectedStage={selectedStage}>
+              <NotepadProvider>
+                <GuideTutorialProvider>
+                  <MainAppShell
+                    selectedStage={selectedStage}
+                    handleSelectStage={handleSelectStage}
+                    selectedLanguage={selectedLanguage}
+                    handleSelectLanguage={handleSelectLanguage}
+                    stageModalOpen={stageModalOpen}
+                    setStageModalOpen={setStageModalOpen}
+                    languageModalOpen={languageModalOpen}
+                    setLanguageModalOpen={setLanguageModalOpen}
+                  />
+                </GuideTutorialProvider>
+              </NotepadProvider>
+            </DictionaryProvider>
+          </DoubtProvider>
+        </AuthProvider>
+      </FontSizeProvider>
     </ThemeProvider>
   );
 }

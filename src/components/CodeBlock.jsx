@@ -69,9 +69,9 @@ export default function CodeBlock({ code, language = "python", title }) {
       <div className="code-block-header flex items-center justify-between px-4 py-2.5">
         <div className="flex items-center gap-2">
           <div className="flex gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#183657] inline-block"></span>
-            <span className="w-2.5 h-2.5 rounded-full bg-[#168BFF]/60 inline-block"></span>
-            <span className="w-2.5 h-2.5 rounded-full bg-[#60B7FF] inline-block"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#102B50] inline-block border border-white/20"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#0756A5] inline-block"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFB800] inline-block"></span>
           </div>
           <span className="ml-2 font-semibold text-slate-200 text-xs font-mono">
             {title || language.toUpperCase()}
@@ -79,13 +79,13 @@ export default function CodeBlock({ code, language = "python", title }) {
         </div>
         <button
           onClick={handleCopy}
-          className="copy-btn flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#102541] hover:bg-[#102B4A] text-slate-200 transition text-xs cursor-pointer border border-[#183657]"
+          className="copy-btn flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#102B50] hover:bg-[#FFB800] hover:text-[#102B50] text-slate-200 transition text-xs cursor-pointer border border-[#1E3A5F] hover:border-[#FFB800]"
           title="Copy code"
         >
           {copied ? (
             <>
-              <Check size={13} className="text-[#38bdf8]" />
-              <span className="text-[#38bdf8] font-medium">Copied!</span>
+              <Check size={13} className="text-[#16A34A]" />
+              <span className="text-[#16A34A] font-medium">Copied!</span>
             </>
           ) : (
             <>

@@ -20,17 +20,21 @@ import {
   Check,
   Globe,
   ChevronRight,
-  StickyNote,
-  Compass
+  Compass,
+  ShieldCheck,
+  Eye,
+  Mail
 } from "lucide-react";
 import { LEARNING_STAGES, getStageById } from "../data/learningStages";
 import { LEARNING_LANGUAGES, getLanguageById } from "../data/learningLanguages";
-import { useDictionary } from "../context/DictionaryContext";
-import { useNotepad } from "../context/NotepadContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
+import { useDoubt } from "../context/DoubtContext";
 import { useGuideTutorial } from "../context/GuideTutorialContext";
 import { AVATAR_OPTIONS } from "../services/authService";
+import { WhatsAppIcon } from "./AskDoubtButton";
+import FontSizeControl from "./FontSizeControl";
+import BrandLogo from "./BrandLogo";
 
 export default function Navbar({
   currentPage,
@@ -43,12 +47,14 @@ export default function Navbar({
   onSelectLanguage,
   onOpenLanguageModal,
   onBack,
-  canGoBack
+  canGoBack,
+  appPreviewMode = false,
+  onToggleAppPreview,
+  onReturnToAdmin
 }) {
-  const { openDictionary } = useDictionary();
-  const { toggleNotepad } = useNotepad();
   const { theme, toggleTheme, isDark } = useTheme();
   const { currentUser, isAuthenticated, openAuthModal, logout } = useAuth();
+  const { doubtCredits, freeDoubtsTotal, openDoubtModal } = useDoubt();
   const { startTour, openWelcomeModal, openExplorer } = useGuideTutorial();
 
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -95,6 +101,22 @@ export default function Navbar({
       icon: Info,
       desc: "About: Learning philosophy and age-adaptive education guides"
     },
+    {
+      id: "contact",
+      label: "Contact",
+      icon: Mail,
+      desc: "Contact: Student support, doubt assistance, and direct inquiries"
+    },
+    ...(currentUser?.role === "admin"
+      ? [
+          {
+            id: "admin",
+            label: "Admin",
+            icon: ShieldCheck,
+            desc: "Admin Console: Monitor platform metrics, telemetry & user status"
+          }
+        ]
+      : [])
   ];
 
   const handleNavClick = (pageId) => {
@@ -126,300 +148,305 @@ export default function Navbar({
     (a) => a.id === currentUser?.avatar
   ) || AVATAR_OPTIONS[0];
 
+  const isAdmin = currentUser?.role === "admin";
+  const showAdminOnlyMode = false; // Admin panel has dedicated standalone AdminTopNav & AdminSidebar
+
   return (
     <header className="app-header">
       <div className="app-navbar-container">
-        {/* Left: Back Button & Brand Logo */}
+        {/* Left: Brand Logo */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
-          {currentPage !== "home" && onBack && (
-            <button
-              onClick={onBack}
-              className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-white/[0.08] hover:bg-slate-200/70 dark:hover:bg-slate-700/80 cursor-pointer shadow-2xs transition shrink-0 active:scale-95 group"
-              title="Go to previous page"
-              aria-label="Go back"
-            >
-              <ArrowLeft size={15} className="text-[#168BFF] dark:text-[#60B7FF] group-hover:-translate-x-0.5 transition-transform shrink-0" />
-              <span className="hidden xxl:inline">Back</span>
-            </button>
-          )}
-
           <button
             id="tour-nav-brand"
-            onClick={() => handleNavClick("home")}
-            className="navbar-brand-btn"
+            onClick={() => handleNavClick(showAdminOnlyMode ? "admin" : "home")}
+            className="navbar-brand-btn group p-0.5 sm:p-1"
+            title="Learn with us"
+            aria-label="Learn with us Home"
           >
-            <div className="navbar-brand-icon">
-              <span className="font-extrabold text-sm font-mono text-cyan-200 tracking-tight">Py</span>
-            </div>
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="navbar-brand-title truncate">
-                Python Adaptive
-              </span>
-              <span className="hidden xxl:inline-flex navbar-brand-badge">
-                Adaptive
-              </span>
-            </div>
+            <BrandLogo variant="nav" size="md" showTagline={false} />
           </button>
         </div>
 
         {/* Center: Segmented Navigation Dock (Desktop >= 1024px) */}
         <div className="navbar-desktop-menu items-center justify-center shrink-0">
-          <nav id="tour-nav-dock" className="navbar-nav-dock">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive =
-                currentPage === item.id ||
-                (item.id === "learn" && currentPage === "lesson");
-              return (
-                <button
-                  key={item.id}
-                  id={`tour-nav-item-${item.id}`}
-                  onClick={() => handleNavClick(item.id)}
-                  className={`navbar-nav-item ${isActive ? "active" : ""}`}
-                  title={item.desc}
-                >
-                  {isActive && <span className="navbar-nav-active-dot" />}
-                  <Icon size={14} className={isActive ? "text-[#168BFF]" : "text-[#91A6BF]"} />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
+          {showAdminOnlyMode ? (
+            <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-[#0c182a] border border-slate-200 dark:border-[#1e3452] shadow-xs text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Database:</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">PostgreSQL Live</span>
+              <span className="text-slate-300 dark:text-slate-600">•</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Telemetry:</span>
+              <span className="text-blue-600 dark:text-blue-400 font-mono font-bold">Connected</span>
+            </div>
+          ) : (
+            <nav id="tour-nav-dock" className="navbar-nav-dock">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive =
+                  currentPage === item.id ||
+                  (item.id === "learn" && currentPage === "lesson");
+                const isSecondary = item.id === "about" || item.id === "contact";
+                return (
+                  <button
+                    key={item.id}
+                    id={`tour-nav-item-${item.id}`}
+                    onClick={() => handleNavClick(item.id)}
+                    className={`navbar-nav-item ${isActive ? "active" : ""}`}
+                    title={item.desc}
+                  >
+                    {isActive && <span className="navbar-nav-active-dot" />}
+                    <Icon size={15} strokeWidth={isActive ? 2.4 : 2.1} className={isActive ? "text-[#0756A5] dark:text-[#FFB800]" : "text-[#0756A5] dark:text-white group-hover:text-[#064681] dark:group-hover:text-[#FFB800]"} />
+                    <span className={isSecondary ? "hidden min-[1340px]:inline" : ""}>{item.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          )}
         </div>
 
         {/* Right: Controls & Preferences (Desktop >= 1024px) */}
         <div className="navbar-desktop-menu items-center gap-1.5 xl:gap-2 shrink-0">
-          {/* 1. Context Capsule (Stage + Language Switcher) */}
-          <div id="tour-nav-capsule" className="navbar-context-capsule">
-            {/* Learning Stage Dropdown Trigger */}
-            <div className="relative shrink-0" ref={stageMenuRef}>
-              <button
-                id="tour-nav-stage"
-                onClick={() => {
-                  setStageDropdownOpen(!stageDropdownOpen);
-                  setLangDropdownOpen(false);
-                  setUserDropdownOpen(false);
-                }}
-                className={`navbar-capsule-btn ${stageDropdownOpen ? "open-stage" : ""}`}
-                title={`Learning Stage: ${stageMeta.label}`}
-                aria-expanded={stageDropdownOpen}
-                aria-haspopup="true"
-              >
-                <span className="text-sm select-none shrink-0">{stageMeta.icon}</span>
-                <span className="navbar-capsule-text truncate max-w-[50px] xl:max-w-[70px] xxl:max-w-[125px]">
-                  {stageShortLabel}
-                </span>
-                <ChevronDown
-                  size={12}
-                  className={`text-slate-400 transition-transform shrink-0 ${
-                    stageDropdownOpen ? "rotate-180 text-[#3b82f6]" : ""
-                  }`}
-                />
-              </button>
+          {/* Admin Mode Controls: App Preview Toggle or Return to Admin */}
+          {showAdminOnlyMode && (
+            <button
+              id="admin-btn-app-preview"
+              onClick={onToggleAppPreview}
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/25 border border-blue-400/30 transition-all duration-200 active:scale-95 cursor-pointer group"
+              title="Preview the full application as a learner"
+            >
+              <Eye size={15} className="group-hover:scale-110 transition-transform text-white" />
+              <span>App Preview</span>
+              <span className="px-1.5 py-0.5 rounded bg-blue-800/60 text-[10px] font-mono tracking-tight text-blue-100">Test</span>
+            </button>
+          )}
 
-              {/* Stage Quick Switch Dropdown */}
-              {stageDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] shadow-2xl p-2 z-50 animate-in">
-                  <div className="px-2.5 py-1.5 mb-1.5 border-b border-slate-100 dark:border-[#23344d] flex items-center justify-between">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                      Learning Stage (Age)
-                    </span>
-                    <span className="text-[11px] font-bold text-blue-600 dark:text-[#60a5fa]">
-                      {stageMeta.label}
-                    </span>
-                  </div>
+          {isAdmin && appPreviewMode && (
+            <button
+              id="admin-return-from-preview"
+              onClick={onReturnToAdmin}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm transition cursor-pointer border border-indigo-400/40 active:scale-95 shrink-0"
+              title="Exit App Preview & Return to Admin Console"
+            >
+              <ShieldCheck size={14} />
+              <span className="hidden xl:inline">Return to Admin</span>
+            </button>
+          )}
 
-                  <div className="space-y-1">
-                    {LEARNING_STAGES.map((stg) => {
-                      const isSelected = selectedStage === stg.id;
-                      return (
+          {!showAdminOnlyMode && (
+            <>
+              {/* 1. Context Capsule (Stage + Language Switcher) */}
+              <div id="tour-nav-capsule" className="navbar-context-capsule">
+                {/* Learning Stage Dropdown Trigger */}
+                <div className="relative shrink-0" ref={stageMenuRef}>
+                  <button
+                    id="tour-nav-stage"
+                    onClick={() => {
+                      setStageDropdownOpen(!stageDropdownOpen);
+                      setLangDropdownOpen(false);
+                      setUserDropdownOpen(false);
+                    }}
+                    className={`navbar-capsule-btn ${stageDropdownOpen ? "open-stage" : ""}`}
+                    title={`Learning Stage: ${stageMeta.label}`}
+                    aria-expanded={stageDropdownOpen}
+                    aria-haspopup="true"
+                  >
+                    <span className="text-sm select-none shrink-0">{stageMeta.icon}</span>
+                    <span className="navbar-capsule-text truncate hidden min-[1380px]:inline max-w-[70px] xxl:max-w-[125px]">
+                      {stageShortLabel}
+                    </span>
+                    <ChevronDown
+                      size={12}
+                      className={`text-[#0756A5] dark:text-white transition-transform shrink-0 ${
+                        stageDropdownOpen ? "rotate-180 text-[#0756A5]" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {/* Stage Quick Switch Dropdown */}
+                  {stageDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] shadow-2xl p-2 z-50 animate-in">
+                      <div className="px-2.5 py-1.5 mb-1.5 border-b border-slate-100 dark:border-[#23344d] flex items-center justify-between">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                          Learning Stage (Age)
+                        </span>
+                        <span className="text-[11px] font-bold text-blue-600 dark:text-[#60a5fa]">
+                          {stageMeta.label}
+                        </span>
+                      </div>
+
+                      <div className="space-y-1">
+                        {LEARNING_STAGES.map((stg) => {
+                          const isSelected = selectedStage === stg.id;
+                          return (
+                            <button
+                              key={stg.id}
+                              onClick={() => {
+                                if (onSelectStage) onSelectStage(stg.id);
+                                setStageDropdownOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
+                                isSelected
+                                  ? "bg-[#FFFBEB] dark:bg-[#153560] border-[#FFB800] text-[#102B50] dark:text-white font-bold"
+                                  : "bg-transparent hover:bg-[#FFB800] border-transparent hover:border-[#FFB800] text-[#102B50] dark:text-slate-200 hover:text-[#102B50] dark:hover:text-[#102B50]"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="text-xl shrink-0 select-none">{stg.icon}</span>
+                                <div className="min-w-0">
+                                  <div className="text-xs font-bold leading-tight truncate">
+                                    {stg.label}
+                                  </div>
+                                  <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate">
+                                    {stg.ageRange} • {stg.shortDesc.slice(0, 30)}...
+                                  </div>
+                                </div>
+                              </div>
+                              {isSelected && (
+                                <div className="w-5 h-5 rounded-full bg-[#FFB800] text-[#102B50] flex items-center justify-center shrink-0 ml-1.5 font-bold">
+                                  <Check size={12} strokeWidth={3} />
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="pt-1.5 mt-1 border-t border-[#E2E8F0] dark:border-[#1E3A5F]">
                         <button
-                          key={stg.id}
                           onClick={() => {
-                            if (onSelectStage) onSelectStage(stg.id);
                             setStageDropdownOpen(false);
+                            if (onOpenStageModal) onOpenStageModal();
                           }}
-                          className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
-                            isSelected
-                              ? "bg-blue-50 dark:bg-[#14233a] border-blue-200 dark:border-[#3b82f6] text-blue-950 dark:text-[#f8fafc] font-bold"
-                              : "bg-transparent hover:bg-slate-100 dark:hover:bg-[#14233a] border-transparent text-slate-700 dark:text-slate-200"
-                          }`}
+                          className="w-full py-1.5 px-2 text-[11px] font-bold text-center text-[#0756A5] dark:text-[#FFB800] hover:underline cursor-pointer bg-transparent border-none"
                         >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-xl shrink-0 select-none">{stg.icon}</span>
-                            <div className="min-w-0">
-                              <div className="text-xs font-bold leading-tight truncate">
-                                {stg.label}
-                              </div>
-                              <div className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight truncate">
-                                {stg.ageRange} • {stg.shortDesc.slice(0, 30)}...
-                              </div>
-                            </div>
-                          </div>
-                          {isSelected && (
-                            <div className="w-5 h-5 rounded-full bg-[#3b82f6] text-white flex items-center justify-center shrink-0 ml-1.5">
-                              <Check size={12} strokeWidth={3} />
-                            </div>
-                          )}
+                          View All Stage Details & Cards →
                         </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="pt-1.5 mt-1 border-t border-slate-100 dark:border-[#23344d]">
-                    <button
-                      onClick={() => {
-                        setStageDropdownOpen(false);
-                        if (onOpenStageModal) onOpenStageModal();
-                      }}
-                      className="w-full py-1.5 px-2 text-[11px] font-bold text-center text-blue-600 dark:text-[#60a5fa] hover:underline cursor-pointer bg-transparent border-none"
-                    >
-                      View All Stage Details & Cards →
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="navbar-capsule-divider" />
-
-            {/* Language Dropdown Trigger */}
-            <div className="relative shrink-0" ref={langMenuRef}>
-              <button
-                id="tour-nav-lang"
-                onClick={() => {
-                  setLangDropdownOpen(!langDropdownOpen);
-                  setStageDropdownOpen(false);
-                  setUserDropdownOpen(false);
-                }}
-                className={`navbar-capsule-btn ${langDropdownOpen ? "open-lang" : ""}`}
-                title={`Language: ${langMeta.label}`}
-                aria-expanded={langDropdownOpen}
-                aria-haspopup="true"
-              >
-                <span className="text-sm select-none shrink-0">{langMeta.icon}</span>
-                <span className="navbar-capsule-text truncate max-w-[50px] xl:max-w-[65px] xxl:max-w-[110px]">
-                  {langShortLabel}
-                </span>
-                <ChevronDown
-                  size={12}
-                  className={`text-slate-400 transition-transform shrink-0 ${
-                    langDropdownOpen ? "rotate-180 text-[#38bdf8]" : ""
-                  }`}
-                />
-              </button>
-
-              {/* Language Quick Switch Dropdown */}
-              {langDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] shadow-2xl p-2 z-50 animate-in">
-                  <div className="px-2.5 py-1.5 mb-1.5 border-b border-slate-100 dark:border-[#23344d] flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                      <Globe size={13} className="text-[#38bdf8]" />
-                      <span>Learning Language</span>
+                      </div>
                     </div>
-                    <span className="text-[11px] font-bold text-blue-600 dark:text-[#38bdf8]">
-                      {langMeta.shortLabel}
-                    </span>
-                  </div>
-
-                  <div className="space-y-1">
-                    {LEARNING_LANGUAGES.map((lang) => {
-                      const isSelected = selectedLanguage === lang.id;
-                      return (
-                        <button
-                          key={lang.id}
-                          onClick={() => {
-                            if (onSelectLanguage) onSelectLanguage(lang.id);
-                            setLangDropdownOpen(false);
-                          }}
-                          className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
-                            isSelected
-                              ? "bg-blue-50 dark:bg-[#14233a] border-blue-200 dark:border-[#3b82f6] text-blue-950 dark:text-[#f8fafc] font-bold"
-                              : "bg-transparent hover:bg-slate-100 dark:hover:bg-[#14233a] border-transparent text-slate-700 dark:text-slate-200"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-xl shrink-0 select-none">{lang.icon}</span>
-                            <div className="min-w-0">
-                              <div className="text-xs font-bold leading-tight truncate">
-                                {lang.label}
-                              </div>
-                              <div className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight truncate">
-                                {lang.shortLabel} • {lang.description.slice(0, 36)}...
-                              </div>
-                            </div>
-                          </div>
-                          {isSelected && (
-                            <div className="w-5 h-5 rounded-full bg-[#3b82f6] text-white flex items-center justify-center shrink-0 ml-1.5">
-                              <Check size={12} strokeWidth={3} />
-                            </div>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="pt-1.5 mt-1 border-t border-slate-100 dark:border-[#23344d]">
-                    <button
-                      onClick={() => {
-                        setLangDropdownOpen(false);
-                        if (onOpenLanguageModal) onOpenLanguageModal();
-                      }}
-                      className="w-full py-1.5 px-2 text-[11px] font-bold text-center text-blue-600 dark:text-[#60a5fa] hover:underline cursor-pointer bg-transparent border-none"
-                    >
-                      View Full Multi-Language Guide →
-                    </button>
-                  </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
 
-          {/* 2. Quick Tools: Meaning, Notes, and Explore App */}
-          <div id="tour-nav-tools" className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-            {/* Meaning Dictionary */}
-            <button
-              id="tour-nav-dict"
-              onClick={() => openDictionary()}
-              className="navbar-tool-btn navbar-tool-btn-compact hidden xl:inline-flex"
-              title="Open Global Word Meaning Dictionary (⌘K)"
-              aria-label="Word Meaning Dictionary"
-            >
-              <BookOpen size={14} className="text-blue-500 dark:text-[#60a5fa] shrink-0" />
-              <span className="hidden xxl:inline">Meaning</span>
-              <kbd className="navbar-tool-kbd hidden xxl:inline">⌘K</kbd>
-            </button>
+                <div className="navbar-capsule-divider" />
 
-            {/* Study Notepad */}
-            <button
-              id="tour-nav-notes"
-              onClick={() => toggleNotepad()}
-              className="navbar-tool-btn navbar-tool-btn-compact hidden xl:inline-flex"
-              title="Open Study Notepad to write important points (Alt+N)"
-              aria-label="Study Notepad"
-            >
-              <StickyNote size={14} className="text-blue-500 dark:text-[#38bdf8] shrink-0" />
-              <span className="hidden xxl:inline">Notes</span>
-            </button>
+                {/* Language Dropdown Trigger */}
+                <div className="relative shrink-0" ref={langMenuRef}>
+                  <button
+                    id="tour-nav-lang"
+                    onClick={() => {
+                      setLangDropdownOpen(!langDropdownOpen);
+                      setStageDropdownOpen(false);
+                      setUserDropdownOpen(false);
+                    }}
+                    className={`navbar-capsule-btn ${langDropdownOpen ? "open-lang" : ""}`}
+                    title={`Language: ${langMeta.label}`}
+                    aria-expanded={langDropdownOpen}
+                    aria-haspopup="true"
+                  >
+                    <span className="text-sm select-none shrink-0">{langMeta.icon}</span>
+                    <span className="navbar-capsule-text truncate hidden min-[1380px]:inline max-w-[65px] xxl:max-w-[110px]">
+                      {langShortLabel}
+                    </span>
+                    <ChevronDown
+                      size={12}
+                      className={`text-[#0756A5] dark:text-white transition-transform shrink-0 ${
+                        langDropdownOpen ? "rotate-180 text-[#0756A5]" : ""
+                      }`}
+                    />
+                  </button>
 
-            {/* Explore App Feature */}
-            <button
-              id="tour-btn-explore-app"
-              onClick={() => openExplorer("all")}
-              className="navbar-tool-btn navbar-btn-explore group relative"
-              title="Explore App: Search all pages, features & take interactive tour"
-              aria-label="Explore App"
-            >
-              <Compass size={14} className="text-[#168BFF] dark:text-[#38bdf8] shrink-0 group-hover:rotate-45 transition-transform" />
-              <span className="font-extrabold text-blue-600 dark:text-[#60B7FF] navbar-btn-explore-label">
-                <span className="navbar-btn-explore-text-short">Explore</span>
-                <span className="navbar-btn-explore-text-full">Explore App</span>
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
-            </button>
-          </div>
+                  {/* Language Quick Switch Dropdown */}
+                  {langDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] shadow-2xl p-2 z-50 animate-in">
+                      <div className="px-2.5 py-1.5 mb-1.5 border-b border-slate-100 dark:border-[#23344d] flex items-center justify-between">
+                        <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#102B50] dark:text-slate-300">
+                          <Globe size={13} className="text-[#0756A5] dark:text-[#38bdf8]" />
+                          <span>Learning Language</span>
+                        </div>
+                        <span className="text-[11px] font-bold text-blue-600 dark:text-[#38bdf8]">
+                          {langMeta.shortLabel}
+                        </span>
+                      </div>
 
-          {/* 3. Theme Toggle */}
+                      <div className="space-y-1">
+                        {LEARNING_LANGUAGES.map((lang) => {
+                          const isSelected = selectedLanguage === lang.id;
+                          return (
+                            <button
+                              key={lang.id}
+                              onClick={() => {
+                                if (onSelectLanguage) onSelectLanguage(lang.id);
+                                setLangDropdownOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
+                                isSelected
+                                  ? "bg-[#FFFBEB] dark:bg-[#153560] border-[#FFB800] text-[#102B50] dark:text-white font-bold"
+                                  : "bg-transparent hover:bg-[#FFB800] border-transparent hover:border-[#FFB800] text-[#102B50] dark:text-slate-200 hover:text-[#102B50] dark:hover:text-[#102B50]"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="text-xl shrink-0 select-none">{lang.icon}</span>
+                                <div className="min-w-0">
+                                  <div className="text-xs font-bold leading-tight truncate">
+                                    {lang.label}
+                                  </div>
+                                  <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate">
+                                    {lang.shortLabel} • {lang.description.slice(0, 36)}...
+                                  </div>
+                                </div>
+                              </div>
+                              {isSelected && (
+                                <div className="w-5 h-5 rounded-full bg-[#FFB800] text-[#102B50] flex items-center justify-center shrink-0 ml-1.5 font-bold">
+                                  <Check size={12} strokeWidth={3} />
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="pt-1.5 mt-1 border-t border-[#E2E8F0] dark:border-[#1E3A5F]">
+                        <button
+                          onClick={() => {
+                            setLangDropdownOpen(false);
+                            if (onOpenLanguageModal) onOpenLanguageModal();
+                          }}
+                          className="w-full py-1.5 px-2 text-[11px] font-bold text-center text-[#0756A5] dark:text-[#FFB800] hover:underline cursor-pointer bg-transparent border-none"
+                        >
+                          View Full Multi-Language Guide →
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 2. Quick Tools: Explore App (Search all pages & guided tour) */}
+              <div id="tour-nav-tools" className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                <button
+                  id="tour-btn-explore-app"
+                  onClick={() => openExplorer("all")}
+                  className="navbar-tool-btn navbar-btn-explore group relative"
+                  title="Explore App: Search all pages, features & take interactive tour"
+                  aria-label="Explore App"
+                >
+                  <Compass size={15} className="text-[#0756A5] dark:text-[#FFB800] shrink-0 group-hover:rotate-45 transition-transform" />
+                  <span className="font-extrabold text-[#0756A5] dark:text-[#FFB800] navbar-btn-explore-label">
+                    <span className="navbar-btn-explore-text-short hidden min-[1380px]:inline xxl:hidden">Explore</span>
+                    <span className="navbar-btn-explore-text-full hidden xxl:inline">Explore App</span>
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse inline-block" />
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* 3. Font Size Controls (Increase / Decrease & Darker Text) */}
+          <FontSizeControl variant="navbar" />
+
+          {/* 4. Theme Toggle */}
           <button
             id="tour-nav-theme"
             onClick={toggleTheme}
@@ -427,10 +454,10 @@ export default function Navbar({
             title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
             aria-label="Toggle Theme"
           >
-            {isDark ? <Sun size={15} className="text-[#60a5fa]" /> : <Moon size={15} className="text-slate-600" />}
+            {isDark ? <Sun size={17} className="text-[#FFB800]" /> : <Moon size={17} className="text-[#102B50]" />}
           </button>
 
-          {/* 4. User Profile or Auth Buttons */}
+          {/* 5. User Profile or Auth Buttons */}
           <div id="tour-nav-auth" className="relative shrink-0" ref={userMenuRef}>
             {isAuthenticated && currentUser ? (
               <>
@@ -447,13 +474,13 @@ export default function Navbar({
                     {currentUser.name.split(" ")[0]}
                   </span>
                   <div className="navbar-user-xp hidden sm:flex">
-                    <Sparkles size={9} className="text-cyan-500 shrink-0" />
+                    <Sparkles size={9} className="text-[#0756A5] dark:text-cyan-400 shrink-0" />
                     <span>{currentUser.stats?.xp || 0}</span>
                   </div>
                   <ChevronDown
                     size={12}
-                    className={`text-slate-400 transition-transform ${
-                      userDropdownOpen ? "rotate-180 text-[#168BFF]" : ""
+                    className={`text-[#0756A5] dark:text-white transition-transform ${
+                      userDropdownOpen ? "rotate-180 text-[#0756A5]" : ""
                     }`}
                   />
                 </button>
@@ -482,10 +509,17 @@ export default function Navbar({
 
                       {/* User Badges: Stage & XP */}
                       <div className="user-menu-badges-row">
-                        <div className="user-badge-stage">
-                          <span>{stageMeta.icon}</span>
-                          <span className="truncate max-w-[120px]">{stageMeta.label}</span>
-                        </div>
+                        {showAdminOnlyMode ? (
+                          <div className="user-badge-stage bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
+                            <ShieldCheck size={13} className="text-indigo-600 dark:text-indigo-400" />
+                            <span>Administrator</span>
+                          </div>
+                        ) : (
+                          <div className="user-badge-stage">
+                            <span>{stageMeta.icon}</span>
+                            <span className="truncate max-w-[120px]">{stageMeta.label}</span>
+                          </div>
+                        )}
 
                         <div className="user-badge-xp">
                           <Sparkles size={11} className="text-[#38bdf8] shrink-0" />
@@ -494,95 +528,206 @@ export default function Navbar({
                       </div>
                     </div>
 
-                    {/* Progress Summary Cards */}
-                    <div className="user-menu-stats-grid">
-                      <div className="user-menu-stat-tile">
-                        <div className="user-menu-stat-icon-blue">
-                          <CheckCircle size={16} />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="user-menu-stat-val">
-                            {(currentUser.stats?.completedTopics || []).length}
+                    {/* Progress Summary Cards (Learner only) */}
+                    {!showAdminOnlyMode && (
+                      <div className="user-menu-stats-grid">
+                        <div className="user-menu-stat-tile">
+                          <div className="user-menu-stat-icon-blue">
+                            <CheckCircle size={16} />
                           </div>
-                          <div className="user-menu-stat-lbl">
-                            Lessons Done
+                          <div className="min-w-0 flex-1">
+                            <div className="user-menu-stat-val">
+                              {(currentUser.stats?.completedTopics || []).length}
+                            </div>
+                            <div className="user-menu-stat-lbl">
+                              Lessons Done
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="user-menu-stat-tile">
-                        <div className="user-menu-stat-icon-blue">
-                          <Bookmark size={15} />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="user-menu-stat-val">
-                            {(currentUser.stats?.bookmarkedTopics || []).length}
+                        <div className="user-menu-stat-tile">
+                          <div className="user-menu-stat-icon-blue">
+                            <Bookmark size={15} />
                           </div>
-                          <div className="user-menu-stat-lbl">
-                            Bookmarks
+                          <div className="min-w-0 flex-1">
+                            <div className="user-menu-stat-val">
+                              {(currentUser.stats?.bookmarkedTopics || []).length}
+                            </div>
+                            <div className="user-menu-stat-lbl">
+                              Bookmarks
+                            </div>
+                          </div>
+                        </div>
+
+                        <div
+                          className="user-menu-stat-tile cursor-pointer hover:border-emerald-300 dark:hover:border-emerald-700 transition"
+                          onClick={() => {
+                            setUserDropdownOpen(false);
+                            openDoubtModal({ sectionTitle: "General Python Inquiry" });
+                          }}
+                          title="Click to view Doubt Credits & Support"
+                        >
+                          <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-[#25D366] flex items-center justify-center shrink-0">
+                            <WhatsAppIcon size={16} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="user-menu-stat-val text-emerald-600 dark:text-emerald-400">
+                              {doubtCredits} left
+                            </div>
+                            <div className="user-menu-stat-lbl">
+                              Doubts
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Menu Actions */}
                     <div className="space-y-1">
-                      <button
-                        onClick={() => {
-                          setUserDropdownOpen(false);
-                          openAuthModal("profile");
-                        }}
-                        className="user-menu-action"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="user-menu-action-icon-blue">
-                            <User size={15} />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="user-menu-action-title">My Profile & Stats</div>
-                            <div className="user-menu-action-sub">Avatar, stats & achievements</div>
-                          </div>
-                        </div>
-                        <ChevronRight size={14} className="text-slate-400 shrink-0 ml-1" />
-                      </button>
+                      {showAdminOnlyMode ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              if (onToggleAppPreview) onToggleAppPreview();
+                            }}
+                            className="user-menu-action bg-blue-50/50 dark:bg-blue-950/30 hover:bg-blue-100/70 dark:hover:bg-blue-950/60 border border-blue-200/50 dark:border-blue-800/40"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                <Eye size={14} />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="user-menu-action-title text-blue-700 dark:text-blue-300 font-bold">App Preview</div>
+                                <div className="user-menu-action-sub text-blue-600/80 dark:text-blue-400/80">View & test app as learner</div>
+                              </div>
+                            </div>
+                            <ChevronRight size={14} className="text-blue-500 shrink-0 ml-1" />
+                          </button>
 
-                      <button
-                        onClick={() => {
-                          setUserDropdownOpen(false);
-                          onOpenStageModal();
-                        }}
-                        className="user-menu-action"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="user-menu-action-icon-blue">
-                            <Settings size={15} />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="user-menu-action-title">Learning Stage</div>
-                            <div className="user-menu-action-sub">Current: {stageMeta.label}</div>
-                          </div>
-                        </div>
-                        <ChevronRight size={14} className="text-slate-400 shrink-0 ml-1" />
-                      </button>
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              handleNavClick("admin");
+                            }}
+                            className="user-menu-action bg-indigo-50/40 dark:bg-indigo-950/20 hover:bg-indigo-100/60 dark:hover:bg-indigo-950/50 border border-indigo-200/50 dark:border-indigo-800/40"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                <ShieldCheck size={14} />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="user-menu-action-title text-indigo-700 dark:text-indigo-300 font-bold">Admin Console</div>
+                                <div className="user-menu-action-sub text-indigo-600/80 dark:text-indigo-400/80">User management center</div>
+                              </div>
+                            </div>
+                            <ChevronRight size={14} className="text-indigo-500 shrink-0 ml-1" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              handleNavClick("profile");
+                            }}
+                            className="user-menu-action"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="user-menu-action-icon-blue">
+                                <User size={15} />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="user-menu-action-title">My Profile & Stats</div>
+                                <div className="user-menu-action-sub">Avatar, stats & achievements</div>
+                              </div>
+                            </div>
+                            <ChevronRight size={14} className="text-[#0756A5] dark:text-slate-400 shrink-0 ml-1" />
+                          </button>
 
-                      <button
-                        onClick={() => {
-                          setUserDropdownOpen(false);
-                          openExplorer("all");
-                        }}
-                        className="user-menu-action"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="user-menu-action-icon-blue">
-                            <Compass size={15} />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="user-menu-action-title">Explore App</div>
-                            <div className="user-menu-action-sub">Search pages, features & guided tour</div>
-                          </div>
-                        </div>
-                        <ChevronRight size={14} className="text-slate-400 shrink-0 ml-1" />
-                      </button>
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              onOpenStageModal();
+                            }}
+                            className="user-menu-action"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="user-menu-action-icon-blue">
+                                <Settings size={15} />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="user-menu-action-title">Learning Stage</div>
+                                <div className="user-menu-action-sub">Current: {stageMeta.label}</div>
+                              </div>
+                            </div>
+                            <ChevronRight size={14} className="text-[#0756A5] dark:text-slate-400 shrink-0 ml-1" />
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              handleNavClick("contact");
+                            }}
+                            className="user-menu-action"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="user-menu-action-icon-blue">
+                                <Mail size={15} />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="user-menu-action-title">Contact Support</div>
+                                <div className="user-menu-action-sub">Get student help & send feedback</div>
+                              </div>
+                            </div>
+                            <ChevronRight size={14} className="text-[#0756A5] dark:text-slate-400 shrink-0 ml-1" />
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              openExplorer("all");
+                            }}
+                            className="user-menu-action"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="user-menu-action-icon-blue">
+                                <Compass size={15} />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="user-menu-action-title">Explore App</div>
+                                <div className="user-menu-action-sub">Search pages, features & guided tour</div>
+                              </div>
+                            </div>
+                            <ChevronRight size={14} className="text-[#0756A5] dark:text-slate-400 shrink-0 ml-1" />
+                          </button>
+
+                          {currentUser?.role === "admin" && (
+                            <button
+                              onClick={() => {
+                                setUserDropdownOpen(false);
+                                if (onReturnToAdmin) {
+                                  onReturnToAdmin();
+                                } else {
+                                  handleNavClick("admin");
+                                }
+                              }}
+                              className="user-menu-action bg-indigo-50/40 dark:bg-indigo-950/20 hover:bg-indigo-100/60 dark:hover:bg-indigo-950/50 border border-indigo-200/50 dark:border-indigo-800/40"
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                  <ShieldCheck size={14} />
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="user-menu-action-title text-indigo-700 dark:text-indigo-300 font-bold">Admin Console</div>
+                                  <div className="user-menu-action-sub text-indigo-600/80 dark:text-indigo-400/80">Exit preview & manage users</div>
+                                </div>
+                              </div>
+                              <ChevronRight size={14} className="text-indigo-500 shrink-0 ml-1" />
+                            </button>
+                          )}
+                        </>
+                      )}
 
                       <div className="my-1.5 border-t border-slate-100 dark:border-slate-800"></div>
 
@@ -610,17 +755,18 @@ export default function Navbar({
               <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                 <button
                   onClick={() => setCurrentPage("signin")}
-                  className="navbar-auth-btn-signin flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-[#60a5fa] hover:bg-slate-100 dark:hover:bg-[#14233a] transition cursor-pointer border-none shrink-0"
+                  className="navbar-auth-btn-signin flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold text-[#102B50] dark:text-white hover:text-[#102B50] hover:bg-[#FFB800] dark:hover:text-[#102B50] dark:hover:bg-[#FFB800] transition cursor-pointer border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] shrink-0"
                 >
-                  <LogIn size={14} className="shrink-0" />
+                  <LogIn size={14} className="shrink-0 text-[#0756A5] dark:text-[#FFB800]" />
                   <span>Sign In</span>
                 </button>
                 <button
                   onClick={() => setCurrentPage("signup")}
-                  className="navbar-auth-btn-signup flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#2563eb] to-[#3b82f6] hover:from-[#1d4ed8] hover:to-[#2563eb] text-white shadow-xs shadow-blue-500/20 transition cursor-pointer border-none shrink-0"
+                  className="navbar-auth-btn-signup flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold bg-[#0756A5] hover:bg-[#064681] text-white shadow-xs transition cursor-pointer border border-[#0756A5] shrink-0"
+                  style={{ backgroundColor: "#0756A5", color: "#FFFFFF" }}
                 >
-                  <Sparkles size={13} className="shrink-0" />
-                  <span>Sign Up</span>
+                  <Sparkles size={13} className="shrink-0 text-[#FFB800]" style={{ color: "#FFB800" }} />
+                  <span className="text-white font-bold" style={{ color: "#FFFFFF" }}>Sign Up</span>
                 </button>
               </div>
             )}
@@ -629,34 +775,64 @@ export default function Navbar({
 
         {/* Mobile / Compact Controls (<1024px, optimized for 280px-1023px) */}
         <div className="navbar-mobile-menu items-center gap-1 sm:gap-1.5 shrink-0">
-          {/* Tablet Explore App shortcut (visible on tablet 640px - 1023px) */}
-          <button
-            onClick={() => openExplorer("all")}
-            className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-blue-500/10 hover:bg-blue-500/20 text-[#168BFF] dark:text-[#60B7FF] border border-blue-500/20 transition cursor-pointer shrink-0"
-            title="Explore App: Search pages & features"
-          >
-            <Compass size={14} className="shrink-0" />
-            <span>Explore</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          </button>
+          {/* Admin Mode Mobile Actions */}
+          {showAdminOnlyMode ? (
+            <button
+              onClick={onToggleAppPreview}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs shadow-xs cursor-pointer border-none active:scale-95 shrink-0"
+              title="Preview App as Learner"
+            >
+              <Eye size={14} />
+              <span>Preview</span>
+            </button>
+          ) : isAdmin && appPreviewMode ? (
+            <button
+              onClick={onReturnToAdmin}
+              className="flex items-center gap-1 px-2 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-xs cursor-pointer border border-indigo-400/40 shrink-0"
+              title="Return to Admin Console"
+            >
+              <ShieldCheck size={13} />
+              <span className="text-[11px]">Admin</span>
+            </button>
+          ) : (
+            /* Tablet Explore App shortcut (visible on tablet 640px - 1023px for learners) */
+            <button
+              onClick={() => openExplorer("all")}
+              className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-[#F3F7FC] hover:bg-[#FFB800] text-[#0756A5] hover:text-[#102B50] dark:bg-[#102B50] dark:hover:bg-[#FFB800] dark:text-[#FFB800] dark:hover:text-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition cursor-pointer shrink-0"
+              title="Explore App: Search pages & features"
+            >
+              <Compass size={14} className="shrink-0" />
+              <span>Explore</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            </button>
+          )}
+
+          {/* Mobile Font Size Control */}
+          <FontSizeControl variant="mobile" />
 
           <button
             id="tour-nav-mobile-theme"
             onClick={toggleTheme}
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-[#101b2d] text-slate-700 dark:text-[#60a5fa] border border-slate-200 dark:border-[#23344d] cursor-pointer shadow-2xs shrink-0"
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-[#101b2d] text-[#102B50] dark:text-[#60a5fa] border border-slate-200 dark:border-[#23344d] cursor-pointer shadow-2xs shrink-0"
             title="Toggle theme"
             aria-label="Toggle Theme"
           >
-            {isDark ? <Sun size={15} /> : <Moon size={15} />}
+            {isDark ? <Sun size={15} className="text-[#FFB800]" /> : <Moon size={15} className="text-[#0756A5]" />}
           </button>
 
           {/* User Profile Avatar / Login Icon on Mobile */}
           {isAuthenticated && currentUser ? (
             <button
               id="tour-nav-mobile-auth"
-              onClick={() => openAuthModal("profile")}
-              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-[#101b2d] text-blue-600 dark:text-[#93c5fd] border border-blue-200 dark:border-[#23344d] cursor-pointer shadow-2xs text-base shrink-0"
-              title="Profile & Stats"
+              onClick={() => {
+                if (showAdminOnlyMode) {
+                  setUserDropdownOpen(!userDropdownOpen);
+                } else {
+                  handleNavClick("profile");
+                }
+              }}
+              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-[#101b2d] text-[#0756A5] dark:text-[#93c5fd] border border-blue-200 dark:border-[#23344d] cursor-pointer shadow-2xs text-base shrink-0"
+              title={showAdminOnlyMode ? "Admin Menu" : "Profile & Stats"}
             >
               {userAvatarMeta.emoji}
             </button>
@@ -664,34 +840,37 @@ export default function Navbar({
             <button
               id="tour-nav-mobile-auth"
               onClick={() => setCurrentPage("signin")}
-              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-[#101b2d] text-blue-600 dark:text-[#93c5fd] border border-blue-200 dark:border-[#23344d] cursor-pointer shadow-2xs shrink-0"
+              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-[#101b2d] text-[#0756A5] dark:text-[#93c5fd] border border-blue-200 dark:border-[#23344d] cursor-pointer shadow-2xs shrink-0"
               title="Sign In"
             >
-              <LogIn size={15} />
+              <LogIn size={15} className="text-[#0756A5] dark:text-[#93c5fd]" />
             </button>
           )}
 
-          {/* Language switch quick pill */}
-          <button
-            id="tour-nav-mobile-lang"
-            onClick={onOpenLanguageModal}
-            className="h-8 sm:h-9 px-1.5 sm:px-2.5 hidden xs:flex items-center gap-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] text-slate-800 dark:text-slate-200 cursor-pointer shadow-2xs shrink-0"
-            title="Switch Language"
-          >
-            <span className="text-sm">{langMeta.icon}</span>
-            <span className="hidden sm:inline">{langShortLabel}</span>
-          </button>
+          {/* Learner only: Language and Stage quick pills */}
+          {!showAdminOnlyMode && (
+            <>
+              <button
+                id="tour-nav-mobile-lang"
+                onClick={onOpenLanguageModal}
+                className="h-8 sm:h-9 px-1.5 sm:px-2.5 hidden xs:flex items-center gap-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] text-slate-800 dark:text-slate-200 cursor-pointer shadow-2xs shrink-0"
+                title="Switch Language"
+              >
+                <span className="text-sm">{langMeta.icon}</span>
+                <span className="hidden sm:inline">{langShortLabel}</span>
+              </button>
 
-          {/* Stage switch quick pill */}
-          <button
-            id="tour-nav-mobile-stage"
-            onClick={onOpenStageModal}
-            className="h-8 sm:h-9 px-1.5 sm:px-2.5 hidden xs:flex items-center gap-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] text-slate-800 dark:text-slate-200 cursor-pointer shadow-2xs shrink-0"
-            title="Switch Learning Stage"
-          >
-            <span className="text-sm">{stageMeta.icon}</span>
-            <span className="hidden sm:inline">{stageMeta.label}</span>
-          </button>
+              <button
+                id="tour-nav-mobile-stage"
+                onClick={onOpenStageModal}
+                className="h-8 sm:h-9 px-1.5 sm:px-2.5 hidden xs:flex items-center gap-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] text-slate-800 dark:text-slate-200 cursor-pointer shadow-2xs shrink-0"
+                title="Switch Learning Stage"
+              >
+                <span className="text-sm">{stageMeta.icon}</span>
+                <span className="hidden sm:inline">{stageMeta.label}</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>

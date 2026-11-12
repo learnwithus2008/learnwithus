@@ -74,5 +74,36 @@ export const rewardRepository = {
       return res.rows[0];
     }
     return current;
+  },
+
+  async useDoubtCredit(userId, dbClient = null) {
+    const q = dbClient ? dbClient.query.bind(dbClient) : query;
+    const res = await q(
+      `
+      UPDATE user_rewards
+      SET doubt_credits = GREATEST(0, COALESCE(doubt_credits, 10) - 1),
+          doubts_used = COALESCE(doubts_used, 0) + 1,
+          updated_at = NOW()
+      WHERE user_id = $1
+      RETURNING *;
+      `,
+      [userId]
+    );
+    return res.rows[0] || null;
+  },
+
+  async addDoubtCredits(userId, count = 1, dbClient = null) {
+    const q = dbClient ? dbClient.query.bind(dbClient) : query;
+    const res = await q(
+      `
+      UPDATE user_rewards
+      SET doubt_credits = COALESCE(doubt_credits, 10) + $2,
+          updated_at = NOW()
+      WHERE user_id = $1
+      RETURNING *;
+      `,
+      [userId, count]
+    );
+    return res.rows[0] || null;
   }
 };

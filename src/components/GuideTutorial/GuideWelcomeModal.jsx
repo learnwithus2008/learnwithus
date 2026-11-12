@@ -50,36 +50,36 @@ export default function GuideWelcomeModal() {
       icon: LogIn,
       iconColor: "text-blue-600 dark:text-[#60B7FF]",
       bgColor: "bg-blue-500/10",
-      title: "Sign In & Sign Up (Account & Progress)",
-      desc: "Register a free account to save your learning progress across devices, track XP and streaks, and unlock interactive practice quizzes and real-world projects."
+      title: "Profile & Progress",
+      desc: "Save your streak, earn XP, and track certificates across devices."
     },
     {
       icon: Compass,
       iconColor: "text-cyan-600 dark:text-[#38bdf8]",
       bgColor: "bg-cyan-500/10",
-      title: "Navigation Items (Tabs & Pages)",
-      desc: "Quickly access Home dashboard, Learn (19 sections, 120 lessons), Practice quizzes, Projects, and About via the top navigation dock on desktop or bottom bar on mobile."
+      title: "Navigation Tabs",
+      desc: "Jump easily between Home, Learn, Practice, Projects, and About."
     },
     {
       icon: Sun,
       iconColor: "text-amber-500 dark:text-amber-400",
       bgColor: "bg-amber-500/10",
-      title: "Theme (Light & Dark Mode)",
-      desc: "Toggle between crisp Light Mode and immersive Dark Mode with one click anytime (top header) for comfortable day and night studying."
+      title: "Light & Dark Mode",
+      desc: "One click to toggle comfortable day or night reading."
     },
     {
       icon: StickyNote,
       iconColor: "text-emerald-600 dark:text-emerald-400",
       bgColor: "bg-emerald-500/10",
-      title: "Study Notes (Interactive Notepad)",
-      desc: "Capture personal code thoughts, key takeaways, and lesson reminders anytime with the floating notepad (Alt+N), automatically saved as you study."
+      title: "Study Notepad",
+      desc: "Jot down code snippets and takeaways with automatic saving."
     },
     {
       icon: BookOpen,
       iconColor: "text-purple-600 dark:text-purple-400",
       bgColor: "bg-purple-500/10",
-      title: "Word Meaning (Programming Dictionary)",
-      desc: "Never get stuck on confusing technical jargon! Press ⌘K or tap any highlighted word in a lesson to see clear, plain-language definitions."
+      title: "Word Dictionary",
+      desc: "Tap any term or press ⌘K for simple definitions in your language."
     }
   ];
 

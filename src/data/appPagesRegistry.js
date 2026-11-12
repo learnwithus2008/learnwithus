@@ -223,6 +223,38 @@ export const APP_PAGES_REGISTRY = [
     }
   },
   {
+    id: "contact",
+    pageKey: "contact",
+    route: "#/contact",
+    title: "Contact & Student Support",
+    tagline: "Get help with curriculum questions, doubts, and student feedback",
+    category: "getting-started",
+    categoryLabel: "Help & Support",
+    icon: "Mail",
+    color: "from-blue-600 to-indigo-600",
+    navLocation: "Top Navigation Bar → 'Contact' Tab, Footer, or User Menu",
+    description:
+      "Reach out to the Learn With Us educational support and developer team. Send inquiries, report bugs, ask doubts, or submit curriculum feedback.",
+    features: [
+      "Direct email and WhatsApp doubt support channels",
+      "Interactive inquiry contact form with category selector",
+      "24-48 hour response guarantee",
+      "Student privacy protection"
+    ],
+    authRequired: false,
+    badge: "Student Support",
+    contextualGuidance: {
+      purpose: "Provide direct channels for student inquiries, concept doubts, curriculum feedback, and bug reports.",
+      mainActions: [
+        "Fill out and submit the interactive contact form",
+        "Send doubts on WhatsApp directly from any lesson or section",
+        "Email support directly for administrative or platform assistance"
+      ],
+      howToStart: "Select your inquiry category, type your question, and submit the form.",
+      nextSteps: "Our team will review your inquiry and follow up promptly."
+    }
+  },
+  {
     id: "signin",
     pageKey: "signin",
     route: "#/signin",
@@ -285,6 +317,42 @@ export const APP_PAGES_REGISTRY = [
       ],
       howToStart: "Fill out the simple form and pick an avatar that matches your style.",
       nextSteps: "You will be automatically logged in and redirected to start learning!"
+    }
+  },
+  {
+    id: "profile",
+    pageKey: "profile",
+    route: "#/profile",
+    title: "Learner Profile & Stats",
+    tagline: "Your learning streak, XP progress, bookmarks & certificates",
+    category: "account",
+    categoryLabel: "Account",
+    icon: "User",
+    color: "from-blue-600 to-cyan-500",
+    navLocation: "Top Navigation Bar → User Avatar Menu or Mobile Bottom Bar → 'Profile'",
+    description:
+      "Your personal dashboard featuring earned XP, daily learning streak, completed lessons history with quiz scores, saved bookmarks, official certificate download, and account security settings.",
+    features: [
+      "Live gamified metrics: XP, Level bar, and daily streak records",
+      "Completed lessons showcase with revision shortcuts and quiz scores",
+      "Saved bookmarks list for quick access to marked curriculum topics",
+      "Printable official Certificate of Achievement generator",
+      "Personal details and learning stage & language preferences editor",
+      "Account security management including password updates"
+    ],
+    authRequired: true,
+    badge: "Personal Dashboard",
+    contextualGuidance: {
+      purpose: "Track your learning progress, manage saved bookmarks, and view your official Python certificate.",
+      mainActions: [
+        "View and edit your personal details, bio, and avatar icon",
+        "Monitor your daily learning streak and earned XP points",
+        "Review completed lessons and launch directly into revision",
+        "Access bookmarked lessons or remove old bookmarks",
+        "Generate and print your official certificate of achievement"
+      ],
+      howToStart: "Review your current learning stats and celebrate completed lesson milestones.",
+      nextSteps: "Head back to Curriculum or Practice to earn more XP and expand your streak!"
     }
   },
   {
@@ -418,6 +486,40 @@ export const APP_PAGES_REGISTRY = [
       ],
       howToStart: "Select 'Eng+Tel' if you enjoy conversational friend-style explanations.",
       nextSteps: "Open any lesson to experience how complex ideas become effortless in your chosen tongue."
+    }
+  },
+  {
+    id: "admin",
+    pageKey: "admin",
+    route: "#/admin",
+    title: "Administrative Console & User Status",
+    tagline: "Platform monitoring, learner status tracking & telemetry",
+    category: "account",
+    categoryLabel: "Administration",
+    icon: "ShieldCheck",
+    color: "from-indigo-600 to-blue-600",
+    navLocation: "Top Navigation Bar → Admin Tab (Admin Accounts)",
+    description:
+      "Comprehensive administration console allowing platform managers to inspect learner accounts, monitor real-time completion progress, manage roles and status, and view platform metrics.",
+    features: [
+      "Real-time learner status monitoring & deep-dive progress inspection",
+      "Account status control (Active ↔ Suspended)",
+      "Role management (Student ↔ Administrator)",
+      "Pedagogical stage & language analytics distribution",
+      "Bonus XP grants & live activity feed"
+    ],
+    authRequired: true,
+    badge: "Admin Only",
+    contextualGuidance: {
+      purpose: "Monitor and manage learner accounts, track topic completions, and review system telemetry.",
+      mainActions: [
+        "Filter and search learners by name, email, stage, role, or status",
+        "Click Inspect on any user to view their complete chapter progress, quiz scores, and login sessions",
+        "Activate or suspend user accounts or grant bonus XP awards",
+        "View community aggregates and leaderboard in the Analytics tab"
+      ],
+      howToStart: "Search for a student name in the directory or switch to the Analytics tab.",
+      nextSteps: "Check on user statuses or review the live activity feed."
     }
   }
 ];

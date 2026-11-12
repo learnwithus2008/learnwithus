@@ -233,19 +233,19 @@ export default function TopicNotes({ topicId, topicTitle, defaultKeyPoints = [] 
       }`}
     >
       {/* Note Header */}
-      <div className="bg-slate-50 dark:bg-[#07101F] px-4 py-3 flex items-center justify-between border-b border-slate-200 dark:border-[#183657]">
+      <div className="bg-[#F3F7FC] dark:bg-[#102B50] px-4 py-3 flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#1E3A5F]">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-[#102541] border border-blue-200 dark:border-[#183657] text-[#168BFF] flex items-center justify-center shadow-2xs">
+          <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#0C1B30] border border-[#E2E8F0] dark:border-[#1E3A5F] text-[#0756A5] dark:text-[#FFB800] flex items-center justify-center shadow-2xs">
             <StickyNote size={17} />
           </div>
           <div>
-            <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 m-0">
+            <h3 className="text-xs sm:text-sm font-bold text-[#102B50] dark:text-white flex items-center gap-2 m-0">
               <span>My Important Notes</span>
               {noteContent && (
-                <span className="w-2 h-2 rounded-full bg-[#168BFF] inline-block animate-pulse" title="Notes Active" />
+                <span className="w-2 h-2 rounded-full bg-[#FFB800] inline-block animate-pulse" title="Notes Active" />
               )}
             </h3>
-            <span className="text-[10px] sm:text-xs text-slate-500 dark:text-[#91A6BF] block">
+            <span className="text-[10px] sm:text-xs text-[#64748B] dark:text-slate-400 block">
               Auto-saved for "{topicTitle}"
             </span>
           </div>
@@ -254,19 +254,19 @@ export default function TopicNotes({ topicId, topicTitle, defaultKeyPoints = [] 
         {/* Action Controls */}
         <div className="flex items-center gap-1.5">
           {saveStatus === 'saving' && (
-            <span className="text-[10px] font-semibold text-blue-600 dark:text-[#8CC8FF] animate-pulse px-2 py-0.5 bg-blue-50 dark:bg-[#102541] border border-blue-200 dark:border-[#183657] rounded-md">
+            <span className="text-[10px] font-semibold text-[#0756A5] dark:text-[#FFB800] animate-pulse px-2 py-0.5 bg-white dark:bg-[#0C1B30] border border-[#E2E8F0] dark:border-[#1E3A5F] rounded-md">
               Saving...
             </span>
           )}
           {saveStatus === 'saved' && lastSavedTime && (
-            <span className="hidden sm:inline-block text-[10px] text-slate-500 dark:text-[#91A6BF] mr-1">
+            <span className="hidden sm:inline-block text-[10px] text-[#64748B] dark:text-slate-400 mr-1">
               Saved {lastSavedTime}
             </span>
           )}
 
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 text-slate-500 hover:text-slate-900 dark:text-[#91A6BF] dark:hover:text-white hover:bg-slate-200 dark:hover:bg-[#102541] rounded-lg transition border-none cursor-pointer bg-transparent"
+            className="p-1.5 text-[#64748B] hover:text-[#102B50] dark:text-slate-400 dark:hover:text-white hover:bg-[#FFB800] dark:hover:bg-[#FFB800] dark:hover:text-[#102B50] rounded-lg transition border-none cursor-pointer bg-transparent"
             title={isExpanded ? "Collapse Note" : "Expand Note to Full Screen"}
           >
             {isExpanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
@@ -274,7 +274,7 @@ export default function TopicNotes({ topicId, topicTitle, defaultKeyPoints = [] 
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-1.5 text-slate-500 hover:text-slate-900 dark:text-[#91A6BF] dark:hover:text-white hover:bg-slate-200 dark:hover:bg-[#102541] rounded-lg transition border-none cursor-pointer bg-transparent"
+            className="p-1.5 text-[#64748B] hover:text-[#102B50] dark:text-slate-400 dark:hover:text-white hover:bg-[#FFB800] dark:hover:bg-[#FFB800] dark:hover:text-[#102B50] rounded-lg transition border-none cursor-pointer bg-transparent"
             title={isOpen ? "Minimize Notes" : "Open Notes"}
           >
             {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -286,50 +286,50 @@ export default function TopicNotes({ topicId, topicTitle, defaultKeyPoints = [] 
       {isOpen && (
         <div className={`p-3.5 space-y-3 ${isExpanded ? 'flex-1 flex flex-col' : ''}`}>
           {/* Quick Toolbar */}
-          <div className="flex items-center justify-between gap-1 flex-wrap pb-2 border-b border-slate-200 dark:border-[#183657] text-xs">
+          <div className="flex items-center justify-between gap-1 flex-wrap pb-2 border-b border-[#E2E8F0] dark:border-[#1E3A5F] text-xs">
             <div className="flex items-center gap-1 flex-wrap">
               <button
                 onClick={() => handleInsertSnippet('bullet')}
-                className="px-2 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-[#102541] dark:hover:bg-[#183657] text-slate-700 hover:text-slate-900 dark:text-[#D2DEEC] dark:hover:text-white font-semibold rounded-md border border-slate-200 dark:border-[#183657] hover:border-[#168BFF] transition flex items-center gap-1 cursor-pointer text-[11px]"
+                className="px-2 py-1 bg-white hover:bg-[#FFB800] dark:bg-[#102B50] dark:hover:bg-[#FFB800] text-[#102B50] hover:text-[#102B50] dark:text-white dark:hover:text-[#102B50] font-semibold rounded-md border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition flex items-center gap-1 cursor-pointer text-[11px]"
                 title="Insert Bullet Point"
               >
-                <List size={12} className="text-[#168BFF]" />
+                <List size={12} className="text-[#0756A5]" />
                 <span className="hidden sm:inline">Bullet</span>
               </button>
 
               <button
                 onClick={() => handleInsertSnippet('bold')}
-                className="px-2 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-[#102541] dark:hover:bg-[#183657] text-slate-700 hover:text-slate-900 dark:text-[#D2DEEC] dark:hover:text-white font-semibold rounded-md border border-slate-200 dark:border-[#183657] hover:border-[#168BFF] transition flex items-center gap-1 cursor-pointer text-[11px]"
+                className="px-2 py-1 bg-white hover:bg-[#FFB800] dark:bg-[#102B50] dark:hover:bg-[#FFB800] text-[#102B50] hover:text-[#102B50] dark:text-white dark:hover:text-[#102B50] font-semibold rounded-md border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition flex items-center gap-1 cursor-pointer text-[11px]"
                 title="Insert Important Bold Tag"
               >
-                <Bold size={12} className="text-[#168BFF]" />
+                <Bold size={12} className="text-[#0756A5]" />
                 <span className="hidden sm:inline">Bold</span>
               </button>
 
               <button
                 onClick={() => handleInsertSnippet('code')}
-                className="px-2 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-[#102541] dark:hover:bg-[#183657] text-slate-700 hover:text-slate-900 dark:text-[#D2DEEC] dark:hover:text-white font-semibold rounded-md border border-slate-200 dark:border-[#183657] hover:border-[#168BFF] transition flex items-center gap-1 cursor-pointer text-[11px]"
+                className="px-2 py-1 bg-white hover:bg-[#FFB800] dark:bg-[#102B50] dark:hover:bg-[#FFB800] text-[#102B50] hover:text-[#102B50] dark:text-white dark:hover:text-[#102B50] font-semibold rounded-md border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition flex items-center gap-1 cursor-pointer text-[11px]"
                 title="Insert Code Block"
               >
-                <Code2 size={12} className="text-[#168BFF]" />
+                <Code2 size={12} className="text-[#0756A5]" />
                 <span className="hidden sm:inline">Code</span>
               </button>
 
               <button
                 onClick={() => handleInsertSnippet('todo')}
-                className="px-2 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-[#102541] dark:hover:bg-[#183657] text-slate-700 hover:text-slate-900 dark:text-[#D2DEEC] dark:hover:text-white font-semibold rounded-md border border-slate-200 dark:border-[#183657] hover:border-[#168BFF] transition flex items-center gap-1 cursor-pointer text-[11px]"
+                className="px-2 py-1 bg-white hover:bg-[#FFB800] dark:bg-[#102B50] dark:hover:bg-[#FFB800] text-[#102B50] hover:text-[#102B50] dark:text-white dark:hover:text-[#102B50] font-semibold rounded-md border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition flex items-center gap-1 cursor-pointer text-[11px]"
                 title="Insert Checklist Item"
               >
-                <CheckSquare size={12} className="text-[#168BFF]" />
+                <CheckSquare size={12} className="text-[#0756A5]" />
                 <span className="hidden sm:inline">Checklist</span>
               </button>
 
               <button
                 onClick={handleInsertTemplate}
-                className="px-2 py-1 bg-blue-50 hover:bg-blue-100 dark:bg-[#102B4A] dark:hover:bg-[#168BFF]/20 text-[#168BFF] dark:text-[#8CC8FF] font-bold rounded-md border border-blue-200 dark:border-[#168BFF]/40 transition flex items-center gap-1 cursor-pointer text-[11px]"
+                className="px-2 py-1 bg-white hover:bg-[#FFB800] dark:bg-[#102B50] dark:hover:bg-[#FFB800] text-[#0756A5] hover:text-[#102B50] dark:text-[#FFB800] dark:hover:text-[#102B50] font-bold rounded-md border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition flex items-center gap-1 cursor-pointer text-[11px]"
                 title="Insert Structured Note Template"
               >
-                <Sparkles size={12} className="text-[#168BFF]" />
+                <Sparkles size={12} className="text-[#FFB800]" />
                 <span className="hidden sm:inline">Template</span>
               </button>
             </div>
@@ -338,16 +338,16 @@ export default function TopicNotes({ topicId, topicTitle, defaultKeyPoints = [] 
               <button
                 onClick={handleCopyNotes}
                 disabled={!noteContent}
-                className="p-1.5 text-slate-500 hover:text-[#168BFF] dark:text-[#91A6BF] dark:hover:text-[#168BFF] rounded-md transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
+                className="p-1.5 text-[#64748B] hover:text-[#0756A5] dark:text-slate-400 dark:hover:text-white rounded-md transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
                 title="Copy Notes to Clipboard"
               >
-                {copied ? <Check size={14} className="text-[#168BFF]" /> : <Copy size={14} />}
+                {copied ? <Check size={14} className="text-[#16A34A]" /> : <Copy size={14} />}
               </button>
 
               <button
                 onClick={handleDownloadNotes}
                 disabled={!noteContent}
-                className="p-1.5 text-slate-500 hover:text-[#168BFF] dark:text-[#91A6BF] dark:hover:text-[#168BFF] rounded-md transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
+                className="p-1.5 text-[#64748B] hover:text-[#0756A5] dark:text-slate-400 dark:hover:text-white rounded-md transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
                 title="Download as Markdown"
               >
                 <Download size={14} />
@@ -356,7 +356,7 @@ export default function TopicNotes({ topicId, topicTitle, defaultKeyPoints = [] 
               <button
                 onClick={handleClearNotes}
                 disabled={!noteContent}
-                className="p-1.5 text-slate-500 hover:text-red-500 dark:text-[#91A6BF] dark:hover:text-white rounded-md transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
+                className="p-1.5 text-[#64748B] hover:text-[#DC2626] dark:text-slate-400 dark:hover:text-[#DC2626] rounded-md transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
                 title="Clear Notes"
               >
                 <Trash2 size={14} />
@@ -373,7 +373,7 @@ export default function TopicNotes({ topicId, topicTitle, defaultKeyPoints = [] 
               onChange={handleContentChange}
               placeholder={`Write your important points, reminders, and key concepts for "${topicTitle}" here...\n\nExample:\n• Remember: print() outputs values to the terminal\n• Watch out: Variable names cannot start with a number`}
               style={{ minHeight: isExpanded ? '100%' : '140px' }}
-              className={`topic-notes-textarea w-full p-3 rounded-xl bg-slate-50 dark:bg-[#040913] border border-slate-200 dark:border-[#183657] text-slate-900 dark:text-white text-xs sm:text-sm font-sans leading-relaxed focus:outline-hidden focus:ring-2 focus:ring-[#168BFF]/40 focus:border-[#168BFF] placeholder-slate-400 dark:placeholder-[#91A6BF] transition resize-y font-mono ${
+              className={`topic-notes-textarea w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0C1B30] border border-[#E2E8F0] dark:border-[#1E3A5F] text-[#102B50] dark:text-white text-xs sm:text-sm font-sans leading-relaxed focus:outline-hidden focus:ring-2 focus:ring-[#0756A5]/40 focus:border-[#0756A5] placeholder-[#64748B] dark:placeholder-slate-400 transition resize-y font-mono ${
                 isExpanded ? 'flex-1 h-full' : ''
               }`}
             />

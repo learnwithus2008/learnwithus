@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useGuideTutorial } from "../../context/GuideTutorialContext";
+import { useAuth } from "../../context/AuthContext";
 import { ChevronRight, ChevronLeft, X } from "lucide-react";
 
 export default function GuideTutorialModal() {
@@ -20,6 +21,8 @@ export default function GuideTutorialModal() {
     skipTour,
     finishTour
   } = useGuideTutorial();
+  const { isAuthenticated, currentUser } = useAuth();
+  const isUserLoggedIn = Boolean(isAuthenticated && currentUser);
 
   const [targetRect, setTargetRect] = useState(null);
   const [cardPosition, setCardPosition] = useState({ top: 100, left: 20 });
@@ -80,7 +83,8 @@ export default function GuideTutorialModal() {
       if (isElementVisible(mfEl)) targetEl = mfEl;
     }
 
-    const cardWidth = Math.min(380, windowWidth - 24);
+    const screenMargin = windowWidth <= 360 ? 8 : 12;
+    const cardWidth = Math.min(380, windowWidth - screenMargin * 2);
     const cardEstimatedHeight = cardRef.current
       ? Math.min(cardRef.current.offsetHeight, 280)
       : 190;
@@ -115,59 +119,72 @@ export default function GuideTutorialModal() {
       // Candidate placements relative to target
       const candidatePlacements = {
         bottom: {
-          top: computedRect.bottom + 12,
-          left: Math.max(
-            12,
-            Math.min(
-              computedRect.left + computedRect.width / 2 - cardWidth / 2,
-              windowWidth - cardWidth - 12
-            )
-          ),
-          feasible: computedRect.bottom + 12 + cardEstimatedHeight <= windowHeight - 12
+          top: computedRect.bottom + 10,
+          left: windowWidth <= 360
+            ? screenMargin
+            : Math.max(
+                screenMargin,
+                Math.min(
+                  computedRect.left + computedRect.width / 2 - cardWidth / 2,
+                  windowWidth - cardWidth - screenMargin
+                )
+              ),
+          feasible: computedRect.bottom + 10 + cardEstimatedHeight <= windowHeight - screenMargin
         },
         top: {
-          top: computedRect.top - 12 - cardEstimatedHeight,
-          left: Math.max(
-            12,
-            Math.min(
-              computedRect.left + computedRect.width / 2 - cardWidth / 2,
-              windowWidth - cardWidth - 12
-            )
-          ),
-          feasible: computedRect.top - 12 - cardEstimatedHeight >= 12
+          top: computedRect.top - 10 - cardEstimatedHeight,
+          left: windowWidth <= 360
+            ? screenMargin
+            : Math.max(
+                screenMargin,
+                Math.min(
+                  computedRect.left + computedRect.width / 2 - cardWidth / 2,
+                  windowWidth - cardWidth - screenMargin
+                )
+              ),
+          feasible: computedRect.top - 10 - cardEstimatedHeight >= screenMargin
         },
         left: {
           top: Math.max(
-            14,
+            screenMargin,
             Math.min(
               computedRect.top + (computedRect.height - cardEstimatedHeight) / 2,
-              windowHeight - cardEstimatedHeight - 14
+              windowHeight - cardEstimatedHeight - screenMargin
             )
           ),
-          left: computedRect.left - 12 - cardWidth,
-          feasible: computedRect.left - 12 - cardWidth >= 14
+          left: computedRect.left - 10 - cardWidth,
+          feasible: computedRect.left - 10 - cardWidth >= screenMargin
         },
         right: {
           top: Math.max(
-            14,
+            screenMargin,
             Math.min(
               computedRect.top + (computedRect.height - cardEstimatedHeight) / 2,
-              windowHeight - cardEstimatedHeight - 14
+              windowHeight - cardEstimatedHeight - screenMargin
             )
           ),
-          left: computedRect.right + 12,
-          feasible: computedRect.right + 12 + cardWidth <= windowWidth - 14
+          left: computedRect.right + 10,
+          feasible: computedRect.right + 10 + cardWidth <= windowWidth - screenMargin
         }
       };
 
-      // Priority based on step suggestion
-      let preferredOrder = ["bottom", "top", "left", "right"];
+      // Priority based on screen size and step suggestion
+      // On mobile / screens < 768px, restrict to top/bottom to prevent horizontal collision
+      let preferredOrder = ["bottom", "top"];
       if (currentStep.placement === "top") {
-        preferredOrder = ["top", "bottom", "left", "right"];
-      } else if (currentStep.placement === "left") {
-        preferredOrder = ["left", "top", "bottom", "right"];
-      } else if (currentStep.placement === "right") {
-        preferredOrder = ["right", "top", "bottom", "left"];
+        preferredOrder = ["top", "bottom"];
+      }
+
+      if (windowWidth >= 768) {
+        if (currentStep.placement === "left") {
+          preferredOrder = ["left", "top", "bottom", "right"];
+        } else if (currentStep.placement === "right") {
+          preferredOrder = ["right", "top", "bottom", "left"];
+        } else if (currentStep.placement === "top") {
+          preferredOrder = ["top", "bottom", "left", "right"];
+        } else {
+          preferredOrder = ["bottom", "top", "left", "right"];
+        }
       }
 
       let chosen = null;
@@ -199,30 +216,32 @@ export default function GuideTutorialModal() {
       if (!chosen) {
         if (computedRect.top > windowHeight * 0.5) {
           chosen = {
-            top: 14,
-            left: Math.max(14, (windowWidth - cardWidth) / 2)
+            top: screenMargin,
+            left: windowWidth <= 360 ? screenMargin : Math.max(screenMargin, (windowWidth - cardWidth) / 2)
           };
           placementKey = "none";
         } else {
           chosen = {
-            top: Math.max(14, windowHeight - cardEstimatedHeight - 14),
-            left: Math.max(14, (windowWidth - cardWidth) / 2)
+            top: Math.max(screenMargin, windowHeight - cardEstimatedHeight - screenMargin),
+            left: windowWidth <= 360 ? screenMargin : Math.max(screenMargin, (windowWidth - cardWidth) / 2)
           };
           placementKey = "none";
         }
       }
 
-      const finalTop = Math.max(12, Math.min(chosen.top, windowHeight - cardEstimatedHeight - 12));
-      const finalLeft = Math.max(12, Math.min(chosen.left, windowWidth - cardWidth - 12));
+      const finalTop = Math.max(screenMargin, Math.min(chosen.top, windowHeight - cardEstimatedHeight - screenMargin));
+      const finalLeft = windowWidth <= 360
+        ? screenMargin
+        : Math.max(screenMargin, Math.min(chosen.left, windowWidth - cardWidth - screenMargin));
 
       // Calculate arrow offset relative to card
       let computedArrowOffset = 24;
       if (placementKey === "bottom" || placementKey === "top") {
         const targetCenterX = computedRect.left + computedRect.width / 2;
-        computedArrowOffset = Math.max(16, Math.min(targetCenterX - finalLeft - 8, cardWidth - 32));
+        computedArrowOffset = Math.max(16, Math.min(targetCenterX - finalLeft - 8, cardWidth - 28));
       } else if (placementKey === "left" || placementKey === "right") {
         const targetCenterY = computedRect.top + computedRect.height / 2;
-        computedArrowOffset = Math.max(16, Math.min(targetCenterY - finalTop - 8, cardEstimatedHeight - 32));
+        computedArrowOffset = Math.max(16, Math.min(targetCenterY - finalTop - 8, cardEstimatedHeight - 28));
       }
 
       setChosenPlacement(placementKey);
@@ -446,14 +465,20 @@ export default function GuideTutorialModal() {
 
         {/* Title */}
         <h4 id="tour-step-title" className="guide-tour-title">
-          {currentStep.title}
+          {!isUserLoggedIn && currentStep.loggedOutTitle
+            ? currentStep.loggedOutTitle
+            : currentStep.title}
         </h4>
 
         {/* Description (2-3 Sentences) */}
         <p className="guide-tour-description">
-          {isSmallScreen && currentStep.mobileDescription
-            ? currentStep.mobileDescription
-            : currentStep.description}
+          {!isUserLoggedIn && currentStep.loggedOutDescription
+            ? (isSmallScreen && currentStep.loggedOutMobileDescription
+                ? currentStep.loggedOutMobileDescription
+                : currentStep.loggedOutDescription)
+            : (isSmallScreen && currentStep.mobileDescription
+                ? currentStep.mobileDescription
+                : currentStep.description)}
         </p>
 
         {/* Footer: Skip, Dot Indicators, Prev & Next */}

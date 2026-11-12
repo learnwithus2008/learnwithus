@@ -1,5 +1,12 @@
+User-agent: Mediapartners-Google
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /admin
 
 Sitemap: https://pythonlearning.vercel.app/sitemap.xml
