@@ -5468,13 +5468,13 @@ html.dark .profile-hero-card {
 .floating-notepad-window,
 .floating-dictionary-window {
   position: fixed;
-  z-index: 45;
+  z-index: 60;
   bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
   right: max(1rem, env(safe-area-inset-right, 1rem));
   left: auto;
   width: min(520px, calc(100vw - 2rem));
-  max-height: min(600px, calc(100vh - 7rem));
-  height: 72vh;
+  max-height: min(640px, calc(100vh - 6.5rem));
+  height: min(600px, 80vh);
   display: flex;
   flex-direction: column;
   border-radius: 1.25rem;
@@ -5483,6 +5483,18 @@ html.dark .profile-hero-card {
   box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), 0 0 25px rgba(22, 139, 255, 0.12);
   overflow: hidden;
   transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 639px) {
+  .floating-dictionary-window {
+    right: 0.75rem !important;
+    left: 0.75rem !important;
+    width: auto !important;
+    max-width: calc(100vw - 1.5rem) !important;
+    height: min(580px, 82vh) !important;
+    max-height: calc(100vh - 5.5rem) !important;
+    bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
 }
 
 html.dark .floating-notepad-window,
@@ -5506,17 +5518,17 @@ html.light .floating-dictionary-window {
   .floating-dictionary-window {
     right: max(1.25rem, env(safe-area-inset-right, 1.25rem));
     bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
-    width: min(500px, calc(100vw - 2.5rem));
-    height: 540px;
-    max-height: min(620px, calc(100vh - 6.5rem));
+    width: min(520px, calc(100vw - 2.5rem));
+    height: 580px;
+    max-height: min(660px, calc(100vh - 6.5rem));
     border-radius: 1.5rem;
   }
 
   .floating-notepad-window.is-expanded,
   .floating-dictionary-window.is-expanded {
-    width: min(740px, calc(100vw - 2.5rem)) !important;
-    height: 600px !important;
-    max-height: min(680px, calc(100vh - 6.5rem)) !important;
+    width: min(760px, calc(100vw - 2.5rem)) !important;
+    height: 640px !important;
+    max-height: min(720px, calc(100vh - 6.5rem)) !important;
   }
 }
 
@@ -5525,13 +5537,22 @@ html.light .floating-dictionary-window {
   .floating-notepad-window,
   .floating-dictionary-window {
     bottom: max(1.25rem, env(safe-area-inset-bottom, 1.25rem));
-    max-height: min(620px, calc(100vh - 5.5rem));
+    max-height: min(660px, calc(100vh - 5.5rem));
   }
 
   .floating-notepad-window.is-expanded,
   .floating-dictionary-window.is-expanded {
-    max-height: min(680px, calc(100vh - 5.5rem)) !important;
+    max-height: min(720px, calc(100vh - 5.5rem)) !important;
   }
+}
+
+/* Custom utility for clean horizontal scrollers without scrollbar bar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
 .floating-notepad-window:focus-within,

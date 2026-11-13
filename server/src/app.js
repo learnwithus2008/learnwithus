@@ -50,11 +50,11 @@ app.use(
       ].filter(Boolean);
 
       const isExplicitMatch = allowedOrigins.includes(origin);
-      const isCloudflarePages = origin.endsWith(".pages.dev");
+      const isCloudflare = origin.endsWith(".pages.dev") || origin.endsWith(".workers.dev");
       const isVercel = origin.endsWith(".vercel.app");
       const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
 
-      if (isExplicitMatch || isCloudflarePages || isVercel || isLocalhost) {
+      if (isExplicitMatch || isCloudflare || isVercel || isLocalhost) {
         callback(null, true);
       } else {
         if (config.nodeEnv === "production") {

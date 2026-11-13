@@ -180,13 +180,14 @@ export default function GlobalWordMeaningModal() {
       </div>
 
       {/* B. Global Search Bar */}
-      <div className="p-2.5 sm:p-3 bg-slate-50 dark:bg-[#0c1422] border-b border-slate-200 dark:border-[#23344d] shrink-0">
+      <div className="p-2 sm:p-2.5 bg-slate-50 dark:bg-[#0c1422] border-b border-slate-200 dark:border-[#23344d] shrink-0">
         <WordMeaningSearch
           query={query}
           onQueryChange={setQuery}
           onSearch={handleSearch}
           isSearching={isSearching}
           autoFocus={false}
+          hasResult={!!result}
         />
       </div>
 
@@ -211,14 +212,49 @@ export default function GlobalWordMeaningModal() {
         )}
 
         {!result && !isSearching && (
-          <div className="py-8 sm:py-12 text-center px-4">
-            <span className="text-4xl sm:text-5xl block mb-2 sm:mb-3 select-none">🔎</span>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1.5 sm:mb-2">
-              Search ANY Python Word or Term
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-[#91A6BF] max-w-sm mx-auto leading-relaxed">
-              Type any coding concept (e.g. <em>variable</em>, <em>loop</em>, <em>function</em>, <em>indentation</em>) or vocabulary word to get instant multi-lingual explanations!
-            </p>
+          <div className="py-6 sm:py-8 px-2 space-y-6">
+            <div className="text-center px-4">
+              <span className="text-4xl block mb-2 select-none">📖</span>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1.5">
+                Search ANY Python Word or Term
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-[#91A6BF] max-w-sm mx-auto leading-relaxed">
+                Type any coding concept or select a suggestion below for instant, stage-tailored explanations in English or Telugu!
+              </p>
+            </div>
+
+            {/* Popular Topics Grid in empty state */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                <span className="flex items-center gap-1.5 text-[#168BFF] uppercase tracking-wider">
+                  <Sparkles size={13} /> Popular Concepts
+                </span>
+                <span className="text-slate-400 font-normal text-[11px]">Click to view meaning</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {[
+                  { term: 'Algorithm', desc: 'Step-by-step problem solving', icon: '⚡' },
+                  { term: 'Variable', desc: 'Named storage for values', icon: '📦' },
+                  { term: 'Function', desc: 'Reusable block of code', icon: '🔧' },
+                  { term: 'Automation', desc: 'Running tasks automatically', icon: '🤖' },
+                  { term: 'Syntax', desc: 'Rules of the language', icon: '📐' },
+                  { term: 'Database', desc: 'Organized data storage', icon: '💾' }
+                ].map(item => (
+                  <button
+                    key={item.term}
+                    type="button"
+                    onClick={() => handleSearch(item.term)}
+                    className="p-2.5 rounded-xl border border-slate-200 dark:border-[#1E3A5F] bg-slate-50 dark:bg-[#0C1B30] hover:border-[#168BFF] dark:hover:border-[#168BFF] hover:bg-blue-50/50 dark:hover:bg-[#102541] transition text-left cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="text-sm select-none">{item.icon}</span>
+                      <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#168BFF] transition">{item.term}</span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 m-0 line-clamp-1">{item.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
