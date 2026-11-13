@@ -33,3 +33,4 @@ server/backups/*.json
 # Binary Office Documents
 *.docx
 
+.neon
