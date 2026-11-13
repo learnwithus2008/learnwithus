@@ -14,20 +14,24 @@ async function startServer() {
       console.log("Ensuring database migrations are up to date...");
       await runMigrations(config.databaseUrl);
       console.log("Database migrations verified.");
-      try {
-        await runSeeds(config.databaseUrl);
-        console.log("Demo test accounts verified.");
-      } catch (seedErr) {
-        console.warn("Seed verification note:", seedErr.message);
+      if (config.seedOnStartup) {
+        try {
+          await runSeeds(config.databaseUrl);
+          console.log("Demo test accounts verified.");
+        } catch (seedErr) {
+          console.warn("Seed verification note:", seedErr.message);
+        }
+      } else {
+        console.log("Seed on startup disabled for production environment.");
       }
     } catch (migErr) {
       console.warn("Migration verification note:", migErr.message);
     }
   }
 
-  const server = app.listen(config.port, () => {
-    console.log(`Backend API Server running at http://localhost:${config.port}`);
-    console.log(`Health Check available at: http://localhost:${config.port}/api/health`);
+  const server = app.listen(config.port, config.host, () => {
+    console.log(`Backend API Server running at http://${config.host}:${config.port}`);
+    console.log(`Health Check available at: http://${config.host}:${config.port}/api/health`);
     console.log(`Configured Frontend Origin: ${config.frontendUrl}`);
   });
 

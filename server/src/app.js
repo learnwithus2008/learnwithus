@@ -14,14 +14,25 @@ import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
-// Trust proxy for rate limiting behind proxies
+// Disable x-powered-by header to avoid leaking backend framework details
+app.disable("x-powered-by");
+
+// Trust proxy for rate limiting behind reverse proxies (Render, Cloudflare)
 app.set("trust proxy", 1);
+
+// Standard security headers middleware
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  next();
+});
 
 // CORS configuration matching frontend URLs and preview domains with credentials
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, server-to-server, curl)
+      // Allow requests with no origin (mobile apps, server-to-server, curl, Postman)
       if (!origin) return callback(null, true);
 
       // Known production & local development origins
@@ -34,13 +45,23 @@ app.use(
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
         "http://127.0.0.1:4173",
-        "http://127.0.0.1:5000"
-      ];
+        "http://127.0.0.1:5000",
+        ...config.allowedOrigins
+      ].filter(Boolean);
 
-      if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+      const isExplicitMatch = allowedOrigins.includes(origin);
+      const isCloudflarePages = origin.endsWith(".pages.dev");
+      const isVercel = origin.endsWith(".vercel.app");
+      const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+
+      if (isExplicitMatch || isCloudflarePages || isVercel || isLocalhost) {
         callback(null, true);
       } else {
-        callback(null, true); // Fallback for custom preview deployments
+        if (config.nodeEnv === "production") {
+          callback(new Error(`CORS error: Origin ${origin} not allowed`));
+        } else {
+          callback(null, true);
+        }
       }
     },
     credentials: true,

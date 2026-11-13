@@ -5,7 +5,7 @@
  */
 
 const LOCAL_API_URL = "http://localhost:5000/api";
-const CLOUD_API_URL = "https://pythonlearning-z8bu.onrender.com/api";
+const CLOUD_API_URL = "https://learnwithus-11jz.onrender.com/api";
 
 function resolveBaseUrl() {
   const envUrl =
