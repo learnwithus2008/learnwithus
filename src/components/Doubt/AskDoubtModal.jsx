@@ -55,9 +55,9 @@ export default function AskDoubtModal() {
   const progressPercent = Math.min(100, Math.max(0, (doubtCredits / freeDoubtsTotal) * 100));
 
   const PACKS = [
-    { credits: 1, amount: 50, perDoubt: 50, popular: false, badge: null },
-    { credits: 3, amount: 120, perDoubt: 40, popular: true, badge: "Save 20%" },
-    { credits: 5, amount: 200, perDoubt: 40, popular: false, badge: "Best Value" }
+    { credits: 1, amount: 49, perDoubt: 49, popular: false, badge: null },
+    { credits: 3, amount: 129, perDoubt: 43, popular: true, badge: "Save 12%" },
+    { credits: 5, amount: 199, perDoubt: 40, popular: false, badge: "Best Value" }
   ];
 
   const currentPack = PACKS.find((p) => p.credits === selectedPack) || PACKS[0];
@@ -250,12 +250,12 @@ export default function AskDoubtModal() {
                   </span>
                 </div>
                 <div className="text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300/60 dark:border-amber-800">
-                  0 Left • ₹50 / Doubt
+                  0 Left • ₹49 / Doubt
                 </div>
               </div>
 
               <p className="text-[11px] sm:text-sm text-slate-900 dark:text-slate-100 leading-relaxed font-bold">
-                You have used all <strong>10 free solved doubts</strong>. To connect directly with our expert Python mentors on WhatsApp, recharge doubt credits for just <strong>₹50 per doubt</strong>!
+                You have used all <strong>10 free solved doubts</strong>. To connect directly with our expert Python mentors on WhatsApp, get 1-on-1 mentorship for just <strong>₹49 per doubt</strong>!
               </p>
             </div>
           )}

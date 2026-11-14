@@ -17,6 +17,7 @@ const PrivacyPolicy = React.lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = React.lazy(() => import("./pages/TermsOfService"));
 const Contact = React.lazy(() => import("./pages/Contact"));
 const Profile = React.lazy(() => import("./pages/Profile"));
+const CertificateVerification = React.lazy(() => import("./pages/CertificateVerification"));
 import { getStoredStage, saveStage } from "./data/learningStages";
 import { getStoredLanguage, saveLanguage } from "./data/learningLanguages";
 import { DictionaryProvider } from "./context/DictionaryContext";
@@ -63,6 +64,12 @@ function getRouteFromLocation() {
   if (hash.startsWith("#/privacy")) return { page: "privacy", topicId: "what-is-python" };
   if (hash.startsWith("#/terms")) return { page: "terms", topicId: "what-is-python" };
   if (hash.startsWith("#/contact")) return { page: "contact", topicId: "what-is-python" };
+  if (hash.startsWith("#/verify-certificate") || hash.startsWith("#/verify")) {
+    const cleanHash = hash.replace(/^#\/?/, "");
+    const parts = cleanHash.split("?")[0].split("/");
+    const certId = parts[1] || "";
+    return { page: "verify-certificate", topicId: "what-is-python", certificateId: certId };
+  }
   if (hash.startsWith("#/profile")) return { page: "profile", topicId: "what-is-python" };
   if (hash.startsWith("#/admin")) return { page: "admin", topicId: "what-is-python" };
   if (hash.startsWith("#/signup") || hash.startsWith("#/register")) {
@@ -85,6 +92,7 @@ function getHashForRoute(page, topicId) {
   if (page === "terms") return "#/terms";
   if (page === "contact") return "#/contact";
   if (page === "profile") return "#/profile";
+  if (page === "verify-certificate" || page === "verify") return `#/verify-certificate${topicId && topicId !== "what-is-python" ? `/${topicId}` : ""}`;
   if (page === "admin") return "#/admin";
   if (page === "signup" || page === "register") return "#/signup";
   if (page === "signin" || page === "login" || page === "auth") return "#/signin";
@@ -121,6 +129,7 @@ function MainAppShell({
   const initialRoute = React.useRef(getRouteFromLocation()).current;
   const [currentPage, setCurrentPage] = useState(initialRoute.page);
   const [selectedTopicId, setSelectedTopicId] = useState(initialRoute.topicId);
+  const [selectedCertId, setSelectedCertId] = useState(initialRoute.certificateId || "");
   const [appPreviewMode, setAppPreviewMode] = useState(false);
 
   // In-session navigation stack to track previous pages
@@ -210,6 +219,9 @@ function MainAppShell({
       setCurrentPage(targetPage);
       if (route.topicId) {
         setSelectedTopicId(route.topicId);
+      }
+      if (route.certificateId !== undefined) {
+        setSelectedCertId(route.certificateId);
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
@@ -522,6 +534,14 @@ function MainAppShell({
           <Profile
             onNavigate={handleNavigate}
             onSelectTopic={handleSelectTopic}
+            onBack={handleBack}
+          />
+        )}
+
+        {currentPage === "verify-certificate" && (
+          <CertificateVerification
+            initialCertificateId={selectedCertId}
+            onNavigate={handleNavigate}
             onBack={handleBack}
           />
         )}

@@ -15,6 +15,7 @@ import AdminLogin from "../components/Admin/AdminLogin";
 import AdminSidebar, { ADMIN_NAV_ITEMS } from "../components/Admin/AdminSidebar";
 import AdminTopNav from "../components/Admin/AdminTopNav";
 import AdminDashboardTab from "../components/Admin/AdminDashboardTab";
+import MonetizationManagerTab from "../components/Admin/MonetizationManagerTab";
 import DoubtsManagerTab from "../components/Admin/DoubtsManagerTab";
 import CurriculumManagerTab from "../components/Admin/CurriculumManagerTab";
 import QuizManagerTab from "../components/Admin/QuizManagerTab";
@@ -246,6 +247,10 @@ export default function Admin({ onNavigateHome, onNavigateTopic, onOpenAppPrevie
                 setActiveTab("curriculum");
               }}
             />
+          )}
+
+          {activeTab === "monetization" && (
+            <MonetizationManagerTab />
           )}
 
           {activeTab === "doubts" && (

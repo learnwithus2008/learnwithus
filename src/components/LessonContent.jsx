@@ -1254,8 +1254,10 @@ export default function LessonContent({
         <CertificateModal
           isOpen={showCertificate}
           onClose={() => setShowCertificate(false)}
-          topicTitle={topic.title}
-          sectionTitle={section.title}
+          studentName={currentUser?.name || currentUser?.full_name || "Python Learner"}
+          courseName="Python Programming & Adaptive Core Curriculum"
+          completedCount={currentUser?.stats?.completedTopics?.length || 1}
+          totalTopics={198}
         />
       )}
     </div>

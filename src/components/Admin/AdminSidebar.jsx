@@ -16,12 +16,14 @@ import {
   ChevronRight,
   Sparkles,
   Server,
-  X
+  X,
+  IndianRupee
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 export const ADMIN_NAV_ITEMS = [
   { id: "dashboard", label: "Admin Dashboard", icon: LayoutDashboard, badge: "Live" },
+  { id: "monetization", label: "Monetization & Payments", icon: IndianRupee, badge: "₹99/₹49" },
   { id: "doubts", label: "Doubts & WhatsApp", icon: MessageCircle, badge: "Mentorship" },
   { id: "curriculum", label: "Curriculum Manager", icon: BookOpen, count: 19 },
   { id: "quizzes", label: "Quiz Manager", icon: HelpCircle, count: 3960 },

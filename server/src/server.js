@@ -14,15 +14,11 @@ async function startServer() {
       console.log("Ensuring database migrations are up to date...");
       await runMigrations(config.databaseUrl);
       console.log("Database migrations verified.");
-      if (config.seedOnStartup) {
-        try {
-          await runSeeds(config.databaseUrl);
-          console.log("Demo test accounts verified.");
-        } catch (seedErr) {
-          console.warn("Seed verification note:", seedErr.message);
-        }
-      } else {
-        console.log("Seed on startup disabled for production environment.");
+      try {
+        await runSeeds(config.databaseUrl);
+        console.log("Default demo and admin test accounts verified.");
+      } catch (seedErr) {
+        console.warn("Seed verification note:", seedErr.message);
       }
     } catch (migErr) {
       console.warn("Migration verification note:", migErr.message);

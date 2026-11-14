@@ -8,6 +8,8 @@ import progressRoutes from "./routes/progressRoutes.js";
 import bookmarkRoutes from "./routes/bookmarkRoutes.js";
 import rewardRoutes from "./routes/rewardRoutes.js";
 import doubtRoutes from "./routes/doubtRoutes.js";
+import certificateRoutes from "./routes/certificateRoutes.js";
+import monetizationRoutes from "./routes/monetizationRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -82,6 +84,8 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/bookmarks", bookmarkRoutes);
 app.use("/api/rewards", rewardRoutes);
 app.use("/api/doubts", doubtRoutes);
+app.use("/api/certificates", certificateRoutes);
+app.use("/api/monetization", monetizationRoutes);
 
 // 404 Not Found Handler
 app.use((req, res) => {

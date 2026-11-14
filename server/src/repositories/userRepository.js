@@ -118,7 +118,7 @@ export const userRepository = {
    * Bulk delete all users at one time
    * Safely excludes the active administrator if excludeAdminId is provided
    */
-  async deleteAll({ excludeAdminId = null, role = null } = {}, dbClient = null) {
+  async deleteAll({ excludeAdminId = null, role = null, preserveDemoAccounts = true } = {}, dbClient = null) {
     const q = dbClient ? dbClient.query.bind(dbClient) : query;
     let sql = "DELETE FROM users WHERE 1=1";
     const params = [];
@@ -126,6 +126,10 @@ export const userRepository = {
     if (excludeAdminId) {
       params.push(excludeAdminId);
       sql += ` AND id != $${params.length}`;
+    }
+
+    if (preserveDemoAccounts) {
+      sql += ` AND LOWER(email) NOT IN ('alex@example.com', 'priya@example.com', 'admin@learnwithus.com', 'admin@example.com')`;
     }
 
     if (role && role !== "all") {

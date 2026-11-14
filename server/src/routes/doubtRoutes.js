@@ -14,7 +14,8 @@ router.post("/purchase", doubtController.purchaseCredits);
 
 // Admin endpoints
 router.get("/tickets", requireAdmin, doubtController.getAllTickets);
-router.post("/tickets/:id/solve", requireAdmin, doubtController.solveTicket); // Deducts 1 count when solved
+router.post("/tickets/:id/verify-payment", requireAdmin, doubtController.verifyPayment);
+router.post("/tickets/:id/solve", requireAdmin, doubtController.solveTicket); // Answers and resolves ticket
 router.post("/tickets/:id/dismiss", requireAdmin, doubtController.dismissTicket);
 
 export default router;

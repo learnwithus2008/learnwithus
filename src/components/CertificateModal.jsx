@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Award, CheckCircle2, Download, Printer, Sparkles, X } from "lucide-react";
+import { Award, CheckCircle2, Download, Printer, Sparkles, X, ExternalLink, ShieldCheck } from "lucide-react";
 import BrandLogo from "./BrandLogo";
 
 /**
@@ -9,9 +9,24 @@ import BrandLogo from "./BrandLogo";
  * - Deep navy typography (#102B50)
  * - Blue borders and headings (#0756A5)
  * - Subtle golden decorative elements (#FFB800)
- * - Premium educational appearance & print support
+ * - Unique Certificate ID & Verification URL
+ * - Academic Board Signatures
+ * - Non-accreditation educational disclosure
+ * - Premium educational appearance & print-to-PDF support
  */
-export default function CertificateModal({ isOpen, onClose, studentName = "Learner", completedCount = 198 }) {
+export default function CertificateModal({
+  isOpen,
+  onClose,
+  studentName = "Learner",
+  courseName = "Python Programming & Adaptive Core Curriculum",
+  completedCount = 198,
+  totalTopics = 198,
+  certificateId = "LWU-PY-2026-CERT01",
+  issueDate = null,
+  completionDate = null,
+  verificationUrl = null,
+  isApproved = true
+}) {
   const certificateRef = useRef(null);
 
   if (!isOpen) return null;
@@ -20,22 +35,26 @@ export default function CertificateModal({ isOpen, onClose, studentName = "Learn
     window.print();
   };
 
-  const currentDate = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric"
-  });
+  const formattedIssueDate = issueDate
+    ? new Date(issueDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+    : new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+  const formattedCompletionDate = completionDate
+    ? new Date(completionDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+    : formattedIssueDate;
+
+  const resolvedVerificationUrl = verificationUrl || `${typeof window !== "undefined" ? window.location.origin : ""}/#/verify-certificate/${certificateId}`;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#102B50]/70 backdrop-blur-md overflow-y-auto animate-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-[#102B50]/75 backdrop-blur-md overflow-y-auto animate-in"
       role="dialog"
       aria-modal="true"
       aria-label="Learn With Us Python Certificate"
     >
-      <div className="relative w-full max-w-3xl my-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-[#E2E8F0]">
-        {/* Modal Controls Bar */}
-        <div className="flex items-center justify-between px-6 py-3.5 bg-[#F3F7FC] border-b border-[#E2E8F0] print:hidden">
+      <div className="relative w-full max-w-3xl my-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-[#E2E8F0] print:border-none print:shadow-none print:rounded-none">
+        {/* Modal Controls Bar - Hidden during print */}
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-[#F3F7FC] border-b border-[#E2E8F0] print:hidden">
           <div className="flex items-center gap-2">
             <Award size={18} className="text-[#0756A5]" />
             <span className="text-xs font-bold uppercase tracking-wider text-[#102B50]">
@@ -45,15 +64,17 @@ export default function CertificateModal({ isOpen, onClose, studentName = "Learn
 
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-bold text-xs shadow-xs transition cursor-pointer border-none"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-bold text-xs shadow-xs transition cursor-pointer border-none"
               title="Print or Save as PDF"
             >
               <Printer size={14} />
-              <span>Print Certificate</span>
+              <span>Print / Download PDF</span>
             </button>
 
             <button
+              type="button"
               onClick={onClose}
               className="p-1.5 rounded-xl text-slate-400 hover:text-[#102B50] hover:bg-white transition cursor-pointer border-none bg-transparent"
               title="Close (Esc)"
@@ -70,12 +91,12 @@ export default function CertificateModal({ isOpen, onClose, studentName = "Learn
             ========================================================================= */}
         <div
           ref={certificateRef}
-          className="p-6 sm:p-12 bg-white text-[#102B50] relative select-none"
-          style={{ minHeight: "520px" }}
+          className="p-4 sm:p-10 md:p-12 bg-white text-[#102B50] relative select-none print:p-6 print:m-0"
+          style={{ minHeight: "540px" }}
         >
           {/* Subtle Outer Blue & Gold Double Border */}
-          <div className="border-4 border-[#0756A5] p-2 rounded-2xl relative">
-            <div className="border border-[#FFB800] p-6 sm:p-10 rounded-xl relative overflow-hidden bg-white">
+          <div className="border-4 border-[#0756A5] p-2 rounded-2xl relative print:border-4">
+            <div className="border border-[#FFB800] p-5 sm:p-8 md:p-10 rounded-xl relative overflow-hidden bg-white">
               
               {/* Corner Golden Accents */}
               <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#FFB800]" />
@@ -83,16 +104,27 @@ export default function CertificateModal({ isOpen, onClose, studentName = "Learn
               <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[#FFB800]" />
               <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#FFB800]" />
 
-              {/* Header: Brand Logo & Watermark */}
-              <div className="flex flex-col items-center justify-center text-center mb-6">
+              {/* Top Bar: Verification ID Badge */}
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4 pb-2 border-b border-slate-100">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#0756A5]">
+                  <ShieldCheck size={14} className="text-[#0756A5]" />
+                  <span>Verified Educational Credential</span>
+                </div>
+                <div className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-[#102B50] border border-slate-200">
+                  ID: <span className="text-[#0756A5] font-black">{certificateId}</span>
+                </div>
+              </div>
+
+              {/* Header: Brand Logo & Tagline */}
+              <div className="flex flex-col items-center justify-center text-center mb-5">
                 <BrandLogo variant="stacked" size="lg" />
-                <span className="text-[11px] font-extrabold tracking-widest uppercase text-[#64748B] mt-2">
+                <span className="text-[10px] sm:text-[11px] font-extrabold tracking-widest uppercase text-[#64748B] mt-2">
                   Learn. Practice. Grow.
                 </span>
               </div>
 
               {/* Certificate Title */}
-              <div className="text-center mb-6">
+              <div className="text-center mb-5">
                 <h2 className="text-xs sm:text-sm font-black uppercase tracking-widest text-[#0756A5] mb-1">
                   Certificate of Achievement
                 </h2>
@@ -103,35 +135,38 @@ export default function CertificateModal({ isOpen, onClose, studentName = "Learn
               </div>
 
               {/* Recipient Student Name */}
-              <div className="text-center mb-6">
+              <div className="text-center mb-5">
                 <h1 className="text-2xl sm:text-4xl font-extrabold text-[#102B50] font-display tracking-tight border-b-2 border-[#0756A5]/20 inline-block px-6 pb-1">
                   {studentName || "Python Learner"}
                 </h1>
               </div>
 
               {/* Completion Statement */}
-              <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
+              <div className="text-center max-w-xl mx-auto mb-6 space-y-2">
                 <p className="text-xs sm:text-sm text-[#102B50] leading-relaxed">
-                  has demonstrated exceptional dedication and proficiency by successfully completing the curriculum and practice exercises in
+                  has demonstrated exceptional dedication and proficiency by successfully completing all course requirements and practice modules in
                 </p>
                 <p className="text-base sm:text-lg font-black text-[#0756A5]">
-                  Python Programming & Adaptive Core Curriculum
+                  {courseName}
                 </p>
                 <p className="text-[11px] text-[#64748B]">
-                  Verified across age-adapted explanation modules, live execution testing, and milestone challenges.
+                  Verified across {completedCount} adaptive lessons, interactive problem-solving exercises, and milestone evaluations.
                 </p>
               </div>
 
-              {/* Certificate Signatures & Date Footer */}
-              <div className="pt-6 border-t border-[#E2E8F0] flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
-                {/* Date */}
+              {/* Certificate Signatures, Date & Seal */}
+              <div className="pt-5 border-t border-[#E2E8F0] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                {/* Dates */}
                 <div>
-                  <div className="text-xs font-bold text-[#102B50]">{currentDate}</div>
-                  <div className="text-[10px] text-[#64748B] uppercase tracking-wider font-semibold">Date Issued</div>
+                  <div className="text-xs font-bold text-[#102B50]">{formattedIssueDate}</div>
+                  <div className="text-[10px] text-[#64748B] uppercase tracking-wider font-semibold">Date of Issuance</div>
+                  {completionDate && (
+                    <div className="text-[9px] text-[#94A3B8] mt-0.5">Completed: {formattedCompletionDate}</div>
+                  )}
                 </div>
 
                 {/* Golden Official Emblem Badge */}
-                <div className="w-14 h-14 rounded-full border-2 border-[#FFB800] bg-[#FFFBEB] flex flex-col items-center justify-center text-center shadow-xs">
+                <div className="w-14 h-14 rounded-full border-2 border-[#FFB800] bg-[#FFFBEB] flex flex-col items-center justify-center text-center shadow-xs shrink-0">
                   <Sparkles size={16} className="text-[#0756A5]" />
                   <span className="text-[8px] font-black uppercase tracking-tight text-[#102B50]">
                     Verified
@@ -145,6 +180,16 @@ export default function CertificateModal({ isOpen, onClose, studentName = "Learn
                 </div>
               </div>
 
+              {/* Verification Link & Educational Disclosure */}
+              <div className="mt-5 pt-3 border-t border-slate-100 text-center space-y-1">
+                <div className="text-[10px] text-[#0756A5] font-mono break-all">
+                  Online Verification: <a href={resolvedVerificationUrl} target="_blank" rel="noopener noreferrer" className="underline font-bold text-[#0756A5]">{resolvedVerificationUrl}</a>
+                </div>
+                <p className="text-[9px] text-[#94A3B8] max-w-lg mx-auto leading-normal">
+                  Disclaimer: This credential certifies successful completion of self-paced coursework on the LearnWithUs digital learning platform. It does not confer formal university degree credit or government accreditation.
+                </p>
+              </div>
+
             </div>
           </div>
         </div>
@@ -153,4 +198,3 @@ export default function CertificateModal({ isOpen, onClose, studentName = "Learn
     </div>
   );
 }
-

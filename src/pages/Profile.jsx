@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   User,
   Mail,
@@ -24,7 +24,18 @@ import {
   Trophy,
   CheckCircle,
   Eye,
-  EyeOff
+  EyeOff,
+  MessageCircle,
+  HelpCircle,
+  Code,
+  IndianRupee,
+  QrCode,
+  FileText,
+  Send,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Clock
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
@@ -34,6 +45,9 @@ import { AVATAR_OPTIONS } from "../services/authService";
 import { allTopics, getTopicById } from "../data/allTopics";
 import CertificateModal from "../components/CertificateModal";
 import PageBackButton from "../components/PageBackButton";
+import { certificateService, doubtService } from "../services/monetizationService";
+import { openWhatsAppCertificateRequest, openWhatsAppPaidDoubt, WHATSAPP_DISPLAY_NUMBER } from "../utils/whatsappHelper";
+import { WhatsAppIcon } from "../components/AskDoubtButton";
 
 export default function Profile({ onNavigate, onSelectTopic, onBack }) {
   const {
@@ -74,6 +88,34 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
 
+  // Certificate State (₹99 Monetization)
+  const [certRequests, setCertRequests] = useState([]);
+  const [issuedCerts, setIssuedCerts] = useState([]);
+  const [selectedCertToView, setSelectedCertToView] = useState(null);
+  const [requestingCert, setRequestingCert] = useState(false);
+  const [certSuccessMsg, setCertSuccessMsg] = useState("");
+  const [certErrorMsg, setCertErrorMsg] = useState("");
+
+  // Doubt State (10 Free / ₹49 Monetization)
+  const [doubtBalance, setDoubtBalance] = useState({
+    doubtCredits: 10,
+    doubtsUsed: 0,
+    freeDoubtsRemaining: 10,
+    paidDoubtsCount: 0,
+    pendingCount: 0,
+    pricePerPaidDoubtInr: 49
+  });
+  const [doubtTickets, setDoubtTickets] = useState([]);
+  const [doubtLoading, setDoubtLoading] = useState(false);
+  const [showNewDoubtForm, setShowNewDoubtForm] = useState(false);
+  const [newDoubtTopic, setNewDoubtTopic] = useState("");
+  const [newDoubtText, setNewDoubtText] = useState("");
+  const [newDoubtCode, setNewDoubtCode] = useState("");
+  const [newDoubtScreenshot, setNewDoubtScreenshot] = useState("");
+  const [submittingDoubt, setSubmittingDoubt] = useState(false);
+  const [doubtSuccessMsg, setDoubtSuccessMsg] = useState("");
+  const [doubtErrorMsg, setDoubtErrorMsg] = useState("");
+
   // Synchronize initial form values from currentUser
   useEffect(() => {
     if (currentUser) {
@@ -102,6 +144,139 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
   const userLevel = Math.max(1, Math.floor(userXp / 250) + 1);
   const xpInCurrentLevel = userXp % 250;
   const levelProgressPercent = Math.min(100, Math.round((xpInCurrentLevel / 250) * 100));
+
+  // Load Certificate Requests & Issued Credentials
+  const loadCertificates = useCallback(async () => {
+    if (!currentUser) return;
+    try {
+      const [reqs, certs] = await Promise.all([
+        certificateService.getMyRequests().catch(() => []),
+        certificateService.getMyCertificates().catch(() => [])
+      ]);
+      setCertRequests(Array.isArray(reqs) ? reqs : []);
+      setIssuedCerts(Array.isArray(certs) ? certs : []);
+    } catch {
+      // Non-blocking
+    }
+  }, [currentUser]);
+
+  // Load Doubt Balance & History
+  const loadDoubts = useCallback(async () => {
+    if (!currentUser) return;
+    setDoubtLoading(true);
+    try {
+      const [bal, tix] = await Promise.all([
+        doubtService.getBalance().catch(() => null),
+        doubtService.getMyTickets().catch(() => [])
+      ]);
+      if (bal) {
+        setDoubtBalance(bal);
+      }
+      setDoubtTickets(Array.isArray(tix) ? tix : []);
+    } catch {
+      // Non-blocking
+    } finally {
+      setDoubtLoading(false);
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser) {
+      loadCertificates();
+      loadDoubts();
+    }
+  }, [currentUser, loadCertificates, loadDoubts]);
+
+  // Handler: Request Certificate via WhatsApp (₹99)
+  const handleRequestCertificateWhatsApp = async () => {
+    if (!currentUser) return;
+    setRequestingCert(true);
+    setCertErrorMsg("");
+    setCertSuccessMsg("");
+    try {
+      const res = await certificateService.requestCertificate();
+      const reqNumber = res?.request?.request_number || `CR-${Date.now()}`;
+
+      openWhatsAppCertificateRequest({
+        studentName: currentUser.name || currentUser.full_name || "Python Learner",
+        studentEmail: currentUser.email,
+        courseName: "Python Programming & Adaptive Core Curriculum",
+        completedCount: completedTopicsList.length,
+        totalTopics: 198,
+        requestNumber: reqNumber
+      });
+
+      setCertSuccessMsg("WhatsApp opened! Your certificate request has been registered. Please send your ₹99 payment receipt on WhatsApp for manual verification.");
+      await loadCertificates();
+    } catch (err) {
+      if (err.message && err.message.includes("already")) {
+        openWhatsAppCertificateRequest({
+          studentName: currentUser.name || currentUser.full_name || "Python Learner",
+          studentEmail: currentUser.email,
+          courseName: "Python Programming & Adaptive Core Curriculum",
+          completedCount: completedTopicsList.length,
+          totalTopics: 198
+        });
+        setCertSuccessMsg("WhatsApp opened for your certificate verification!");
+      } else {
+        setCertErrorMsg(err.message || "Failed to submit certificate request.");
+      }
+    } finally {
+      setRequestingCert(false);
+    }
+  };
+
+  // Handler: Submit Doubt (Free if remaining, else ₹49)
+  const handleSubmitDoubt = async (e) => {
+    e.preventDefault();
+    if (!newDoubtText.trim()) {
+      setDoubtErrorMsg("Please enter your question or doubt details.");
+      return;
+    }
+    setSubmittingDoubt(true);
+    setDoubtErrorMsg("");
+    setDoubtSuccessMsg("");
+
+    const isPaid = doubtBalance.freeDoubtsRemaining <= 0;
+
+    try {
+      const res = await doubtService.submitDoubt({
+        question: newDoubtText.trim(),
+        codeSnippet: newDoubtCode.trim() || null,
+        screenshotUrl: newDoubtScreenshot.trim() || null,
+        lessonName: newDoubtTopic.trim() || "Python Learning Module",
+        sectionTitle: "Python Adaptive Course"
+      });
+
+      const ticket = res?.ticket || res?.data?.ticket;
+      const ticketNumber = ticket?.ticket_number || `DBT-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      if (isPaid) {
+        openWhatsAppPaidDoubt({
+          studentName: currentUser.name || currentUser.full_name || "Student",
+          studentEmail: currentUser.email,
+          ticketNumber,
+          lessonName: newDoubtTopic.trim() || "Python Learning Module",
+          question: newDoubtText.trim(),
+          codeSnippet: newDoubtCode.trim() || null
+        });
+        setDoubtSuccessMsg(`Paid doubt #${ticketNumber} created! WhatsApp opened for ₹49 payment verification.`);
+      } else {
+        setDoubtSuccessMsg(`Doubt ticket #${ticketNumber} submitted! 1 free credit in progress. Our mentors will answer shortly.`);
+      }
+
+      setNewDoubtText("");
+      setNewDoubtCode("");
+      setNewDoubtScreenshot("");
+      setNewDoubtTopic("");
+      setShowNewDoubtForm(false);
+      await loadDoubts();
+    } catch (err) {
+      setDoubtErrorMsg(err.message || "Failed to submit doubt request.");
+    } finally {
+      setSubmittingDoubt(false);
+    }
+  };
 
   // Handler: Save Profile Edits
   const handleSaveProfile = async (e) => {
@@ -642,7 +817,36 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
           }`}
         >
           <Award size={15} />
-          <span>Certificate & Badges</span>
+          <span>Certificates (₹99)</span>
+          {issuedCerts.length > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-emerald-500 text-white">
+              {issuedCerts.length}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("doubts")}
+          className={`py-2 px-3.5 sm:px-5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer ${
+            activeTab === "doubts"
+              ? "bg-[#0756A5] text-white shadow-md shadow-blue-500/20"
+              : "bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-800"
+          }`}
+        >
+          <MessageCircle size={15} />
+          <span>Doubt Support</span>
+          <span
+            className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+              doubtBalance.freeDoubtsRemaining > 0
+                ? "bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-400/40"
+                : "bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-400/40"
+            }`}
+          >
+            {doubtBalance.freeDoubtsRemaining > 0
+              ? `${doubtBalance.freeDoubtsRemaining} Free Left`
+              : "₹49 / Doubt"}
+          </span>
         </button>
 
         <button
@@ -823,17 +1027,17 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
         </div>
       )}
 
-      {/* 8. Tab Content: Certificate & Achievements */}
+      {/* 8. Tab Content: Certificate & Monetization (₹99) */}
       {activeTab === "certificate" && (
         <div className="space-y-6">
           {/* Certificate Banner Card */}
           <div
-            className="p-5 sm:p-7 rounded-3xl border shadow-lg relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-5"
+            className="p-5 sm:p-7 rounded-3xl border shadow-lg relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-6"
             style={{
               background: isDark
-                ? "linear-gradient(135deg, rgba(7, 86, 165, 0.3) 0%, rgba(16, 43, 80, 0.8) 100%)"
+                ? "linear-gradient(135deg, rgba(7, 86, 165, 0.35) 0%, rgba(16, 43, 80, 0.85) 100%)"
                 : "linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)",
-              borderColor: isDark ? "rgba(56, 189, 248, 0.3)" : "#bfdbfe"
+              borderColor: isDark ? "rgba(56, 189, 248, 0.35)" : "#bfdbfe"
             }}
           >
             <div className="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
@@ -841,24 +1045,234 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
                 <Trophy size={32} />
               </div>
               <div>
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-400/40">
+                    Official Credential • ₹99
+                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                    100% Free Learning
+                  </span>
+                </div>
                 <h3 className="text-lg sm:text-xl font-black text-[#102B50] dark:text-white">
-                  Official Certificate of Achievement
+                  Python Certificate of Achievement
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-lg mt-0.5">
-                  Verify and showcase your completed Python mastery milestones with this printable, signed educational credential.
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-lg mt-0.5 leading-relaxed">
+                  Learn the entire curriculum completely free! When you complete the coursework, request your verified, signed certificate with unique credential ID for <strong>₹99</strong>.
                 </p>
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setShowCertificate(true)}
-              className="py-3 px-6 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2 cursor-pointer border-none shrink-0"
-            >
-              <Award size={16} className="text-[#FFB800]" />
-              <span>View Official Certificate</span>
-            </button>
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 w-full sm:w-auto shrink-0">
+              <button
+                type="button"
+                onClick={handleRequestCertificateWhatsApp}
+                disabled={requestingCert}
+                style={{
+                  backgroundColor: "#25D366",
+                  color: "#FFFFFF",
+                  border: "none",
+                  boxShadow: "0 4px 16px rgba(37, 211, 102, 0.35)"
+                }}
+                className="py-3 px-5 rounded-xl font-black text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:opacity-95 disabled:opacity-50"
+              >
+                <WhatsAppIcon size={16} className="text-white" />
+                <span>{requestingCert ? "Opening WhatsApp..." : "Request Certificate (₹99)"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCertToView(issuedCerts[0] || null);
+                  setShowCertificate(true);
+                }}
+                className="py-2.5 px-4 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer border-none"
+              >
+                <Award size={14} className="text-[#FFB800]" />
+                <span>{issuedCerts.length > 0 ? "View Official Certificate" : "Preview Certificate Layout"}</span>
+              </button>
+            </div>
           </div>
+
+          {/* Feedback messages */}
+          {certSuccessMsg && (
+            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2.5">
+              <CheckCircle2 size={16} className="shrink-0 text-emerald-600" />
+              <span>{certSuccessMsg}</span>
+            </div>
+          )}
+          {certErrorMsg && (
+            <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2.5">
+              <AlertCircle size={16} className="shrink-0 text-rose-600" />
+              <span>{certErrorMsg}</span>
+            </div>
+          )}
+
+          {/* Course Completion Eligibility Tracker */}
+          <div
+            className="p-5 sm:p-6 rounded-3xl border shadow-sm space-y-3"
+            style={{
+              background: isDark ? "rgba(16, 43, 80, 0.5)" : "#ffffff",
+              borderColor: isDark ? "rgba(56, 189, 248, 0.2)" : "#e2e8f0"
+            }}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h4 className="text-sm font-bold text-[#102B50] dark:text-white flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-emerald-500" />
+                  <span>Curriculum Completion Progress</span>
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Requirements: Complete all 198 self-paced Python topics
+                </p>
+              </div>
+              <div className="text-xs font-black px-3 py-1 rounded-full bg-blue-500/10 text-[#0756A5] dark:text-[#38bdf8] border border-blue-500/20">
+                {completedTopicsList.length} of 198 Lessons Completed ({Math.min(100, Math.round((completedTopicsList.length / 198) * 100))}%)
+              </div>
+            </div>
+
+            <div className="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-linear-to-r from-[#0756A5] to-emerald-400 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(100, Math.round((completedTopicsList.length / 198) * 100))}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Issued Certificates List */}
+          {issuedCerts.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-[#102B50] dark:text-white flex items-center gap-2">
+                <ShieldCheck size={16} className="text-emerald-500" />
+                <span>Your Issued Certificates</span>
+              </h4>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {issuedCerts.map((cert) => (
+                  <div
+                    key={cert.certificate_id}
+                    className="p-5 rounded-2xl border shadow-sm space-y-3"
+                    style={{
+                      background: isDark ? "rgba(16, 43, 80, 0.6)" : "#ffffff",
+                      borderColor: isDark ? "rgba(56, 189, 248, 0.25)" : "#e2e8f0"
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-400/40">
+                        {cert.certificate_id}
+                      </span>
+                      <span className="text-[11px] text-slate-400 font-semibold">
+                        Issued: {new Date(cert.issued_at).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h5 className="text-sm font-black text-[#102B50] dark:text-white">
+                        {cert.course_name || "Python Programming & Adaptive Core Curriculum"}
+                      </h5>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                        Completed: {cert.completed_topics_count || 198} topics
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedCertToView(cert);
+                          setShowCertificate(true);
+                        }}
+                        className="py-1.5 px-3 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-bold text-xs flex items-center gap-1 cursor-pointer border-none"
+                      >
+                        <Award size={13} />
+                        <span>View / Print PDF</span>
+                      </button>
+
+                      <a
+                        href={`#/verify-certificate/${cert.certificate_id}`}
+                        className="py-1.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[#102B50] dark:text-slate-200 font-bold text-xs flex items-center gap-1 no-underline border border-slate-200 dark:border-slate-700"
+                      >
+                        <ExternalLink size={13} />
+                        <span>Public Verification</span>
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Certificate Requests Status */}
+          {certRequests.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-[#102B50] dark:text-white flex items-center gap-2">
+                <Clock size={16} className="text-[#0756A5]" />
+                <span>Certificate Requests & Verification Status</span>
+              </h4>
+
+              <div className="space-y-2">
+                {certRequests.map((req) => (
+                  <div
+                    key={req.id}
+                    className="p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+                    style={{
+                      background: isDark ? "rgba(16, 43, 80, 0.45)" : "#ffffff",
+                      borderColor: isDark ? "rgba(56, 189, 248, 0.15)" : "#e2e8f0"
+                    }}
+                  >
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-mono text-xs font-bold text-[#102B50] dark:text-white">
+                          #{req.request_number}
+                        </span>
+                        {req.status === "approved" ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300">
+                            Approved & Issued
+                          </span>
+                        ) : req.status === "payment_verified" ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-300">
+                            Payment Verified (₹99)
+                          </span>
+                        ) : req.status === "rejected" ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-300">
+                            Rejected
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300">
+                            ⏳ Pending WhatsApp Payment Verification (₹99)
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                        Requested on {new Date(req.created_at).toLocaleDateString()} • Fee: ₹99
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {req.status === "pending_payment" && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            openWhatsAppCertificateRequest({
+                              studentName: currentUser.name || currentUser.full_name || "Python Learner",
+                              studentEmail: currentUser.email,
+                              courseName: "Python Programming & Adaptive Core Curriculum",
+                              completedCount: completedTopicsList.length,
+                              totalTopics: 198,
+                              requestNumber: req.request_number
+                            });
+                          }}
+                          className="py-1.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs flex items-center gap-1 cursor-pointer border-none"
+                        >
+                          <WhatsAppIcon size={13} className="text-white" />
+                          <span>Send Receipt on WhatsApp</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Achievement Milestones Grid */}
           <div>
@@ -868,7 +1282,6 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {/* Badge 1 */}
               <div
                 className="p-4 rounded-2xl border flex items-center gap-3"
                 style={{
@@ -889,7 +1302,6 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
                 </div>
               </div>
 
-              {/* Badge 2 */}
               <div
                 className="p-4 rounded-2xl border flex items-center gap-3"
                 style={{
@@ -910,7 +1322,6 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
                 </div>
               </div>
 
-              {/* Badge 3 */}
               <div
                 className="p-4 rounded-2xl border flex items-center gap-3"
                 style={{
@@ -931,6 +1342,390 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Legal / Non-accreditation disclosure */}
+          <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 text-center leading-relaxed">
+            Academic Disclosure: This credential certifies successful self-paced completion of the Python Programming & Adaptive Core Curriculum on LearnWithUs. It does not confer formal university degree credit or government accreditation.
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+          TAB CONTENT: DOUBT SUPPORT (10 Free / ₹49 Thereafter)
+          ===================================================================== */}
+      {activeTab === "doubts" && (
+        <div className="space-y-6">
+          {/* Header & Balance Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Card 1: Free Doubts Left */}
+            <div
+              className="p-4 rounded-2xl border shadow-sm"
+              style={{
+                background: isDark ? "rgba(16, 43, 80, 0.65)" : "#ffffff",
+                borderColor: isDark ? "rgba(56, 189, 248, 0.2)" : "#e2e8f0"
+              }}
+            >
+              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                Free Doubts Left
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                {doubtBalance.freeDoubtsRemaining} <span className="text-xs text-slate-400 font-bold">/ 10</span>
+              </div>
+              <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                <div
+                  className="bg-emerald-500 h-full rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(100, Math.max(0, (doubtBalance.freeDoubtsRemaining / 10) * 100))}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Card 2: Doubts Used */}
+            <div
+              className="p-4 rounded-2xl border shadow-sm"
+              style={{
+                background: isDark ? "rgba(16, 43, 80, 0.65)" : "#ffffff",
+                borderColor: isDark ? "rgba(56, 189, 248, 0.2)" : "#e2e8f0"
+              }}
+            >
+              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                Resolved Doubts
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-[#102B50] dark:text-white">
+                {doubtBalance.doubtsUsed || 0}
+              </div>
+              <div className="text-[10px] text-slate-400 font-semibold mt-1">
+                Mentors answered
+              </div>
+            </div>
+
+            {/* Card 3: Paid Doubts Pricing */}
+            <div
+              className="p-4 rounded-2xl border shadow-sm"
+              style={{
+                background: isDark ? "rgba(16, 43, 80, 0.65)" : "#ffffff",
+                borderColor: isDark ? "rgba(56, 189, 248, 0.2)" : "#e2e8f0"
+              }}
+            >
+              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                11th Doubt Onwards
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-[#0756A5] dark:text-[#38bdf8]">
+                ₹49 <span className="text-xs text-slate-400 font-bold">/ doubt</span>
+              </div>
+              <div className="text-[10px] text-slate-400 font-semibold mt-1">
+                1-on-1 WhatsApp Support
+              </div>
+            </div>
+
+            {/* Card 4: In Progress */}
+            <div
+              className="p-4 rounded-2xl border shadow-sm"
+              style={{
+                background: isDark ? "rgba(16, 43, 80, 0.65)" : "#ffffff",
+                borderColor: isDark ? "rgba(56, 189, 248, 0.2)" : "#e2e8f0"
+              }}
+            >
+              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                In Progress
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-amber-500">
+                {doubtBalance.pendingCount || 0}
+              </div>
+              <div className="text-[10px] text-slate-400 font-semibold mt-1">
+                Under mentor review
+              </div>
+            </div>
+          </div>
+
+          {/* Action Header: Ask a Doubt Button / Status */}
+          <div
+            className="p-5 sm:p-6 rounded-3xl border shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4"
+            style={{
+              background: isDark ? "rgba(16, 43, 80, 0.55)" : "#ffffff",
+              borderColor: isDark ? "rgba(56, 189, 248, 0.2)" : "#e2e8f0"
+            }}
+          >
+            <div>
+              <h3 className="text-base sm:text-lg font-black text-[#102B50] dark:text-white flex items-center gap-2">
+                <MessageCircle size={20} className="text-emerald-500" />
+                <span>Dedicated Coding Mentorship</span>
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-300 max-w-xl mt-1 leading-relaxed">
+                {doubtBalance.freeDoubtsRemaining > 0
+                  ? `Every student receives 10 free doubts! You currently have ${doubtBalance.freeDoubtsRemaining} free doubts remaining.`
+                  : "You have used your 10 free doubts. Submit paid doubts for ₹49 each with 1-on-1 verified mentor support on WhatsApp."}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowNewDoubtForm(!showNewDoubtForm)}
+              className="py-2.5 px-5 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2 cursor-pointer border-none shrink-0"
+            >
+              <HelpCircle size={16} />
+              <span>{showNewDoubtForm ? "Hide Form" : "Ask a Doubt"}</span>
+            </button>
+          </div>
+
+          {/* Feedback messages */}
+          {doubtSuccessMsg && (
+            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2.5">
+              <CheckCircle2 size={16} className="shrink-0 text-emerald-600" />
+              <span>{doubtSuccessMsg}</span>
+            </div>
+          )}
+          {doubtErrorMsg && (
+            <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2.5">
+              <AlertCircle size={16} className="shrink-0 text-rose-600" />
+              <span>{doubtErrorMsg}</span>
+            </div>
+          )}
+
+          {/* New Doubt Submission Form */}
+          {showNewDoubtForm && (
+            <div
+              className="p-5 sm:p-6 rounded-3xl border shadow-lg space-y-4 animate-in fade-in duration-200"
+              style={{
+                background: isDark ? "rgba(16, 43, 80, 0.7)" : "#ffffff",
+                borderColor: isDark ? "rgba(56, 189, 248, 0.3)" : "#cbd5e1"
+              }}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <h4 className="text-sm font-bold text-[#102B50] dark:text-white flex items-center gap-2">
+                  <HelpCircle size={16} className="text-[#0756A5]" />
+                  <span>Submit Programming Doubt</span>
+                </h4>
+                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                  {doubtBalance.freeDoubtsRemaining > 0 ? "Free Mentorship (Credit Protected)" : "Paid Support • ₹49"}
+                </span>
+              </div>
+
+              <form onSubmit={handleSubmitDoubt} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Lesson / Topic Name (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={newDoubtTopic}
+                    onChange={(e) => setNewDoubtTopic(e.target.value)}
+                    placeholder="e.g. For Loops, Functions, or List Comprehensions"
+                    className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#0756A5]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Your Question / Doubt Details <span className="text-rose-500">*</span>
+                  </label>
+                  <textarea
+                    value={newDoubtText}
+                    onChange={(e) => setNewDoubtText(e.target.value)}
+                    required
+                    rows={3}
+                    placeholder="Explain what concept is confusing or what error you are encountering..."
+                    className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#0756A5] resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Code Snippet (Optional)
+                  </label>
+                  <textarea
+                    value={newDoubtCode}
+                    onChange={(e) => setNewDoubtCode(e.target.value)}
+                    rows={3}
+                    placeholder="Paste your Python code snippet here..."
+                    className="w-full px-3.5 py-2.5 rounded-xl font-mono text-xs bg-slate-900 text-emerald-400 border border-slate-700 placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-[#0756A5] resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Screenshot URL or Image Link (Optional)
+                  </label>
+                  <input
+                    type="url"
+                    value={newDoubtScreenshot}
+                    onChange={(e) => setNewDoubtScreenshot(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#0756A5]"
+                  />
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal text-center sm:text-left">
+                    {doubtBalance.freeDoubtsRemaining > 0
+                      ? "Protected: Count will NOT be reduced until mentor marks solved!"
+                      : "Paid Doubt: Admin verifies payment manually on WhatsApp before answer is issued."}
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <button
+                      type="button"
+                      onClick={() => setShowNewDoubtForm(false)}
+                      className="flex-1 sm:flex-initial py-2.5 px-4 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={submittingDoubt}
+                      style={{
+                        backgroundColor: doubtBalance.freeDoubtsRemaining > 0 ? "#0756A5" : "#25D366",
+                        color: "#FFFFFF",
+                        border: "none"
+                      }}
+                      className="flex-1 sm:flex-initial py-2.5 px-5 rounded-xl font-black text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:opacity-95 disabled:opacity-50"
+                    >
+                      {doubtBalance.freeDoubtsRemaining > 0 ? (
+                        <>
+                          <Send size={14} />
+                          <span>{submittingDoubt ? "Submitting..." : `Submit Doubt (${doubtBalance.freeDoubtsRemaining} Left)`}</span>
+                        </>
+                      ) : (
+                        <>
+                          <WhatsAppIcon size={15} className="text-white" />
+                          <span>{submittingDoubt ? "Opening..." : "Ask on WhatsApp (₹49)"}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Doubt Tickets History & Mentor Answers */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-bold text-[#102B50] dark:text-white flex items-center gap-2">
+                <Clock size={16} className="text-[#0756A5]" />
+                <span>Your Doubt History & Mentor Solutions ({doubtTickets.length})</span>
+              </h4>
+              <button
+                type="button"
+                onClick={loadDoubts}
+                className="text-xs text-[#0756A5] dark:text-[#38bdf8] font-bold flex items-center gap-1 cursor-pointer bg-transparent border-none"
+              >
+                <RefreshCw size={12} className={doubtLoading ? "animate-spin" : ""} />
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            {doubtTickets.length > 0 ? (
+              <div className="space-y-3">
+                {doubtTickets.map((t) => (
+                  <div
+                    key={t.id || t.ticket_number}
+                    className="p-5 rounded-2xl border shadow-sm space-y-3"
+                    style={{
+                      background: isDark ? "rgba(16, 43, 80, 0.5)" : "#ffffff",
+                      borderColor: isDark ? "rgba(56, 189, 248, 0.2)" : "#e2e8f0"
+                    }}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-[#102B50] dark:text-white">
+                          #{t.ticket_number || t.id}
+                        </span>
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                          {t.lesson_name || t.section_title || "Python Question"}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {t.is_paid && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/40">
+                            Paid (₹49)
+                          </span>
+                        )}
+
+                        {t.status === "solved" ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300">
+                            ✅ Solved by Mentor
+                          </span>
+                        ) : t.status === "pending" && t.is_paid && t.payment_status !== "verified" ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300">
+                            ⏳ ₹49 Payment Verification Pending
+                          </span>
+                        ) : t.status === "dismissed" ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-300">
+                            Cancelled
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-300">
+                            ⏳ Awaiting Mentor Response
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+                      {t.question || t.custom_message}
+                    </p>
+
+                    {/* Code Snippet if present */}
+                    {t.code_snippet && (
+                      <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs text-emerald-400 overflow-x-auto">
+                        <pre className="m-0">{t.code_snippet}</pre>
+                      </div>
+                    )}
+
+                    {/* Mentor Answer Box (When answered) */}
+                    {(t.answer || t.resolution_notes) && (
+                      <div className="p-4 rounded-xl bg-emerald-500/10 border-2 border-emerald-400/50 dark:border-emerald-500/40 space-y-2 animate-in fade-in">
+                        <div className="flex items-center justify-between text-xs font-black text-emerald-800 dark:text-emerald-300">
+                          <span className="flex items-center gap-1.5">
+                            <CheckCircle2 size={14} className="text-emerald-600" />
+                            <span>Mentor's Official Answer</span>
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-normal">
+                            {t.answered_at ? new Date(t.answered_at).toLocaleDateString() : "Verified"}
+                          </span>
+                        </div>
+                        <p className="text-xs sm:text-sm text-slate-900 dark:text-white leading-relaxed font-medium whitespace-pre-wrap">
+                          {t.answer || t.resolution_notes}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="text-[10px] text-slate-400 pt-1">
+                      Submitted on {new Date(t.created_at).toLocaleString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div
+                className="p-8 rounded-3xl text-center border"
+                style={{
+                  background: isDark ? "rgba(16, 43, 80, 0.4)" : "#ffffff",
+                  borderColor: isDark ? "rgba(56, 189, 248, 0.15)" : "#e2e8f0"
+                }}
+              >
+                <div className="w-12 h-12 mx-auto mb-2 rounded-2xl bg-blue-500/10 text-[#0756A5] dark:text-[#38bdf8] flex items-center justify-center">
+                  <HelpCircle size={22} />
+                </div>
+                <h5 className="text-sm font-bold text-[#102B50] dark:text-white mb-1">
+                  No Doubts Asked Yet
+                </h5>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-4">
+                  Whenever you get stuck while learning or practicing Python, submit your doubt here or ask on WhatsApp!
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowNewDoubtForm(true)}
+                  className="py-2 px-4 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-bold text-xs shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer border-none"
+                >
+                  <HelpCircle size={14} />
+                  <span>Ask Your First Doubt (10 Free)</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1097,9 +1892,19 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
       {currentUser && (
         <CertificateModal
           isOpen={showCertificate}
-          onClose={() => setShowCertificate(false)}
-          studentName={currentUser.name || currentUser.full_name || "Python Learner"}
-          completedCount={completedTopicsList.length}
+          onClose={() => {
+            setShowCertificate(false);
+            setSelectedCertToView(null);
+          }}
+          studentName={selectedCertToView?.student_name || currentUser.name || currentUser.full_name || "Python Learner"}
+          courseName={selectedCertToView?.course_name || "Python Programming & Adaptive Core Curriculum"}
+          completedCount={selectedCertToView?.completed_topics_count || completedTopicsList.length || 198}
+          totalTopics={198}
+          certificateId={selectedCertToView?.certificate_id || "LWU-PY-2026-PREVIEW"}
+          issueDate={selectedCertToView?.issued_at}
+          completionDate={selectedCertToView?.completion_date}
+          verificationUrl={selectedCertToView?.verification_url}
+          isApproved={Boolean(selectedCertToView)}
         />
       )}
     </div>

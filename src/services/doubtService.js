@@ -9,7 +9,7 @@
 import { apiClient } from "./apiClient.js";
 
 const DEFAULT_FREE_DOUBTS = 10;
-const DOUBT_COST_INR = 50;
+const DOUBT_COST_INR = 49;
 
 function getStorageKeys(userId) {
   const safeId = userId || "guest";
@@ -80,8 +80,9 @@ export async function fetchDoubtBalance(userId) {
   const local = getLocalDoubtBalance(userId);
   try {
     const res = await apiClient.get("/doubts/balance");
-    if (res.data?.doubtCredits !== undefined) {
-      return res.data;
+    const payload = res.data?.data || res.data;
+    if (payload?.doubtCredits !== undefined) {
+      return payload;
     }
   } catch {
     // offline/fallback
@@ -96,8 +97,9 @@ export async function fetchMyTickets(userId) {
   const local = getLocalTickets(userId);
   try {
     const res = await apiClient.get("/doubts/my-tickets");
-    if (Array.isArray(res.data) && res.data.length > 0) {
-      return res.data;
+    const payload = res.data?.data || res.data;
+    if (Array.isArray(payload) && payload.length > 0) {
+      return payload;
     }
   } catch {}
   return local;

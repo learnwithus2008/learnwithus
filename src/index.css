@@ -2775,7 +2775,10 @@ html.dark [class*="bg-gradient-"] button.bg-white span {
    Learn Dashboard Welcome Banner & Resume Card
    Guarantees 100% crystal-clear contrast in Light & Dark modes
    ======================================================== */
-.learn-welcome-banner {
+.learn-welcome-banner,
+html.darker-text .learn-welcome-banner,
+html.dark-ink-mode .learn-welcome-banner,
+html:not(.dark).darker-text .learn-welcome-banner {
   background: linear-gradient(135deg, #0756A5 0%, #064681 50%, #102B50 100%) !important;
   color: #FFFFFF !important;
   box-shadow: 0 10px 25px -5px rgba(7, 86, 165, 0.25) !important;
@@ -2788,17 +2791,35 @@ html.dark [class*="bg-gradient-"] button.bg-white span {
   border: 1px solid rgba(255, 255, 255, 0.25) !important;
 }
 
-.learn-welcome-banner .learn-welcome-title {
+.learn-welcome-banner h1,
+.learn-welcome-banner .learn-welcome-title,
+html.darker-text .learn-welcome-banner h1,
+html.darker-text .learn-welcome-banner .learn-welcome-title,
+html.dark-ink-mode .learn-welcome-banner h1,
+html.dark-ink-mode .learn-welcome-banner .learn-welcome-title,
+html:not(.dark).darker-text .learn-welcome-banner h1,
+html:not(.dark).darker-text .learn-welcome-banner .learn-welcome-title {
   color: #FFFFFF !important;
   font-weight: 900 !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25) !important;
 }
 
-.learn-welcome-banner .learn-welcome-desc {
+.learn-welcome-banner .learn-welcome-title span,
+html.darker-text .learn-welcome-banner .learn-welcome-title span,
+html.dark-ink-mode .learn-welcome-banner .learn-welcome-title span,
+html:not(.dark).darker-text .learn-welcome-banner .learn-welcome-title span {
+  color: #FFB800 !important;
+}
+
+.learn-welcome-banner .learn-welcome-desc,
+html.darker-text .learn-welcome-banner .learn-welcome-desc,
+html:not(.dark).darker-text .learn-welcome-banner .learn-welcome-desc {
   color: #E0E7FF !important;
 }
 
-.learn-welcome-banner .learn-welcome-desc strong {
+.learn-welcome-banner .learn-welcome-desc strong,
+html.darker-text .learn-welcome-banner .learn-welcome-desc strong,
+html:not(.dark).darker-text .learn-welcome-banner .learn-welcome-desc strong {
   color: #FFFFFF !important;
   font-weight: 800 !important;
 }

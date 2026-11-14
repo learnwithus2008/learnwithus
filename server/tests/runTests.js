@@ -1,4 +1,5 @@
 import { runMigrations } from "../migrations/migrate.js";
+import { runSeeds } from "../seeds/seed.js";
 import { config } from "../src/config/env.js";
 import { pool } from "../src/config/db.js";
 import { testAuth } from "./auth.test.js";
@@ -6,6 +7,7 @@ import { testProgress } from "./progress.test.js";
 import { testBookmarks } from "./bookmarks.test.js";
 import { testSecurity } from "./security.test.js";
 import { testAdmin } from "./admin.test.js";
+import { testMonetization } from "./monetization.test.js";
 
 async function runAllTests() {
   console.log("=================================================");
@@ -39,7 +41,14 @@ async function runAllTests() {
     console.log("\n--- SUITE 5: Admin Panel & User Status Management ---");
     const adminResults = await testAdmin();
     results.push(...adminResults);
+
+    console.log("\n--- SUITE 6: Monetization, Certificates & Mentorship ---");
+    const monetizationResults = await testMonetization();
+    results.push(...monetizationResults);
   } finally {
+    try {
+      await runSeeds(config.databaseUrl);
+    } catch (_) {}
     await pool.end();
   }
 

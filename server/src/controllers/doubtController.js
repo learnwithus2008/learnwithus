@@ -1,10 +1,11 @@
 import { rewardRepository } from "../repositories/rewardRepository.js";
+import { paymentRepository } from "../repositories/paymentRepository.js";
 import { query } from "../config/db.js";
 
 export const doubtController = {
   /**
    * GET /api/doubts/balance
-   * Returns current user's doubt balance and pending tickets count
+   * Returns current user's doubt balance, free doubts used, and pending tickets count
    */
   async getBalance(req, res, next) {
     try {
@@ -14,14 +15,22 @@ export const doubtController = {
       const doubtsUsed = rewards?.doubts_used || 0;
 
       let pendingCount = 0;
+      let paidDoubtsCount = 0;
       try {
-        const pendingRes = await query(
-          "SELECT COUNT(*) FROM doubt_tickets WHERE user_id = $1 AND status = 'pending'",
+        const countRes = await query(
+          `
+          SELECT
+            COUNT(*) FILTER (WHERE status = 'pending')::INTEGER AS pending_count,
+            COUNT(*) FILTER (WHERE is_paid = TRUE)::INTEGER AS paid_count
+          FROM doubt_tickets
+          WHERE user_id = $1
+          `,
           [req.user.id]
         );
-        pendingCount = parseInt(pendingRes.rows[0]?.count || 0, 10);
+        pendingCount = countRes.rows[0]?.pending_count || 0;
+        paidDoubtsCount = countRes.rows[0]?.paid_count || 0;
       } catch {
-        // Table may not exist yet
+        // Fallback
       }
 
       res.status(200).json({
@@ -30,7 +39,10 @@ export const doubtController = {
           doubtCredits,
           freeDoubtsTotal,
           doubtsUsed,
-          pendingCount
+          freeDoubtsRemaining: Math.max(0, doubtCredits),
+          paidDoubtsCount,
+          pendingCount,
+          pricePerPaidDoubtInr: 49
         }
       });
     } catch (err) {
@@ -45,7 +57,16 @@ export const doubtController = {
   async getMyTickets(req, res, next) {
     try {
       const resQuery = await query(
-        "SELECT * FROM doubt_tickets WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50",
+        `
+        SELECT
+          t.*,
+          admin.full_name AS answered_by_name
+        FROM doubt_tickets t
+        LEFT JOIN users admin ON admin.id = t.answered_by
+        WHERE t.user_id = $1
+        ORDER BY t.created_at DESC
+        LIMIT 50
+        `,
         [req.user.id]
       );
       res.status(200).json({
@@ -62,8 +83,9 @@ export const doubtController = {
 
   /**
    * POST /api/doubts/request
-   * Creates a doubt request when user clicks WhatsApp.
-   * CRITICAL: Does NOT reduce user doubt count! Doubt count stays intact until solved by admin.
+   * Creates a doubt request.
+   * If student has free doubts (1-10): is_paid = false, payment_status = 'free'.
+   * If student has exhausted 10 free doubts (11th onwards): is_paid = true, amount_inr = 49.00, payment_status = 'pending'.
    */
   async createRequest(req, res, next) {
     try {
@@ -73,20 +95,27 @@ export const doubtController = {
         lessonName,
         topicNumber,
         stepName,
-        question
+        question,
+        codeSnippet,
+        screenshotUrl
       } = req.body || {};
+
+      if (!question || !question.trim()) {
+        return res.status(400).json({
+          success: false,
+          error: "Please enter your doubt question or description"
+        });
+      }
 
       const rewards = await rewardRepository.getByUserId(req.user.id);
       const currentCredits = rewards?.doubt_credits !== undefined && rewards?.doubt_credits !== null ? rewards.doubt_credits : 10;
+      const doubtsUsed = rewards?.doubts_used || 0;
 
-      // If user has zero credits, they must recharge first
-      if (currentCredits <= 0) {
-        return res.status(402).json({
-          success: false,
-          error: "Free doubts exhausted. Please recharge for ₹50 to submit a doubt.",
-          doubtCredits: 0
-        });
-      }
+      // 10 Free doubts rule:
+      const isFreeDoubt = currentCredits > 0;
+      const isPaid = !isFreeDoubt;
+      const amountInr = isPaid ? 49.00 : 0.00;
+      const paymentStatus = isPaid ? "pending" : "free";
 
       const ticketNumber = `DBT-${Date.now().toString().slice(-6)}`;
       let ticket = {
@@ -100,7 +129,12 @@ export const doubtController = {
         lesson_name: lessonName || "",
         topic_number: topicNumber || "",
         step_name: stepName || "",
-        question: question || "",
+        question: question.trim(),
+        code_snippet: codeSnippet ? codeSnippet.trim() : null,
+        screenshot_url: screenshotUrl ? screenshotUrl.trim() : null,
+        is_paid: isPaid,
+        amount_inr: amountInr,
+        payment_status: paymentStatus,
         status: "pending",
         created_at: new Date().toISOString()
       };
@@ -111,9 +145,9 @@ export const doubtController = {
           INSERT INTO doubt_tickets (
             ticket_number, user_id, student_name, student_email,
             section_number, section_title, lesson_name, topic_number, step_name,
-            question, status
+            question, code_snippet, screenshot_url, is_paid, amount_inr, payment_status, status
           )
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'pending')
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 'pending')
           RETURNING *;
           `,
           [
@@ -126,20 +160,41 @@ export const doubtController = {
             lessonName || null,
             topicNumber || null,
             stepName || null,
-            question || null
+            question.trim(),
+            codeSnippet ? codeSnippet.trim() : null,
+            screenshotUrl ? screenshotUrl.trim() : null,
+            isPaid,
+            amountInr,
+            paymentStatus
           ]
         );
         if (insertRes.rows[0]) ticket = insertRes.rows[0];
+
+        // If paid doubt, record in payment_records as pending
+        if (isPaid) {
+          await paymentRepository.createPayment({
+            paymentType: "paid_doubt",
+            userId: req.user.id,
+            referenceId: ticket.id,
+            amountInr: 49.00,
+            paymentMethod: "whatsapp_manual"
+          }).catch(() => {});
+        }
       } catch (dbErr) {
-        // Table not created yet - non-blocking
+        console.warn("Doubt ticket DB insert warning:", dbErr.message);
       }
 
       res.status(201).json({
         success: true,
         data: {
           ticket,
-          doubtCredits: currentCredits, // Unchanged!
-          message: "Doubt request submitted. Count will NOT be reduced until solved by admin."
+          isPaid,
+          amountInr,
+          paymentStatus,
+          freeDoubtsRemaining: Math.max(0, currentCredits),
+          message: isPaid
+            ? "Your 10 free doubts are used. This paid doubt (₹49) has been recorded. Please complete WhatsApp verification to receive your mentor answer."
+            : "Free doubt request submitted. Count will NOT be reduced until answered by admin."
         }
       });
     } catch (err) {
@@ -149,18 +204,46 @@ export const doubtController = {
 
   /**
    * GET /api/doubts/tickets (Admin)
-   * Lists all tickets with status filter
+   * Lists all tickets with status and payment filter
    */
   async getAllTickets(req, res, next) {
     try {
-      const { status = "all" } = req.query;
-      let sql = "SELECT * FROM doubt_tickets";
+      const { status = "all", isPaid = "all", search = "", limit = 50, page = 1 } = req.query;
+      const offset = (Math.max(1, parseInt(page, 10)) - 1) * parseInt(limit, 10);
+
+      let sql = `
+        SELECT
+          t.*,
+          admin.full_name AS answered_by_name
+        FROM doubt_tickets t
+        LEFT JOIN users admin ON admin.id = t.answered_by
+      `;
+      const conditions = [];
       const params = [];
+
       if (status && status !== "all") {
-        sql += " WHERE status = $1";
         params.push(status);
+        conditions.push(`t.status = $${params.length}`);
       }
-      sql += " ORDER BY created_at DESC LIMIT 100";
+
+      if (isPaid !== "all") {
+        params.push(isPaid === "true");
+        conditions.push(`t.is_paid = $${params.length}`);
+      }
+
+      if (search && search.trim()) {
+        params.push(`%${search.trim().toLowerCase()}%`);
+        conditions.push(
+          `(LOWER(t.student_name) LIKE $${params.length} OR LOWER(t.student_email) LIKE $${params.length} OR LOWER(t.question) LIKE $${params.length} OR LOWER(t.ticket_number) LIKE $${params.length})`
+        );
+      }
+
+      if (conditions.length > 0) {
+        sql += " WHERE " + conditions.join(" AND ");
+      }
+
+      sql += ` ORDER BY t.created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+      params.push(limit, offset);
 
       const queryRes = await query(sql, params);
       res.status(200).json({
@@ -176,17 +259,71 @@ export const doubtController = {
   },
 
   /**
+   * POST /api/doubts/tickets/:id/verify-payment (Admin)
+   * Manually verifies ₹49 payment for a paid doubt ticket
+   */
+  async verifyPayment(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { transactionReference, notes } = req.body || {};
+
+      const updateRes = await query(
+        `
+        UPDATE doubt_tickets
+        SET payment_status = 'verified',
+            payment_reference = COALESCE($2, payment_reference),
+            resolution_notes = COALESCE($3, resolution_notes),
+            updated_at = NOW()
+        WHERE id::text = $1 OR ticket_number = $1
+        RETURNING *;
+        `,
+        [id, transactionReference, notes]
+      );
+
+      const ticket = updateRes.rows[0];
+      if (!ticket) {
+        return res.status(404).json({ success: false, error: "Doubt ticket not found" });
+      }
+
+      await paymentRepository.verifyPayment(ticket.id, {
+        verifiedBy: req.user.id,
+        transactionReference,
+        notes
+      }).catch(() => {});
+
+      res.status(200).json({
+        success: true,
+        data: ticket,
+        message: "Payment of ₹49 verified. Ticket is now unlocked for answering."
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  /**
    * POST /api/doubts/tickets/:id/solve (Admin)
-   * Admin solves the issue -> THIS IS WHEN THE DOUBT COUNT IS ACTUALLY REDUCED!
+   * Admin submits mentor answer & marks ticket as solved
    */
   async solveTicket(req, res, next) {
     try {
       const { id } = req.params;
-      const { resolutionNotes = "" } = req.body || {};
+      const { resolutionNotes = "", answer = "" } = req.body || {};
+      const solutionText = answer || resolutionNotes;
+
+      if (!solutionText || !solutionText.trim()) {
+        return res.status(400).json({
+          success: false,
+          error: "Please enter the mentor solution or answer before marking as solved"
+        });
+      }
 
       let ticket = null;
       try {
-        const ticketRes = await query("SELECT * FROM doubt_tickets WHERE id::text = $1 OR ticket_number = $1 LIMIT 1", [id]);
+        const ticketRes = await query(
+          "SELECT * FROM doubt_tickets WHERE id::text = $1 OR ticket_number = $1 LIMIT 1",
+          [id]
+        );
         ticket = ticketRes.rows[0];
       } catch {}
 
@@ -198,50 +335,69 @@ export const doubtController = {
         return res.status(400).json({ success: false, error: "Ticket is already marked as solved" });
       }
 
-      // 1. Mark ticket as solved
-      await query(
+      // Paid doubt rule: Unpaid paid-doubt requests cannot receive answers
+      if (ticket.is_paid && ticket.payment_status !== "verified") {
+        return res.status(403).json({
+          success: false,
+          error: "Cannot answer an unpaid paid doubt. Please verify the ₹49 payment first."
+        });
+      }
+
+      // 1. Mark ticket as solved and store answer
+      const updatedRes = await query(
         `
         UPDATE doubt_tickets
         SET status = 'solved',
+            answer = $2,
             resolution_notes = $2,
+            answered_by = $3,
+            answered_at = NOW(),
             resolved_by = $3,
             resolved_at = NOW(),
             updated_at = NOW()
         WHERE id = $1
         RETURNING *;
         `,
-        [ticket.id, resolutionNotes, req.user.id]
+        [ticket.id, solutionText.trim(), req.user.id]
       );
 
-      // 2. NOW officially deduct 1 doubt count from user rewards!
-      const updatedRewards = await rewardRepository.useDoubtCredit(ticket.user_id);
-      const remainingCredits = updatedRewards?.doubt_credits ?? 9;
+      let remainingCredits = 0;
+      // 2. Only deduct from 10 free doubts balance if this was a FREE doubt!
+      if (!ticket.is_paid) {
+        const updatedRewards = await rewardRepository.useDoubtCredit(ticket.user_id);
+        remainingCredits = updatedRewards?.doubt_credits ?? 9;
 
-      // 3. Record transaction
-      try {
-        await query(
-          `
-          INSERT INTO doubt_transactions (
-            user_id, ticket_id, action, amount_inr, credits_change, credits_after, payment_method, context
-          )
-          VALUES ($1, $2, 'resolved_use', 0, -1, $3, 'free', $4)
-          `,
-          [
-            ticket.user_id,
-            ticket.id,
-            remainingCredits,
-            JSON.stringify({ solvedBy: req.user.email, resolvedAt: new Date().toISOString() })
-          ]
-        );
-      } catch {}
+        // Record usage audit transaction
+        try {
+          await query(
+            `
+            INSERT INTO doubt_transactions (
+              user_id, ticket_id, action, amount_inr, credits_change, credits_after, payment_method, context
+            )
+            VALUES ($1, $2, 'resolved_use', 0, -1, $3, 'free', $4)
+            `,
+            [
+              ticket.user_id,
+              ticket.id,
+              remainingCredits,
+              JSON.stringify({ solvedBy: req.user.email, resolvedAt: new Date().toISOString() })
+            ]
+          );
+        } catch {}
+      } else {
+        const rewards = await rewardRepository.getByUserId(ticket.user_id);
+        remainingCredits = rewards?.doubt_credits ?? 0;
+      }
 
       res.status(200).json({
         success: true,
         data: {
-          ticketId: ticket.id,
+          ticket: updatedRes.rows[0],
           status: "solved",
           userRemainingCredits: remainingCredits,
-          message: `Doubt marked as solved. 1 doubt count deducted from student (Remaining: ${remainingCredits}).`
+          message: ticket.is_paid
+            ? "Paid doubt answered successfully!"
+            : `Free doubt answered. 1 credit deducted (Remaining: ${remainingCredits}).`
         }
       });
     } catch (err) {
@@ -251,7 +407,6 @@ export const doubtController = {
 
   /**
    * POST /api/doubts/tickets/:id/dismiss (Admin)
-   * Dismiss/cancel ticket -> Count is NOT reduced!
    */
   async dismissTicket(req, res, next) {
     try {
@@ -283,7 +438,7 @@ export const doubtController = {
    */
   async purchaseCredits(req, res, next) {
     try {
-      const { credits = 1, amount = 50, paymentMethod = "mock", paymentReference } = req.body || {};
+      const { credits = 1, amount = 49, paymentMethod = "whatsapp_manual", paymentReference } = req.body || {};
       const count = Math.max(1, parseInt(credits, 10) || 1);
       const updated = await rewardRepository.addDoubtCredits(req.user.id, count);
       const creditsAfter = updated?.doubt_credits ?? (10 + count);

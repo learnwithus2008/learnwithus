@@ -95,10 +95,21 @@ export default function Learn({
                 <Sparkles size={14} className="text-[#FFB800]" />
                 <span>Student Learning Dashboard</span>
               </div>
-              <h1 className="learn-welcome-title text-2xl sm:text-3xl font-black tracking-tight text-white">
-                {isAuthenticated && currentUser
-                  ? `Welcome back, ${currentUser.name.split(" ")[0]}!`
-                  : "Welcome to Learn With Us!"}
+              <h1
+                className="learn-welcome-title text-2xl sm:text-3xl font-black tracking-tight text-white"
+                style={{ color: "#FFFFFF" }}
+              >
+                {isAuthenticated && currentUser ? (
+                  <>
+                    Welcome back,{" "}
+                    <span style={{ color: "#FFB800" }}>
+                      {currentUser.name.split(" ")[0]}
+                    </span>
+                    !
+                  </>
+                ) : (
+                  "Welcome to Learn With Us!"
+                )}
               </h1>
               <p className="learn-welcome-desc text-sm sm:text-base leading-relaxed font-normal">
                 Curriculum of {SECTIONS.length} sections and {totalTopicsCount} interactive topics, adapted for <strong>{stageMeta.label} ({stageMeta.ageRange})</strong> in <strong>{langMeta.label}</strong>.
