@@ -53,7 +53,6 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useNotepad } from "../context/NotepadContext";
 import CertificateModal from "./CertificateModal";
-import { AdsterraNativeBanner, AdsterraBanner300x250 } from "./Ads";
 
 export default function LessonContent({
   topic,
@@ -1211,11 +1210,6 @@ export default function LessonContent({
                 </div>
               )}
 
-              {/* Sponsored 300x250 Display Unit on Chapter Mastery */}
-              <div className="py-2 flex justify-center">
-                <AdsterraBanner300x250 label="Sponsored Learning Partner" />
-              </div>
-
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
                 <button
@@ -1254,13 +1248,6 @@ export default function LessonContent({
           )}
         </div>
       </div>
-
-      {/* Sponsored Native Resource Banner - Positioned cleanly after educational reading, never during active quiz or code runner */}
-      {currentStep !== "practice" && currentStep !== "code" && (
-        <div className="mt-6 mb-2">
-          <AdsterraNativeBanner label="Sponsored Educational Resource" />
-        </div>
-      )}
 
       {/* Official Certificate Modal */}
       {showCertificate && (

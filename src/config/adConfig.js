@@ -1,103 +1,108 @@
 /**
  * src/config/adConfig.js
- * Centralized configuration for all advertising units and third-party scripts on LearnWithUs.
+ * Centralized Configuration for LearnWithUs Advertising Integration.
  *
- * Each advertising unit is independently configurable, auditable, and isolated.
+ * Approved Ad Script:
+ * <script data-cfasync="false" src="https://abscloud.org/1/8dd4f528a9dc426c7936891238d7bc3a"></script>
+ *
+ * Requirements & Educational Safeguards:
+ * - Single verified script provider (abscloud.org)
+ * - Display ONLY in suitable sections (Homepage and informational pages)
+ * - STRICTLY KEPT AWAY from:
+ *   - Quizzes (currentStep === 'practice')
+ *   - Code Practice / Playground (currentStep === 'code')
+ *   - Sign In / Registration ('signin', 'signup')
+ *   - Certificate verification & requests ('verify-certificate')
+ *   - Payment and doubt workflows
+ * - Instant Emergency Kill-Switch provided if inappropriate content is ever detected
  */
 
-export const AD_PROVIDERS = {
-  BAUVAL: "bauval.org",
-  ABSCLOUD: "abscloud.org",
-  GOOGLE: "google.com"
-};
+export const AD_CONFIG = {
+  scriptUrl: "https://abscloud.org/1/8dd4f528a9dc426c7936891238d7bc3a",
+  provider: "abscloud.org",
+  scriptId: "abscloud-ad-script",
+  dataCfasync: false,
 
-function getInitialState(key, defaultVal) {
-  if (typeof window === "undefined") return defaultVal;
-  try {
-    const params = new URLSearchParams(window.location.search || window.location.hash.split("?")[1] || "");
-    if (params.get("enable_all_ads") === "true") return true;
-    if (params.get(key.toLowerCase()) === "true") return true;
-    const stored = localStorage.getItem(`lwu_ad_${key.toLowerCase()}`);
-    if (stored !== null) return stored === "true";
-  } catch (_) {}
-  return defaultVal;
-}
+  // Allowed pages: Homepage and informational pages
+  allowedPages: ["home", "about", "contact", "terms", "privacy", "projects"],
 
-export const AD_SCRIPTS = {
-  // SCRIPT 1: Native Banner
-  NATIVE_BANNER: {
-    id: "adsterra_native_banner",
-    name: "Adsterra Native Banner",
-    url: "https://bauval.org/21/6262f8eaf407dba385778988c358262b",
-    containerId: "container-6262f8eaf407dba385778988c358262b",
-    format: "native_banner",
-    provider: AD_PROVIDERS.BAUVAL,
-    enabled: getInitialState("native_banner", true), // Safe, non-intrusive card grid
-    isIntrusive: false,
-    requiresContainer: true,
-    description: "Grid/card banner that integrates into content sections. Safe for educational UX.",
-    allowedPlacements: ["home", "learn", "lesson_footer"]
-  },
-
-  // SCRIPT 2: Bauval Social Bar / In-Page Push
-  BAUVAL_SOCIAL_BAR: {
-    id: "bauval_social_bar",
-    name: "Bauval Social Bar / In-Page Push",
-    url: "https://bauval.org/14/139f459964696e9529c356b58868a7f9",
-    format: "social_bar_inpage_push",
-    provider: AD_PROVIDERS.BAUVAL,
-    // DISABLED BY POLICY by default per instruction: "If either additional script produces popunders or intrusive advertising, do not enable it on LearnWithUs."
-    // Can be dynamically enabled for testing via ?enable_all_ads=true or ?social_bar=true
-    enabled: getInitialState("social_bar", false),
-    isIntrusive: true,
-    requiresContainer: false,
-    description: "Generates sticky floating notifications, chat widgets, back-click handlers, and overlap popunders. Intrusive to student learning.",
-    policyReason: "Disabled by LearnWithUs policy: contains sticky floating overlays, backClick interception, and overlapPopunder logic that disrupt reading, quizzes, and code execution.",
-    allowedPlacements: []
-  },
-
-  // SCRIPT 3: Abscloud Popunder
-  ABSCLOUD_POPUNDER: {
-    id: "abscloud_popunder",
-    name: "Abscloud OnClick Popunder",
-    url: "https://abscloud.org/1/8dd4f528a9dc426c7936891238d7bc3a",
-    format: "onclick_popunder",
-    provider: AD_PROVIDERS.ABSCLOUD,
-    // DISABLED BY POLICY by default per instruction: "If either additional script produces popunders or intrusive advertising, do not enable it on LearnWithUs."
-    // Can be dynamically enabled for testing via ?enable_all_ads=true or ?popunder=true
-    enabled: getInitialState("popunder", false),
-    isIntrusive: true,
-    requiresContainer: false,
-    description: "Injects transpLayerId full-page overlay layer that hijacks student clicks to launch background popunder windows and intercepts back button navigation.",
-    policyReason: "Disabled by LearnWithUs policy: contains full-page transparent overlay (transpLayerId), click-jacking popunders (pu_click), and back navigation takeover (extraBackButtonInvokeDomain).",
-    allowedPlacements: []
-  }
+  // Strictly prohibited pages: Authentication, administration, certificate workflows
+  restrictedPages: ["signin", "signup", "admin", "verify-certificate", "verify"]
 };
 
 /**
- * Route protection: Determines whether advertising should be suppressed
- * during sensitive student workflows.
- *
- * @param {Object} options
- * @param {string} [options.page] - Current SPA page route
- * @param {string} [options.currentStep] - Current lesson step ('understand' | 'example' | 'code' | 'practice' | 'challenge' | 'complete')
- * @param {boolean} [options.isModalOpen] - Whether any modal dialog is active
- * @returns {boolean} True if advertising must be blocked
+ * Checks whether ads are globally enabled or if an emergency disable kill-switch is active.
+ * Allows instant shutdown via localStorage, window event, or query parameter (?disable_ads=true)
+ * without requiring a redeployment.
  */
-export function isRouteAdRestricted({ page, currentStep, isModalOpen } = {}) {
-  // 1. Critical functional views (Authentication, Admin, Certificate Verification)
-  const restrictedPages = ["signin", "signup", "admin", "verify-certificate", "verify"];
-  if (page && restrictedPages.includes(page)) {
-    return true;
+export function areAdsGloballyEnabled() {
+  if (typeof window === "undefined") return true;
+
+  try {
+    const fullHref = window.location.href || "";
+
+    // 1. Emergency URL parameter override (?disable_ads=true anywhere in URL or hash)
+    if (fullHref.includes("disable_ads=true")) {
+      return false;
+    }
+
+    // 2. Emergency localStorage kill-switch
+    if (localStorage.getItem("lwu_disable_ads") === "true") {
+      return false;
+    }
+
+    // 3. User / Admin preference toggle
+    const stored = localStorage.getItem("lwu_abscloud_enabled");
+    if (stored !== null) {
+      return stored === "true";
+    }
+  } catch (_) {}
+
+  return true;
+}
+
+/**
+ * Evaluates whether an ad placement is permissible on the current screen/state.
+ *
+ * @param {Object} context
+ * @param {string} [context.page] - Current SPA page route ('home' | 'about' | 'learn' | 'lesson' | etc.)
+ * @param {string} [context.currentStep] - Lesson step ('understand' | 'example' | 'code' | 'practice' | 'challenge' | 'complete')
+ * @param {boolean} [context.isModalOpen] - Whether any modal dialog is active
+ * @returns {boolean} True if ads are permitted; False if suppressed
+ */
+export function isAdPlacementAllowed({ page, currentStep, isModalOpen } = {}) {
+  // 1. Check emergency killswitch
+  if (!areAdsGloballyEnabled()) {
+    return false;
   }
 
-  // 2. Interactive learning modes (Active Quizzes & Interactive Code Playground)
-  if (currentStep === "practice" || currentStep === "code") {
-    return true;
+  // 2. Suppress on authentication, admin, and certificate verification pages
+  if (page && AD_CONFIG.restrictedPages.includes(page)) {
+    return false;
   }
 
-  // 3. User interaction dialogues (Doubt submission, Payment/WhatsApp request, Notepad)
+  // 3. Suppress during interactive quizzes
+  if (currentStep === "practice") {
+    return false;
+  }
+
+  // 4. Suppress during coding practice / playground
+  if (currentStep === "code") {
+    return false;
+  }
+
+  // 5. Suppress when user is interacting with modals (Ask Doubt, WhatsApp, Certificate Request, Auth)
   if (isModalOpen) {
+    return false;
+  }
+
+  // 6. Placement allowed on approved pages
+  if (page && AD_CONFIG.allowedPages.includes(page)) {
+    return true;
+  }
+
+  // If in lesson, only allow during non-interactive reading/summary steps
+  if (page === "lesson" && currentStep !== "practice" && currentStep !== "code") {
     return true;
   }
 
@@ -105,26 +110,27 @@ export function isRouteAdRestricted({ page, currentStep, isModalOpen } = {}) {
 }
 
 /**
- * Check if a specific ad script is enabled
- * @param {string} key - SCRIPT key in AD_SCRIPTS
- * @returns {boolean}
+ * Emergency Kill-Switch: Disables the ad placement immediately across the site.
  */
-export function isAdScriptEnabled(key) {
-  return Boolean(AD_SCRIPTS[key]?.enabled);
+export function disableAdsImmediately() {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem("lwu_disable_ads", "true");
+      localStorage.setItem("lwu_abscloud_enabled", "false");
+    } catch (_) {}
+    window.dispatchEvent(new Event("lwu_ads_state_change"));
+  }
 }
 
 /**
- * Programmatic toggle for administrative auditing/testing
- * @param {string} key
- * @param {boolean} state
+ * Re-enables the approved ad placement.
  */
-export function setAdScriptEnabled(key, state) {
-  if (AD_SCRIPTS[key]) {
-    AD_SCRIPTS[key].enabled = Boolean(state);
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(`lwu_ad_${key.toLowerCase()}`, String(Boolean(state)));
-      } catch (_) {}
-    }
+export function enableAds() {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.removeItem("lwu_disable_ads");
+      localStorage.setItem("lwu_abscloud_enabled", "true");
+    } catch (_) {}
+    window.dispatchEvent(new Event("lwu_ads_state_change"));
   }
 }

@@ -60,25 +60,25 @@ export default function PrivacyPolicy({ onNavigate, onBack }) {
           </ul>
         </section>
 
-        {/* Section 2: Third-Party Advertising (Adsterra & AdSense Disclosures) */}
+        {/* Section 2: Third-Party Advertising (Adsterra / Abscloud & AdSense Disclosures) */}
         <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-blue-50/60 dark:bg-[#102541]/70 border border-blue-200/80 dark:border-[#183657]">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#0756A5] text-white flex items-center justify-center">
               <Cookie size={18} />
             </div>
             <h2 className="heading-section text-slate-900 dark:text-white">
-              2. Third-Party Advertising & Adsterra / Abscloud Disclosures
+              2. Third-Party Advertising & Abscloud Disclosures
             </h2>
           </div>
           <p className="body-base text-slate-700 dark:text-[#D2DEEC] leading-relaxed">
-            To provide high-quality Python educational content free of subscription fees, Learn With Us partners with verified third-party advertising networks, including Adsterra (via bauval.org and abscloud.org domains) and Google AdSense. In compliance with applicable privacy standards and advertising publisher policies, we disclose the following:
+            To provide high-quality Python educational content free of subscription fees, Learn With Us partners with verified third-party advertising networks, including Adsterra (via the approved abscloud.org network script) and Google AdSense. In compliance with applicable privacy standards and advertising publisher policies, we disclose the following:
           </p>
           <ul className="list-disc pl-6 space-y-2 text-sm sm:text-base text-slate-700 dark:text-[#D2DEEC]">
             <li>
               <strong>Third-Party Vendors & Cookies:</strong> Third-party advertising vendors (including Adsterra and Google) may use cookies, web beacons, and similar tracking technologies to deliver, evaluate, and tailor advertisements based on previous visits to this or other websites across the Internet.
             </li>
             <li>
-              <strong>Ad Units & Educational Safety:</strong> We display curated Native Banners and standard 300×250 display units placed strictly outside interactive quiz and live coding environments to protect student concentration. Intrusive popunders, redirects, and click-jacking layers are permanently disabled by platform policy.
+              <strong>Ad Units & Educational Safety:</strong> Advertising is restricted exclusively to approved sections (such as informational and home pages) and is strictly excluded from interactive quizzes, coding environments, authentication pages, and certificate workflows to protect student concentration.
             </li>
             <li>
               <strong>Data Collection by Ad Networks:</strong> Advertising scripts may collect technical identifiers, browser characteristics, IP addresses, and aggregated interaction data for the purposes of ad impression auditing, fraud prevention, and frequency capping. Learn With Us never shares private student progress, quiz answers, account credentials, or student emails with any advertising network.

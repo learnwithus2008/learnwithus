@@ -10,7 +10,7 @@
  * - Full protection of React Virtual DOM and application state
  */
 
-import { AD_SCRIPTS, isRouteAdRestricted } from "../config/adConfig";
+import { AD_CONFIG, isAdPlacementAllowed } from "../config/adConfig";
 
 class AdScriptManager {
   constructor() {

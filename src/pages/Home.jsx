@@ -7,7 +7,6 @@ import { PageHelpButton } from "../components/GuideTutorial/ContextualPageGuidan
 import { LEARNING_STAGES, getStageById } from "../data/learningStages";
 import { getLanguageById } from "../data/learningLanguages";
 import { useAuth } from "../context/AuthContext";
-import { AdsterraNativeBanner } from "../components/Ads";
 import {
   Code2,
   Terminal,
@@ -621,9 +620,6 @@ export default function Home({
           ))}
         </div>
       </section>
-
-      {/* Sponsored Partner Showcase (Native Banner) */}
-      <AdsterraNativeBanner label="Sponsored Learning Partner" />
 
       {/* ========================================================
           SECTION F: LEARNING COMMUNITY (Stats & Motivation)
