@@ -42,6 +42,7 @@ import GuideCompletionModal from "./components/GuideTutorial/GuideCompletionModa
 import ContextualPageGuidance from "./components/GuideTutorial/ContextualPageGuidance";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { RefreshCw, ShieldCheck, Eye } from "lucide-react";
+import { GlobalAdManager } from "./components/Ads";
 
 // Route resolution helpers for URL hash & history synchronization
 function getRouteFromLocation() {
@@ -561,6 +562,7 @@ function MainAppShell({
       </ErrorBoundary>
 
       {/* Global Word Meaning Dictionary Modal & Floating Search Trigger */}
+      <GlobalAdManager page={currentPage} isModalOpen={stageModalOpen || languageModalOpen} />
       <GlobalWordMeaningModal />
       <AskDoubtModal />
       <DoubtToast />

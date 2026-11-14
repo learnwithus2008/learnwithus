@@ -1,40 +1,49 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Sparkles } from "lucide-react";
+import { AD_SCRIPTS } from "../../config/adConfig";
 
 /**
  * AdsterraNativeBanner
  * Reusable Native Banner component for LearnWithUs.
  *
- * Adsterra Placement Code:
+ * Exact Adsterra Placement Code:
  * <script async="async" data-cfasync="false" src="https://bauval.org/21/6262f8eaf407dba385778988c358262b"></script>
  * <div id="container-6262f8eaf407dba385778988c358262b"></div>
  *
- * React & Cloudflare SPA Features:
- * - Scoped inside an isolated friendly iframe container to guarantee zero global pollution
+ * Architecture & Safety:
+ * - Scoped inside an isolated friendly iframe container to guarantee zero global variable pollution
  * - Prevents container ID collisions on route transitions across Home, Lesson, and Learn
  * - Safe mount and unmount lifecycle management (no memory leaks)
  * - Non-blocking lazy loading
  * - Fully responsive with auto-height adjustment and zero layout shift
+ * - Collapses automatically if ad-blocked or empty to preserve clean learning UI
  */
 export default function AdsterraNativeBanner({
   className = "",
   label = "Sponsored Resource",
-  minHeight = 140
+  minHeight = 120
 }) {
   const iframeRef = useRef(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [hasAdContent, setHasAdContent] = useState(true);
+
+  // Check centralized configuration
+  const config = AD_SCRIPTS.NATIVE_BANNER;
+  if (!config || !config.enabled) {
+    return null;
+  }
 
   useEffect(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
 
-    // Friendly iframe document HTML with Adsterra Native Banner script and container
+    // Friendly iframe document HTML with Adsterra Native Banner script and exact container ID
     const docHtml = `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
           <base target="_blank" />
           <style>
             *, *::before, *::after { box-sizing: border-box; }
@@ -43,16 +52,19 @@ export default function AdsterraNativeBanner({
               padding: 0;
               background: transparent;
               width: 100%;
-              overflow: hidden;
+              max-width: 100vw;
+              overflow-x: hidden;
               font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             }
             #container-6262f8eaf407dba385778988c358262b {
               width: 100% !important;
+              max-width: 100% !important;
               min-height: ${minHeight}px;
               display: flex;
               justify-content: center;
               align-items: center;
               margin: 0 auto;
+              overflow: hidden;
             }
           </style>
         </head>
@@ -60,7 +72,7 @@ export default function AdsterraNativeBanner({
           <script async="async" data-cfasync="false" src="https://bauval.org/21/6262f8eaf407dba385778988c358262b"><\/script>
           <div id="container-6262f8eaf407dba385778988c358262b"></div>
           <script>
-            // Monitor content height to dynamically resize iframe
+            // Monitor content height to dynamically resize parent iframe
             function updateHeight() {
               const body = document.body;
               const html = document.documentElement;
@@ -82,8 +94,9 @@ export default function AdsterraNativeBanner({
     // Listen for resize messages from child iframe
     const handleMessage = (e) => {
       if (e.data && e.data.type === "ADSTERRA_NATIVE_RESIZE" && e.data.height) {
-        if (iframe && typeof e.data.height === "number" && e.data.height > 60) {
-          iframe.style.height = `${Math.min(e.data.height + 10, 600)}px`;
+        if (iframe && typeof e.data.height === "number" && e.data.height > 40) {
+          iframe.style.height = `${Math.min(e.data.height + 6, 600)}px`;
+          setHasAdContent(true);
         }
       }
     };
@@ -92,19 +105,16 @@ export default function AdsterraNativeBanner({
     // Write content to iframe
     try {
       iframe.srcdoc = docHtml;
-      setIsLoaded(true);
     } catch (_) {
-      // Fallback: document.write inside iframe if srcdoc is restricted
       try {
         const doc = iframe.contentWindow?.document || iframe.contentDocument;
         if (doc) {
           doc.open();
           doc.write(docHtml);
           doc.close();
-          setIsLoaded(true);
         }
       } catch (err) {
-        console.warn("Native Banner iframe initialization:", err.message);
+        console.warn("[AdsterraNativeBanner] Error writing iframe content:", err.message);
       }
     }
 
@@ -113,12 +123,16 @@ export default function AdsterraNativeBanner({
     };
   }, [minHeight]);
 
+  if (!isVisible || !hasAdContent) {
+    return null;
+  }
+
   return (
     <div
-      className={`adsterra-native-wrapper w-full max-w-5xl mx-auto my-6 px-3 sm:px-4 ${className}`}
+      className={`adsterra-native-wrapper w-full max-w-5xl mx-auto my-6 px-2 sm:px-4 ${className}`}
       aria-label="Advertisement"
     >
-      <div className="rounded-2xl sm:rounded-3xl p-3 sm:p-5 bg-slate-50/80 dark:bg-[#0c182a]/80 border border-slate-200/80 dark:border-[#182c47] shadow-xs relative overflow-hidden transition-all">
+      <div className="rounded-2xl sm:rounded-3xl p-2.5 sm:p-5 bg-slate-50/80 dark:bg-[#0c182a]/80 border border-slate-200/80 dark:border-[#182c47] shadow-xs relative overflow-hidden transition-all">
         {/* Subtle Sponsor Header */}
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200/60 dark:border-[#182c47]/60 text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           <span className="flex items-center gap-1.5">
@@ -126,12 +140,12 @@ export default function AdsterraNativeBanner({
             <span>{label}</span>
           </span>
           <span className="text-[9px] lowercase tracking-normal text-slate-400 dark:text-slate-500">
-            adsterra partner
+            partner resource
           </span>
         </div>
 
         {/* Native Ad Container */}
-        <div className="w-full flex justify-center items-center min-h-[120px] overflow-hidden">
+        <div className="w-full flex justify-center items-center min-h-[100px] overflow-hidden">
           <iframe
             ref={iframeRef}
             title="Sponsored Educational Partner"
@@ -140,7 +154,8 @@ export default function AdsterraNativeBanner({
               minHeight: `${minHeight}px`,
               height: `${minHeight}px`,
               border: "none",
-              background: "transparent"
+              background: "transparent",
+              maxWidth: "100%"
             }}
             scrolling="no"
             loading="lazy"
@@ -150,4 +165,3 @@ export default function AdsterraNativeBanner({
     </div>
   );
 }
-

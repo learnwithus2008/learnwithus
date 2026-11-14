@@ -67,21 +67,21 @@ export default function PrivacyPolicy({ onNavigate, onBack }) {
               <Cookie size={18} />
             </div>
             <h2 className="heading-section text-slate-900 dark:text-white">
-              2. Third-Party Advertising & Adsterra Disclosures
+              2. Third-Party Advertising & Adsterra / Abscloud Disclosures
             </h2>
           </div>
           <p className="body-base text-slate-700 dark:text-[#D2DEEC] leading-relaxed">
-            To provide high-quality Python educational content free of subscription fees, Learn With Us partners with trusted third-party advertising networks, including Adsterra and Google AdSense. In compliance with applicable privacy standards and advertising publisher policies, we disclose the following:
+            To provide high-quality Python educational content free of subscription fees, Learn With Us partners with verified third-party advertising networks, including Adsterra (via bauval.org and abscloud.org domains) and Google AdSense. In compliance with applicable privacy standards and advertising publisher policies, we disclose the following:
           </p>
           <ul className="list-disc pl-6 space-y-2 text-sm sm:text-base text-slate-700 dark:text-[#D2DEEC]">
             <li>
               <strong>Third-Party Vendors & Cookies:</strong> Third-party advertising vendors (including Adsterra and Google) may use cookies, web beacons, and similar tracking technologies to deliver, evaluate, and tailor advertisements based on previous visits to this or other websites across the Internet.
             </li>
             <li>
-              <strong>Ad Units & Delivery:</strong> We display curated Native Banners and standard 300×250 display units placed strictly outside interactive quiz and live coding environments to protect student concentration.
+              <strong>Ad Units & Educational Safety:</strong> We display curated Native Banners and standard 300×250 display units placed strictly outside interactive quiz and live coding environments to protect student concentration. Intrusive popunders, redirects, and click-jacking layers are permanently disabled by platform policy.
             </li>
             <li>
-              <strong>Data Collection by Ad Networks:</strong> Advertising scripts may collect technical identifiers, browser characteristics, IP addresses, and aggregated interaction data for the purposes of ad impression auditing, fraud prevention, and frequency capping. Learn With Us does not share private student progress, quiz answers, or account passwords with any advertising network.
+              <strong>Data Collection by Ad Networks:</strong> Advertising scripts may collect technical identifiers, browser characteristics, IP addresses, and aggregated interaction data for the purposes of ad impression auditing, fraud prevention, and frequency capping. Learn With Us never shares private student progress, quiz answers, account credentials, or student emails with any advertising network.
             </li>
             <li>
               <strong>Personalized Advertising Opt-Out:</strong> Users may opt out of personalized advertising by visiting{" "}
