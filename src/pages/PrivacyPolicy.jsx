@@ -60,25 +60,28 @@ export default function PrivacyPolicy({ onNavigate, onBack }) {
           </ul>
         </section>
 
-        {/* Section 2: Google AdSense & Third-Party Cookies (Strict AdSense Requirement) */}
+        {/* Section 2: Third-Party Advertising (Adsterra & AdSense Disclosures) */}
         <section className="space-y-3 p-5 sm:p-6 rounded-2xl bg-blue-50/60 dark:bg-[#102541]/70 border border-blue-200/80 dark:border-[#183657]">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#0756A5] text-white flex items-center justify-center">
               <Cookie size={18} />
             </div>
             <h2 className="heading-section text-slate-900 dark:text-white">
-              2. Third-Party Advertising & Google AdSense Disclosures
+              2. Third-Party Advertising & Adsterra Disclosures
             </h2>
           </div>
           <p className="body-base text-slate-700 dark:text-[#D2DEEC] leading-relaxed">
-            In compliance with Google AdSense Publisher Policies, we disclose the following concerning third-party advertising partners:
+            To provide high-quality Python educational content free of subscription fees, Learn With Us partners with trusted third-party advertising networks, including Adsterra and Google AdSense. In compliance with applicable privacy standards and advertising publisher policies, we disclose the following:
           </p>
           <ul className="list-disc pl-6 space-y-2 text-sm sm:text-base text-slate-700 dark:text-[#D2DEEC]">
             <li>
-              <strong>Third-Party Vendors & Cookies:</strong> Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites across the Internet.
+              <strong>Third-Party Vendors & Cookies:</strong> Third-party advertising vendors (including Adsterra and Google) may use cookies, web beacons, and similar tracking technologies to deliver, evaluate, and tailor advertisements based on previous visits to this or other websites across the Internet.
             </li>
             <li>
-              <strong>Advertising Cookies:</strong> Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to Learn With Us and/or other sites on the Internet.
+              <strong>Ad Units & Delivery:</strong> We display curated Native Banners and standard 300×250 display units placed strictly outside interactive quiz and live coding environments to protect student concentration.
+            </li>
+            <li>
+              <strong>Data Collection by Ad Networks:</strong> Advertising scripts may collect technical identifiers, browser characteristics, IP addresses, and aggregated interaction data for the purposes of ad impression auditing, fraud prevention, and frequency capping. Learn With Us does not share private student progress, quiz answers, or account passwords with any advertising network.
             </li>
             <li>
               <strong>Personalized Advertising Opt-Out:</strong> Users may opt out of personalized advertising by visiting{" "}
@@ -93,16 +96,16 @@ export default function PrivacyPolicy({ onNavigate, onBack }) {
               .
             </li>
             <li>
-              <strong>Network Advertising Initiative (NAI):</strong> Alternatively, users can opt out of a third-party vendor's use of cookies for personalized advertising by visiting{" "}
+              <strong>Digital Advertising Alliance & NAI:</strong> Users can also opt out of third-party cookie-based interest advertising across multiple networks via{" "}
               <a
                 href="http://www.aboutads.info/choices/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#0756A5] dark:text-[#FFB800] underline font-semibold hover:opacity-80"
               >
-                aboutads.info (http://www.aboutads.info/choices/)
+                AboutAds Consumer Choices (http://www.aboutads.info/choices/)
               </a>
-              .
+              {" "}or the European Interactive Digital Advertising Alliance (EDAA).
             </li>
           </ul>
         </section>

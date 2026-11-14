@@ -7,6 +7,7 @@ import { PageHelpButton } from "../components/GuideTutorial/ContextualPageGuidan
 import { getStageById } from "../data/learningStages";
 import { getLanguageById } from "../data/learningLanguages";
 import { useAuth } from "../context/AuthContext";
+import { AdsterraNativeBanner } from "../components/Ads";
 import {
   Search,
   BookOpen,
@@ -277,6 +278,9 @@ export default function Learn({
           </div>
         )}
       </div>
+
+      {/* Featured Educational Resource (Native Banner) */}
+      <AdsterraNativeBanner label="Featured Educational Resource" />
 
       {/* ========================================================
           CHAPTER AND LESSON CARDS
