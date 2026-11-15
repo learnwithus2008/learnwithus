@@ -4,6 +4,7 @@ import TopicCard from "../components/TopicCard";
 import AskDoubtButton from "../components/AskDoubtButton";
 import PageBackButton from "../components/PageBackButton";
 import { PageHelpButton } from "../components/GuideTutorial/ContextualPageGuidance";
+import { AbscloudMidContent } from "../components/Ads";
 import { getStageById } from "../data/learningStages";
 import { getLanguageById } from "../data/learningLanguages";
 import { useAuth } from "../context/AuthContext";
@@ -277,6 +278,11 @@ export default function Learn({
           </div>
         )}
       </div>
+
+      {/* ========================================================
+          MID-CONTENT EDUCATIONAL SPONSORED PARTNER
+          ======================================================== */}
+      <AbscloudMidContent page="learn" />
 
       {/* ========================================================
           CHAPTER AND LESSON CARDS

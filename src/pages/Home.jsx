@@ -4,6 +4,7 @@ import LanguageSelector from "../components/LanguageSelector";
 import PageBackButton from "../components/PageBackButton";
 import HeroBookIllustration from "../components/HeroBookIllustration";
 import { PageHelpButton } from "../components/GuideTutorial/ContextualPageGuidance";
+import { AdsterraNativeBanner } from "../components/Ads";
 import { LEARNING_STAGES, getStageById } from "../data/learningStages";
 import { getLanguageById } from "../data/learningLanguages";
 import { useAuth } from "../context/AuthContext";
@@ -573,6 +574,11 @@ export default function Home({
           })}
         </div>
       </section>
+
+      {/* ========================================================
+          SPONSORED SHOWCASE: ADSTERRA NATIVE BANNER
+          ======================================================== */}
+      <AdsterraNativeBanner page="home" />
 
       {/* ========================================================
           SECTION E: YOUR ACHIEVEMENTS (Gamification & Badges)

@@ -1,39 +1,73 @@
 /**
  * src/config/adConfig.js
- * Centralized Configuration for LearnWithUs Advertising Integration.
+ * Centralized Configuration for LearnWithUs Three-Ad Script Integration.
  *
- * Approved Ad Script:
- * <script data-cfasync="false" src="https://abscloud.org/1/8dd4f528a9dc426c7936891238d7bc3a"></script>
+ * Ad Units:
+ * 1. Native Banner Ad (bauval.org/21/...) with #container-6262f8eaf407dba385778988c358262b
+ * 2. Second Ad Script (bauval.org/14/...)
+ * 3. Third Mid-Content Ad Script (abscloud.org/1/...)
  *
- * Requirements & Educational Safeguards:
- * - Single verified script provider (abscloud.org)
- * - Display ONLY in suitable sections (Homepage and informational pages)
- * - STRICTLY KEPT AWAY from:
- *   - Quizzes (currentStep === 'practice')
- *   - Code Practice / Playground (currentStep === 'code')
- *   - Sign In / Registration ('signin', 'signup')
- *   - Certificate verification & requests ('verify-certificate')
- *   - Payment and doubt workflows
- * - Instant Emergency Kill-Switch provided if inappropriate content is ever detected
+ * Student Protection Rules:
+ * - Never show ads on: Login/Register, Quizzes, Coding Practice, Payment, Certificate Verification
+ * - Load scripts only once (deduplication)
+ * - Safe static handling for Script 3 (provider does not support periodic re-injection)
+ * - Emergency Kill-Switch for instant site-wide or per-ad disabling
  */
 
-export const AD_CONFIG = {
-  scriptUrl: "https://abscloud.org/1/8dd4f528a9dc426c7936891238d7bc3a",
-  provider: "abscloud.org",
-  scriptId: "abscloud-ad-script",
-  dataCfasync: false,
+export const AD_UNITS = {
+  // SCRIPT 1: Native Banner Ad
+  NATIVE_BANNER: {
+    id: "adsterra_native_banner",
+    name: "Adsterra Native Banner",
+    url: "https://bauval.org/21/6262f8eaf407dba385778988c358262b",
+    containerId: "container-6262f8eaf407dba385778988c358262b",
+    placement: "Homepage Sponsored Showcase",
+    enabled: true,
+    storageKey: "lwu_ad_native_banner"
+  },
 
-  // Allowed pages: Homepage and informational pages
-  allowedPages: ["home", "about", "contact", "terms", "privacy", "projects"],
+  // SCRIPT 2: Second Ad Script
+  SECOND_AD: {
+    id: "bauval_second_ad",
+    name: "Bauval Secondary Ad Unit",
+    url: "https://bauval.org/14/139f459964696e9529c356b58868a7f9",
+    placement: "Secondary Non-Learning Area",
+    enabled: true,
+    storageKey: "lwu_ad_second"
+  },
 
-  // Strictly prohibited pages: Authentication, administration, certificate workflows
-  restrictedPages: ["signin", "signup", "admin", "verify-certificate", "verify"]
+  // SCRIPT 3: Third Mid-Content Ad Script
+  MID_CONTENT: {
+    id: "abscloud_mid_content",
+    name: "Abscloud Mid-Content Ad Placement",
+    url: "https://abscloud.org/1/8dd4f528a9dc426c7936891238d7bc3a",
+    scriptUrl: "https://abscloud.org/1/8dd4f528a9dc426c7936891238d7bc3a",
+    scriptId: "adsterra-abscloud-ad-script",
+    placement: "Mid-Content (Between Learning Modules)",
+    enabled: true,
+    storageKey: "lwu_ad_mid_content",
+    // Timing / Refresh: Adsterra does not support client-side periodic refresh without re-injecting scripts,
+    // which violates ad network anti-fraud policies. Kept static per user instructions.
+    supportsRefresh: false,
+    refreshIntervalMs: 120000 // 2 minutes documented
+  }
 };
 
+// Backwards compatibility alias
+export const AD_CONFIG = AD_UNITS.MID_CONTENT;
+
+export const RESTRICTED_PAGES = [
+  "signin",
+  "signup",
+  "admin",
+  "verify-certificate",
+  "verify",
+  "practice",
+  "lesson"
+];
+
 /**
- * Checks whether ads are globally enabled or if an emergency disable kill-switch is active.
- * Allows instant shutdown via localStorage, window event, or query parameter (?disable_ads=true)
- * without requiring a redeployment.
+ * Checks whether advertising is globally allowed or if an emergency killswitch is active.
  */
 export function areAdsGloballyEnabled() {
   if (typeof window === "undefined") return true;
@@ -41,20 +75,14 @@ export function areAdsGloballyEnabled() {
   try {
     const fullHref = window.location.href || "";
 
-    // 1. Emergency URL parameter override (?disable_ads=true anywhere in URL or hash)
+    // 1. URL emergency override (?disable_ads=true)
     if (fullHref.includes("disable_ads=true")) {
       return false;
     }
 
-    // 2. Emergency localStorage kill-switch
+    // 2. localStorage emergency killswitch
     if (localStorage.getItem("lwu_disable_ads") === "true") {
       return false;
-    }
-
-    // 3. User / Admin preference toggle
-    const stored = localStorage.getItem("lwu_abscloud_enabled");
-    if (stored !== null) {
-      return stored === "true";
     }
   } catch (_) {}
 
@@ -62,75 +90,84 @@ export function areAdsGloballyEnabled() {
 }
 
 /**
- * Evaluates whether an ad placement is permissible on the current screen/state.
- *
- * @param {Object} context
- * @param {string} [context.page] - Current SPA page route ('home' | 'about' | 'learn' | 'lesson' | etc.)
- * @param {string} [context.currentStep] - Lesson step ('understand' | 'example' | 'code' | 'practice' | 'challenge' | 'complete')
- * @param {boolean} [context.isModalOpen] - Whether any modal dialog is active
- * @returns {boolean} True if ads are permitted; False if suppressed
+ * Check if a specific ad unit is enabled by configuration or storage override.
+ * @param {string} unitKey - Key in AD_UNITS ('NATIVE_BANNER' | 'SECOND_AD' | 'MID_CONTENT')
+ * @returns {boolean}
+ */
+export function isAdUnitEnabled(unitKey) {
+  if (!areAdsGloballyEnabled()) return false;
+  const unit = AD_UNITS[unitKey];
+  if (!unit) return false;
+
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem(unit.storageKey);
+      if (stored !== null) return stored === "true";
+    } catch (_) {}
+  }
+
+  return Boolean(unit.enabled);
+}
+
+/**
+ * Evaluates whether an advertisement can be displayed on the current screen/state.
+ * Enforces strict educational safeguards:
+ * - NO ads during active quizzes ('practice')
+ * - NO ads during code runner / playground ('code')
+ * - NO ads on signin/signup/admin/verify/practice/lesson
+ * - NO ads while modal dialogues are active
  */
 export function isAdPlacementAllowed({ page, currentStep, isModalOpen } = {}) {
-  // 1. Check emergency killswitch
-  if (!areAdsGloballyEnabled()) {
+  // 1. Global killswitch check
+  if (!areAdsGloballyEnabled()) return false;
+
+  // 2. Check sensitive routes
+  if (page && RESTRICTED_PAGES.includes(page)) {
     return false;
   }
 
-  // 2. Suppress on authentication, admin, and certificate verification pages
-  if (page && AD_CONFIG.restrictedPages.includes(page)) {
-    return false;
-  }
-
-  // 3. Suppress during interactive quizzes
+  // 3. Strict Learning Safeguard: Active Quiz
   if (currentStep === "practice") {
     return false;
   }
 
-  // 4. Suppress during coding practice / playground
+  // 4. Strict Learning Safeguard: Active Code Runner
   if (currentStep === "code") {
     return false;
   }
 
-  // 5. Suppress when user is interacting with modals (Ask Doubt, WhatsApp, Certificate Request, Auth)
+  // 5. Active Modals (Doubt, WhatsApp, Certificate Request, Auth)
   if (isModalOpen) {
     return false;
   }
 
-  // 6. Placement allowed on approved pages
-  if (page && AD_CONFIG.allowedPages.includes(page)) {
-    return true;
-  }
-
-  // If in lesson, only allow during non-interactive reading/summary steps
-  if (page === "lesson" && currentStep !== "practice" && currentStep !== "code") {
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 /**
- * Emergency Kill-Switch: Disables the ad placement immediately across the site.
+ * Instant Emergency Kill-Switch: Disables all advertising placements immediately.
  */
-export function disableAdsImmediately() {
+export function disableAllAds() {
   if (typeof window !== "undefined") {
     try {
       localStorage.setItem("lwu_disable_ads", "true");
-      localStorage.setItem("lwu_abscloud_enabled", "false");
     } catch (_) {}
     window.dispatchEvent(new Event("lwu_ads_state_change"));
   }
 }
 
+export const disableAdsImmediately = disableAllAds;
+
 /**
- * Re-enables the approved ad placement.
+ * Re-enables advertising placements.
  */
-export function enableAds() {
+export function enableAllAds() {
   if (typeof window !== "undefined") {
     try {
       localStorage.removeItem("lwu_disable_ads");
-      localStorage.setItem("lwu_abscloud_enabled", "true");
     } catch (_) {}
     window.dispatchEvent(new Event("lwu_ads_state_change"));
   }
 }
+
+export const enableAds = enableAllAds;

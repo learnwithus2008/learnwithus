@@ -750,17 +750,25 @@ export default function LessonContent({
                 )}
 
                 {langPkg.commonMistakes && (
-                  <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40">
-                    <span className="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 block mb-1.5 flex items-center gap-1.5">
-                      <AlertTriangle size={15} className="text-[#D97706] dark:text-[#FFB800]" />
+                  <div className="p-4 sm:p-5 rounded-2xl bg-[#FFFBEB] dark:bg-[#0A1E38] border border-amber-300/80 dark:border-amber-500/30 shadow-xs space-y-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-[#FFB800] block flex items-center gap-1.5">
+                      <AlertTriangle size={15} className="text-amber-600 dark:text-[#FFB800]" />
                       <span>Common Mistake to Avoid:</span>
                     </span>
-                    <p className="text-xs sm:text-sm font-bold text-amber-950 dark:text-amber-100 mb-1">
-                      {langPkg.commonMistakes.mistake}
+                    <p className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 m-0 leading-relaxed">
+                      {typeof langPkg.commonMistakes === "object"
+                        ? langPkg.commonMistakes.mistake
+                        : langPkg.commonMistakes}
                     </p>
-                    <p className="text-xs text-amber-800 dark:text-amber-200 m-0">
-                      💡 <strong>Fix:</strong> {langPkg.commonMistakes.fix}
-                    </p>
+                    {typeof langPkg.commonMistakes === "object" && langPkg.commonMistakes.fix && (
+                      <div className="mt-2.5 p-3 rounded-xl bg-white/90 dark:bg-[#153560] border border-amber-200/90 dark:border-[#1B3B66] flex items-start gap-2 shadow-2xs">
+                        <span className="text-sm select-none shrink-0 leading-tight">💡</span>
+                        <p className="text-xs text-amber-950 dark:text-slate-200 leading-relaxed m-0 font-medium">
+                          <strong className="font-bold text-amber-900 dark:text-[#FFB800]">Fix:</strong>{" "}
+                          {langPkg.commonMistakes.fix}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1116,9 +1124,9 @@ export default function LessonContent({
                 </button>
 
                 {showHint && (
-                  <div className="mt-3 p-3.5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 animate-in flex items-start gap-2.5">
-                    <span className="text-xl select-none">💡</span>
-                    <p className="text-xs sm:text-sm text-[#102B50] dark:text-white m-0 font-medium">
+                  <div className="mt-3 p-3.5 rounded-2xl bg-[#FFFBEB] dark:bg-[#0A1E38] border border-amber-300/80 dark:border-amber-500/30 animate-in flex items-start gap-2.5 shadow-xs">
+                    <span className="text-xl select-none shrink-0">💡</span>
+                    <p className="text-xs sm:text-sm text-amber-950 dark:text-slate-100 m-0 font-medium leading-relaxed">
                       {tryIt.hint || "Make sure your syntax has matching parentheses and quotes."}
                     </p>
                   </div>
