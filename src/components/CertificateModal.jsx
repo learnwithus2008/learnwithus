@@ -15,9 +15,9 @@ import BrandLogo from "./BrandLogo";
  * - Premium educational appearance & print-to-PDF support
  */
 export default function CertificateModal({
-  isOpen,
+  isOpen = false,
   onClose,
-  studentName = "Learner",
+  studentName = "Python Learner",
   courseName = "Python Programming & Adaptive Core Curriculum",
   completedCount = 198,
   totalTopics = 198,
@@ -32,18 +32,48 @@ export default function CertificateModal({
   if (!isOpen) return null;
 
   const handlePrint = () => {
-    window.print();
+    if (typeof window !== "undefined") {
+      window.print();
+    }
   };
 
-  const formattedIssueDate = issueDate
-    ? new Date(issueDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-    : new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  // Safe date formatting helper that gracefully handles any input without throwing
+  const formatDateSafe = (dateVal) => {
+    if (!dateVal) return null;
+    try {
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return null;
+      return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    } catch {
+      return null;
+    }
+  };
 
-  const formattedCompletionDate = completionDate
-    ? new Date(completionDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-    : formattedIssueDate;
+  const todayFormatted = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const formattedIssueDate = formatDateSafe(issueDate) || todayFormatted;
+  const formattedCompletionDate = formatDateSafe(completionDate) || formattedIssueDate;
 
-  const resolvedVerificationUrl = verificationUrl || `${typeof window !== "undefined" ? window.location.origin : ""}/#/verify-certificate/${certificateId}`;
+  const safeCertificateId = typeof certificateId === "string" && certificateId.trim()
+    ? certificateId
+    : "LWU-PY-2026-CERT01";
+
+  const safeStudentName = typeof studentName === "string" && studentName.trim()
+    ? studentName
+    : "Python Learner";
+
+  const safeCourseName = typeof courseName === "string" && courseName.trim()
+    ? courseName
+    : "Python Programming & Adaptive Core Curriculum";
+
+  const safeCompletedCount = typeof completedCount === "number" && !isNaN(completedCount)
+    ? completedCount
+    : 198;
+
+  const resolvedVerificationUrl = verificationUrl || (
+    typeof window !== "undefined"
+      ? `${window.location.origin}/#/verify-certificate/${safeCertificateId}`
+      : `/#/verify-certificate/${safeCertificateId}`
+  );
 
   return (
     <div
@@ -94,10 +124,9 @@ export default function CertificateModal({
           className="p-4 sm:p-10 md:p-12 bg-white text-[#102B50] relative select-none print:p-6 print:m-0"
           style={{ minHeight: "540px" }}
         >
-          {/* Subtle Outer Blue & Gold Double Border */}
+          {/* Outer Blue & Gold Double Border */}
           <div className="border-4 border-[#0756A5] p-2 rounded-2xl relative print:border-4">
             <div className="border border-[#FFB800] p-5 sm:p-8 md:p-10 rounded-xl relative overflow-hidden bg-white">
-              
               {/* Corner Golden Accents */}
               <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#FFB800]" />
               <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[#FFB800]" />
@@ -111,7 +140,7 @@ export default function CertificateModal({
                   <span>Verified Educational Credential</span>
                 </div>
                 <div className="font-mono text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-[#102B50] border border-slate-200">
-                  ID: <span className="text-[#0756A5] font-black">{certificateId}</span>
+                  ID: <span className="text-[#0756A5] font-black">{safeCertificateId}</span>
                 </div>
               </div>
 
@@ -137,7 +166,7 @@ export default function CertificateModal({
               {/* Recipient Student Name */}
               <div className="text-center mb-5">
                 <h1 className="text-2xl sm:text-4xl font-extrabold text-[#102B50] font-display tracking-tight border-b-2 border-[#0756A5]/20 inline-block px-6 pb-1">
-                  {studentName || "Python Learner"}
+                  {safeStudentName}
                 </h1>
               </div>
 
@@ -147,10 +176,10 @@ export default function CertificateModal({
                   has demonstrated exceptional dedication and proficiency by successfully completing all course requirements and practice modules in
                 </p>
                 <p className="text-base sm:text-lg font-black text-[#0756A5]">
-                  {courseName}
+                  {safeCourseName}
                 </p>
                 <p className="text-[11px] text-[#64748B]">
-                  Verified across {completedCount} adaptive lessons, interactive problem-solving exercises, and milestone evaluations.
+                  Verified across {safeCompletedCount} adaptive lessons, interactive problem-solving exercises, and milestone evaluations.
                 </p>
               </div>
 

@@ -95,7 +95,7 @@ export default function LessonContent({
     });
   };
 
-  const { isAuthenticated, openAuthModal, toggleBookmark, isTopicBookmarked, toggleComplete, recordQuiz } = useAuth();
+  const { currentUser, isAuthenticated, openAuthModal, toggleBookmark, isTopicBookmarked, toggleComplete, recordQuiz } = useAuth();
   const isBookmarked = isTopicBookmarked(topic.id);
   const { openNotepad, setTopicContext } = useNotepad();
 

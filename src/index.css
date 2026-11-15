@@ -10186,3 +10186,38 @@ html.dark .font-size-control-pill .font-size-btn-value:hover svg {
 html.dark .font-size-control-pill .font-size-divider {
   background-color: #1E3A5F !important;
 }
+
+/* ==========================================================================
+   Advertising Components - Dark Theme High Contrast Typography
+   Ensures 100% crystal-clear readability for Adsterra, Bauval, and Abscloud
+   ========================================================================== */
+html.dark [data-ad-unit="abscloud_mid_content"],
+html.dark [data-ad-unit="adsterra_native_banner"],
+html.dark #abscloud-midcontent-host,
+html.dark [class*="abscloud"],
+html.dark [id*="abscloud"],
+html.dark [class*="adsterra"],
+html.dark [id*="adsterra"],
+html.dark [class*="bauval"] {
+  color: #FFFFFF !important;
+}
+
+html.dark [data-ad-unit="abscloud_mid_content"] a,
+html.dark [data-ad-unit="abscloud_mid_content"] a *,
+html.dark #abscloud-midcontent-host a,
+html.dark #abscloud-midcontent-host a *,
+html.dark [data-ad-unit="abscloud_mid_content"] p,
+html.dark [data-ad-unit="abscloud_mid_content"] span,
+html.dark [data-ad-unit="abscloud_mid_content"] h1,
+html.dark [data-ad-unit="abscloud_mid_content"] h2,
+html.dark [data-ad-unit="abscloud_mid_content"] h3,
+html.dark [data-ad-unit="abscloud_mid_content"] h4,
+html.dark #abscloud-midcontent-host * {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+html.dark [data-ad-unit="abscloud_mid_content"] a:hover,
+html.dark #abscloud-midcontent-host a:hover {
+  color: #FFB800 !important;
+}

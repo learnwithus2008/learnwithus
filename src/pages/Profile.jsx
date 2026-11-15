@@ -1896,12 +1896,12 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
             setShowCertificate(false);
             setSelectedCertToView(null);
           }}
-          studentName={selectedCertToView?.student_name || currentUser.name || currentUser.full_name || "Python Learner"}
+          studentName={selectedCertToView?.student_name || currentUser?.name || currentUser?.full_name || "Python Learner"}
           courseName={selectedCertToView?.course_name || "Python Programming & Adaptive Core Curriculum"}
           completedCount={selectedCertToView?.completed_topics_count || completedTopicsList.length || 198}
           totalTopics={198}
           certificateId={selectedCertToView?.certificate_id || "LWU-PY-2026-PREVIEW"}
-          issueDate={selectedCertToView?.issued_at}
+          issueDate={selectedCertToView?.issue_date || selectedCertToView?.issued_at || selectedCertToView?.issueDate}
           completionDate={selectedCertToView?.completion_date}
           verificationUrl={selectedCertToView?.verification_url}
           isApproved={Boolean(selectedCertToView)}
