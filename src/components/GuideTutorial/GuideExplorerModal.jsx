@@ -151,6 +151,7 @@ export default function GuideExplorerModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="explorer-modal-title"
+      onClick={closeExplorer}
       onWheel={(e) => {
         if (e.target === e.currentTarget) e.preventDefault();
       }}
@@ -161,6 +162,7 @@ export default function GuideExplorerModal() {
       <div
         ref={modalContainerRef}
         className="guide-modal-explorer-card"
+        onClick={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
       >
         {/* Subtle Ambient Glow */}
@@ -204,10 +206,17 @@ export default function GuideExplorerModal() {
               <button
                 onClick={closeExplorer}
                 className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#14233a] transition cursor-pointer border-none bg-transparent"
+                type="button"
+                onClick={(e) => {
+                  if (e) e.stopPropagation();
+                  closeExplorer();
+                }}
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#14233a] transition cursor-pointer border-none bg-transparent active:scale-95"
                 title="Close (Esc)"
                 aria-label="Close Explorer"
               >
                 <X size={20} />
+                <X size={20} className="pointer-events-none" />
               </button>
             </div>
           </div>

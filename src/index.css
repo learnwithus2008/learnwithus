@@ -3461,8 +3461,8 @@ html.dark .border-\[\#FFB800\] {
   border-color: #FFB800 !important;
 }
 
-/* Scoped Dark Navy Background Overrides */
-html.dark .bg-white {
+/* Scoped Dark Navy Background Overrides (Certificate sheet is strictly immune to dark mode) */
+html.dark .bg-white:not(.certificate-pure-white-sheet):not(.certificate-pure-white-sheet *) {
   background-color: #0C1B30 !important;
 }
 
@@ -10220,4 +10220,104 @@ html.dark #abscloud-midcontent-host * {
 html.dark [data-ad-unit="abscloud_mid_content"] a:hover,
 html.dark #abscloud-midcontent-host a:hover {
   color: #FFB800 !important;
+}
+
+/* ==========================================================================
+   A4 LANDSCAPE PRINT & PDF EXPORT STYLES
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background: #FFFFFF !important;
+    color: #0A2540 !important;
+  }
+
+  /* Hide navigation, floating widgets, ads, background controls */
+  nav,
+  header,
+  footer,
+  .print\:hidden,
+  .floating-dock-notepad,
+  .floating-dock-dictionary,
+  .floating-notepad-window,
+  .floating-dictionary-window,
+  [data-ad-unit] {
+    display: none !important;
+  }
+
+  /* Expand modal container cleanly for print */
+  [role="dialog"] {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  [role="dialog"] > div {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+/* ==========================================================================
+   FIXED CERTIFICATE DESIGN: STRICT CONSTANT WHITE BACKGROUND (#FFFFFF)
+   The certificate must ALWAYS have a constant white background and dark text.
+   It NEVER changes under dark mode or light mode.
+   ========================================================================== */
+.certificate-pure-white-sheet,
+html.dark .certificate-pure-white-sheet,
+body.dark .certificate-pure-white-sheet {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  color: #0A2540 !important;
+  color-scheme: light !important;
+}
+
+.certificate-pure-white-sheet *,
+html.dark .certificate-pure-white-sheet *,
+body.dark .certificate-pure-white-sheet * {
+  color-scheme: light !important;
+}
+
+/* Ensure no dark-mode background overrides inside the certificate */
+.certificate-pure-white-sheet [class*="bg-white"],
+html.dark .certificate-pure-white-sheet [class*="bg-white"],
+body.dark .certificate-pure-white-sheet [class*="bg-white"],
+.certificate-pure-white-sheet .bg-white,
+html.dark .certificate-pure-white-sheet .bg-white {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+}
+
+/* Ensure headings and titles stay deep navy */
+.certificate-pure-white-sheet h1,
+.certificate-pure-white-sheet h2,
+.certificate-pure-white-sheet h3,
+.certificate-pure-white-sheet h4,
+html.dark .certificate-pure-white-sheet h1,
+html.dark .certificate-pure-white-sheet h2,
+html.dark .certificate-pure-white-sheet h3,
+html.dark .certificate-pure-white-sheet h4 {
+  color: #0A2540 !important;
+}
+
+/* Ensure body text stays dark readable charcoal/slate */
+.certificate-pure-white-sheet p,
+html.dark .certificate-pure-white-sheet p {
+  color: #334155 !important;
+}
+
+.certificate-pure-white-sheet [style*="#0756A5"],
+html.dark .certificate-pure-white-sheet [style*="#0756A5"] {
+  color: #0756A5 !important;
 }

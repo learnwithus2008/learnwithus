@@ -5,6 +5,8 @@ import AskDoubtButton from "../components/AskDoubtButton";
 import PageBackButton from "../components/PageBackButton";
 import { PageHelpButton } from "../components/GuideTutorial/ContextualPageGuidance";
 import { AbscloudMidContent } from "../components/Ads";
+import CertificateEligibilityCard from "../components/CertificateEligibilityCard";
+import DemoCertificateModal from "../components/DemoCertificateModal";
 import { getStageById } from "../data/learningStages";
 import { getLanguageById } from "../data/learningLanguages";
 import { useAuth } from "../context/AuthContext";
@@ -39,6 +41,7 @@ export default function Learn({
   const { currentUser, isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSection, setSelectedSection] = useState("all");
+  const [showDemoModal, setShowDemoModal] = useState(false);
   const stageMeta = getStageById(selectedStage);
   const langMeta = getLanguageById(selectedLanguage);
 
@@ -218,6 +221,16 @@ export default function Learn({
             </div>
           </div>
         </div>
+
+        {/* ========================================================
+            CERTIFICATE ELIGIBILITY DASHBOARD BANNER (80% Rule)
+            ======================================================== */}
+        <CertificateEligibilityCard
+          completedCount={completedCount}
+          totalTopics={totalTopicsCount}
+          onOpenPreview={() => setShowDemoModal(true)}
+          onNavigate={onNavigate}
+        />
       </div>
 
       {/* ========================================================
@@ -377,6 +390,12 @@ export default function Learn({
           ))}
         </div>
       )}
+
+      {/* Demo Certificate Modal Preview */}
+      <DemoCertificateModal
+        isOpen={showDemoModal}
+        onClose={() => setShowDemoModal(false)}
+      />
     </div>
   );
 }

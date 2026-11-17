@@ -53,6 +53,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useNotepad } from "../context/NotepadContext";
 import CertificateModal from "./CertificateModal";
+import CertificateEligibilityCard from "./CertificateEligibilityCard";
 
 export default function LessonContent({
   topic,
@@ -434,6 +435,7 @@ export default function LessonContent({
 
             {/* Study Notepad */}
             <button
+              data-notepad-trigger="true"
               onClick={() =>
                 openNotepad({
                   topicId: topic.id,
@@ -750,22 +752,26 @@ export default function LessonContent({
                 )}
 
                 {langPkg.commonMistakes && (
-                  <div className="p-4 sm:p-5 rounded-2xl bg-[#FFFBEB] dark:bg-[#0A1E38] border border-amber-300/80 dark:border-amber-500/30 shadow-xs space-y-2">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-[#FFFBEB] dark:bg-[#0A1E38] border border-amber-300/80 dark:border-amber-500/30 shadow-xs space-y-2.5">
                     <span className="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-[#FFB800] block flex items-center gap-1.5">
                       <AlertTriangle size={15} className="text-amber-600 dark:text-[#FFB800]" />
                       <span>Common Mistake to Avoid:</span>
                     </span>
                     <p className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 m-0 leading-relaxed">
-                      {typeof langPkg.commonMistakes === "object"
+                      {(typeof langPkg.commonMistakes === "object"
                         ? langPkg.commonMistakes.mistake
-                        : langPkg.commonMistakes}
+                        : langPkg.commonMistakes) || "Watch out for syntax, naming, and case-sensitive keyword rules."}
                     </p>
-                    {typeof langPkg.commonMistakes === "object" && langPkg.commonMistakes.fix && (
-                      <div className="mt-2.5 p-3 rounded-xl bg-white/90 dark:bg-[#153560] border border-amber-200/90 dark:border-[#1B3B66] flex items-start gap-2 shadow-2xs">
+                    {((typeof langPkg.commonMistakes === "object" && langPkg.commonMistakes.fix) ||
+                      (typeof langPkg.commonMistakes === "string" && langPkg.commonMistakes)) && (
+                      <div className="mt-2.5 p-3 rounded-xl bg-amber-100/70 dark:bg-[#153560] border border-amber-200/90 dark:border-[#1B3B66] flex items-start gap-2 shadow-2xs">
                         <span className="text-sm select-none shrink-0 leading-tight">💡</span>
                         <p className="text-xs text-amber-950 dark:text-slate-200 leading-relaxed m-0 font-medium">
                           <strong className="font-bold text-amber-900 dark:text-[#FFB800]">Fix:</strong>{" "}
-                          {langPkg.commonMistakes.fix}
+                          {(typeof langPkg.commonMistakes === "object"
+                            ? langPkg.commonMistakes.fix
+                            : "Double check your spelling, closing quotes, and indentation.") ||
+                            "Double check your spelling, closing quotes, and indentation."}
                         </p>
                       </div>
                     )}
@@ -1218,11 +1224,22 @@ export default function LessonContent({
                 </div>
               )}
 
+              {/* Course Certificate Eligibility & 80% Rule Banner */}
+              <div className="max-w-xl mx-auto text-left">
+                <CertificateEligibilityCard
+                  completedCount={currentUser?.stats?.completedTopics?.length || 1}
+                  totalTopics={198}
+                  compact={true}
+                  onOpenPreview={() => setShowCertificate(true)}
+                  onNavigate={onBackToLearn}
+                />
+              </div>
+
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
                 <button
                   onClick={() => setShowCertificate(true)}
-                  className="px-5 py-2.5 rounded-xl bg-[#FFB800] hover:bg-[#E0A200] text-[#102B50] font-black text-xs sm:text-sm flex items-center gap-2 shadow-sm cursor-pointer border-none"
+                  className="px-5 py-2.5 rounded-xl bg-[#0756A5] hover:bg-[#004085] text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm cursor-pointer border-none"
                 >
                   <Award size={16} />
                   <span>View Official Certificate</span>

@@ -9,8 +9,9 @@ export default function FloatingNotepadButton() {
   if (isOpen && !isMinimized) return null;
 
   return (
-    <div id="tour-floating-notepad" className="floating-dock-notepad animate-in">
+    <div id="tour-floating-notepad" data-notepad-trigger="true" className="floating-dock-notepad animate-in">
       <button
+        data-notepad-trigger="true"
         onClick={toggleNotepad}
         className="flex items-center gap-2 sm:gap-2.5 p-2 sm:px-4 sm:py-2.5 bg-white/95 dark:bg-[#102B50]/95 hover:bg-white text-[#102B50] dark:text-white rounded-2xl shadow-lg hover:shadow-xl border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition-all transform hover:-translate-y-0.5 cursor-pointer group backdrop-blur-md"
         title="Open Study Notepad to write important points (Alt+N)"

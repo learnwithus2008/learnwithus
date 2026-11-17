@@ -2,6 +2,7 @@ import React from "react";
 import { Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useDoubt } from "../context/DoubtContext";
+import { isDemoUser, isRegisteredStudent } from "../utils/studentAuthHelper";
 
 /**
  * High-fidelity WhatsApp SVG Icon
@@ -38,8 +39,11 @@ export default function AskDoubtButton({
   label = "Ask Doubt",
   title
 }) {
-  const { isAuthenticated, openAuthModal } = useAuth();
+  const { isAuthenticated, currentUser, openAuthModal } = useAuth();
   const { openDoubtModal, doubtCredits, freeDoubtsTotal } = useDoubt();
+
+  const isEligibleStudent = isRegisteredStudent(currentUser, isAuthenticated);
+  const isDemo = isDemoUser(currentUser);
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -52,12 +56,13 @@ export default function AskDoubtButton({
         ? `Section ${sectionNumber}`
         : "this topic";
       openAuthModal(
-        "login",
-        `Please sign in to access your 10 Free Doubts on WhatsApp for ${topicContext}! Only registered candidates can send doubt inquiries.`
+        "signup",
+        `Doubt clearing with 1-on-1 mentor support is exclusively reserved for registered students. Demo/guest users cannot ask doubts. Please register or sign in to ask doubts for ${topicContext}!`
       );
       return;
     }
 
+    // Authenticated users (both eligible students and demo users to see the registered-only modal guidance)
     openDoubtModal({
       sectionNumber,
       sectionTitle,
@@ -67,16 +72,20 @@ export default function AskDoubtButton({
     });
   };
 
-  const remainingLabel = isAuthenticated
-    ? doubtCredits > 0
-      ? `${doubtCredits} left`
-      : "₹50 / doubt"
-    : "10 Free";
+  const remainingLabel = !isAuthenticated
+    ? "Reg Only"
+    : isDemo
+    ? "Reg Only"
+    : doubtCredits > 0
+    ? `${doubtCredits} left`
+    : "₹50 / doubt";
 
   const tooltip =
     title ||
     (!isAuthenticated
-      ? `Sign in for 10 Free Doubts on WhatsApp`
+      ? `Register as a student to access 10 Free Doubts on WhatsApp (Demo users cannot ask doubts)`
+      : isDemo
+      ? `Demo Account (${currentUser?.email || "Demo"}): Doubts are reserved for registered students only. Click to view details.`
       : doubtCredits > 0
       ? `You have ${doubtCredits} of ${freeDoubtsTotal} free doubts left • Click to ask`
       : `Free doubts exhausted • Click to ask on WhatsApp for ₹50`);
@@ -95,7 +104,7 @@ export default function AskDoubtButton({
         <WhatsAppIcon size={14} className="text-[#25D366] shrink-0" />
         <span className="truncate">{label}</span>
         <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-md font-extrabold shrink-0 ${
-          !isAuthenticated
+          !isEligibleStudent
             ? "bg-slate-200/60 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
             : doubtCredits > 0
             ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
@@ -103,7 +112,7 @@ export default function AskDoubtButton({
         }`}>
           {remainingLabel}
         </span>
-        {!isAuthenticated && <Lock size={11} className="opacity-75 text-amber-500 shrink-0" />}
+        {!isEligibleStudent && <Lock size={11} className="opacity-75 text-amber-500 shrink-0" />}
       </button>
     );
   }
@@ -122,7 +131,7 @@ export default function AskDoubtButton({
         <WhatsAppIcon size={12} className="text-[#25D366] shrink-0" />
         <span className="truncate">{label}</span>
         <span className={`text-[8px] sm:text-[9px] px-1 py-0.2 rounded-sm font-black shrink-0 ${
-          !isAuthenticated
+          !isEligibleStudent
             ? "bg-slate-200/50 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
             : doubtCredits > 0
             ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
@@ -130,7 +139,7 @@ export default function AskDoubtButton({
         }`}>
           {remainingLabel}
         </span>
-        {!isAuthenticated && <Lock size={10} className="opacity-75 text-amber-500 shrink-0" />}
+        {!isEligibleStudent && <Lock size={10} className="opacity-75 text-amber-500 shrink-0" />}
       </button>
     );
   }
@@ -149,7 +158,7 @@ export default function AskDoubtButton({
         <WhatsAppIcon size={13} className="text-[#25D366] shrink-0" />
         <span className="truncate">{label}</span>
         <span className={`text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded-md font-extrabold shrink-0 ${
-          !isAuthenticated
+          !isEligibleStudent
             ? "bg-slate-200/60 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
             : doubtCredits > 0
             ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
@@ -157,7 +166,7 @@ export default function AskDoubtButton({
         }`}>
           {remainingLabel}
         </span>
-        {!isAuthenticated && <Lock size={11} className="opacity-75 text-amber-500 shrink-0" />}
+        {!isEligibleStudent && <Lock size={11} className="opacity-75 text-amber-500 shrink-0" />}
       </button>
     );
   }
@@ -176,7 +185,7 @@ export default function AskDoubtButton({
         <WhatsAppIcon size={16} className="text-[#25D366] shrink-0" />
         <span className="truncate">{label || "Ask Doubt on WhatsApp"}</span>
         <span className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded-md font-black shrink-0 ${
-          !isAuthenticated
+          !isEligibleStudent
             ? "bg-slate-200/60 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
             : doubtCredits > 0
             ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
@@ -184,10 +193,10 @@ export default function AskDoubtButton({
         }`}>
           {remainingLabel}
         </span>
-        {!isAuthenticated && (
+        {!isEligibleStudent && (
           <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-medium bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded-md shrink-0">
             <Lock size={10} />
-            <span>Sign In</span>
+            <span>{isDemo ? "Registered Only" : "Sign Up"}</span>
           </span>
         )}
       </button>
@@ -207,7 +216,7 @@ export default function AskDoubtButton({
       <WhatsAppIcon size={14} className="text-[#25D366] shrink-0" />
       <span className="truncate">{label}</span>
       <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-md font-extrabold shrink-0 ${
-        !isAuthenticated
+        !isEligibleStudent
           ? "bg-slate-200/60 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
         : doubtCredits > 0
         ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
@@ -215,7 +224,7 @@ export default function AskDoubtButton({
       }`}>
         {remainingLabel}
       </span>
-      {!isAuthenticated && <Lock size={11} className="opacity-75 text-amber-500 shrink-0" />}
+      {!isEligibleStudent && <Lock size={11} className="opacity-75 text-amber-500 shrink-0" />}
     </button>
   );
 }

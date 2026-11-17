@@ -35,6 +35,7 @@ import { AVATAR_OPTIONS } from "../services/authService";
 import { WhatsAppIcon } from "./AskDoubtButton";
 import FontSizeControl from "./FontSizeControl";
 import BrandLogo from "./BrandLogo";
+import { isDemoUser } from "../utils/studentAuthHelper";
 
 export default function Navbar({
   currentPage,
@@ -565,14 +566,14 @@ export default function Navbar({
                             setUserDropdownOpen(false);
                             openDoubtModal({ sectionTitle: "General Python Inquiry" });
                           }}
-                          title="Click to view Doubt Credits & Support"
+                          title={isDemoUser(currentUser) ? "Demo Account: Doubts are reserved for registered students" : "Click to view Doubt Credits & Support"}
                         >
                           <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-[#25D366] flex items-center justify-center shrink-0">
                             <WhatsAppIcon size={16} />
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="user-menu-stat-val text-emerald-600 dark:text-emerald-400">
-                              {doubtCredits} left
+                              {isDemoUser(currentUser) ? "Reg Only" : `${doubtCredits} left`}
                             </div>
                             <div className="user-menu-stat-lbl">
                               Doubts

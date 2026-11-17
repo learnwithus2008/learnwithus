@@ -31,12 +31,23 @@ export default function GuideCompletionModal() {
 
   const modalRef = useRef(null);
 
+  const handleClose = (e) => {
+    if (e) {
+      if (typeof e.preventDefault === "function") e.preventDefault();
+      if (typeof e.stopPropagation === "function") e.stopPropagation();
+    }
+    if (typeof closeCompletion === "function") {
+      closeCompletion();
+    }
+  };
+
   // Keyboard navigation: Escape key closes completion modal
   useEffect(() => {
     if (!isCompletionOpen) return;
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         closeCompletion();
+        handleClose(e);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -51,6 +62,8 @@ export default function GuideCompletionModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="completion-modal-title"
+      onClick={closeCompletionModal}
+      onClick={handleClose}
       onWheel={(e) => {
         if (e.target === e.currentTarget) e.preventDefault();
       }}
@@ -61,6 +74,7 @@ export default function GuideCompletionModal() {
       <div
         ref={modalRef}
         className="guide-modal-completion-card"
+        onClick={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
       >
         {/* Subtle Ambient Glow */}
@@ -70,10 +84,14 @@ export default function GuideCompletionModal() {
         <button
           onClick={closeCompletion}
           className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#14233a] transition cursor-pointer border-none bg-transparent z-10"
+          type="button"
+          onClick={handleClose}
+          className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-50 w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#14233a] transition cursor-pointer border-none bg-transparent active:scale-95"
           title="Close (Esc)"
           aria-label="Close Completion Modal"
         >
           <X size={18} />
+          <X size={20} className="pointer-events-none" />
         </button>
 
         {/* Trophy Celebration Icon */}

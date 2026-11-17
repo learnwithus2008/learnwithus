@@ -31,12 +31,30 @@ export default function GuideWelcomeModal() {
   useBodyScrollLock(isWelcomeOpen);
   const modalRef = useRef(null);
 
+  // Safe handler to close the modal immediately and persist completion
+  const handleClose = (e) => {
+    if (e) {
+      if (typeof e.preventDefault === "function") e.preventDefault();
+      if (typeof e.stopPropagation === "function") e.stopPropagation();
+    }
+    // Synchronously close welcome modal state
+    setIsWelcomeOpen(false);
+    try {
+      if (typeof skipTour === "function") {
+        skipTour();
+      }
+    } catch (err) {
+      console.warn("Failed to complete tour skip:", err);
+    }
+  };
+
   // Keyboard navigation: Escape key closes modal
   useEffect(() => {
     if (!isWelcomeOpen) return;
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         skipTour();
+        handleClose(e);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -89,6 +107,7 @@ export default function GuideWelcomeModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="welcome-modal-title"
+      onClick={handleClose}
       onWheel={(e) => {
         if (e.target === e.currentTarget) e.preventDefault();
       }}
@@ -99,23 +118,25 @@ export default function GuideWelcomeModal() {
       <div
         ref={modalRef}
         className="guide-modal-welcome-card"
+        onClick={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
       >
         {/* Subtle Ambient Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Close Button */}
+        {/* Close Button - High Z-Index & Generous Hit Target */}
         <button
-          onClick={skipTour}
-          className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#14233a] transition cursor-pointer border-none bg-transparent z-10"
+          type="button"
+          onClick={handleClose}
+          className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-50 w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#14233a] transition cursor-pointer border-none bg-transparent active:scale-95"
           title="Close (Esc)"
           aria-label="Close welcome modal"
         >
-          <X size={18} />
+          <X size={20} className="pointer-events-none" />
         </button>
 
         {/* Top Header Badge */}
-        <div className="flex items-center gap-3.5 mb-3 relative z-10">
+        <div className="flex items-center gap-3.5 mb-3 relative z-10 pr-10">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#168BFF] to-[#0876E8] text-white flex items-center justify-center shadow-lg shadow-blue-500/30 shrink-0">
             <Compass size={24} />
           </div>
@@ -183,7 +204,8 @@ export default function GuideWelcomeModal() {
         <div className="mt-3.5 pt-2.5 border-t border-slate-100 dark:border-[#183657] flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <span>Explore freely at your own pace</span>
           <button
-            onClick={skipTour}
+            type="button"
+            onClick={handleClose}
             className="font-bold text-slate-600 dark:text-[#8CC8FF] hover:underline cursor-pointer bg-transparent border-none p-0"
           >
             Skip for Now

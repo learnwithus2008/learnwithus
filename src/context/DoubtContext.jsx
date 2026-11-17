@@ -13,6 +13,7 @@ import {
   DOUBT_COST_INR
 } from "../services/doubtService";
 import { openWhatsAppDoubt, WHATSAPP_DISPLAY_NUMBER } from "../utils/whatsappHelper";
+import { isDemoUser, isRegisteredStudent, DOUBT_DEMO_RESTRICTION_MESSAGE } from "../utils/studentAuthHelper";
 
 const DoubtContext = createContext(null);
 
@@ -115,12 +116,18 @@ export function DoubtProvider({ children }) {
    * Submit Doubt Request and Launch WhatsApp
    * CRITICAL: Doubt count DOES NOT REDUCE!
    * Count is only reduced once admin marks the issue as solved.
+   * STRICT RULE: Demo users CANNOT ask doubts! Only registered students can ask doubts.
    */
   const submitAndLaunchWhatsApp = useCallback(
     async (optionalCustomMessage = null) => {
       if (!isAuthenticated || !currentUser?.id) {
-        openAuthModal("login", "Please sign in to ask doubts.");
+        openAuthModal("signup", "Please register as a student to ask doubts.");
         return;
+      }
+
+      if (isDemoUser(currentUser)) {
+        showToast("Demo users cannot ask doubts. Doubt clearing is exclusively reserved for registered students.", "error");
+        throw new Error("Demo users cannot ask doubts. Only registered students can ask doubts.");
       }
 
       if (doubtCredits <= 0) {
@@ -222,12 +229,17 @@ export function DoubtProvider({ children }) {
     [refreshBalanceAndTickets, showToast]
   );
 
-  // Recharge doubt credits (₹50 per doubt)
+  // Recharge doubt credits (₹50 per doubt) - Restricted to registered students
   const rechargeAndLaunch = useCallback(
     async ({ credits = 1, amount = DOUBT_COST_INR, paymentMethod = "upi", paymentReference = null } = {}) => {
       if (!isAuthenticated || !currentUser?.id) {
-        openAuthModal("login", "Please sign in to recharge doubts.");
+        openAuthModal("signup", "Please register as a student to recharge doubts.");
         return;
+      }
+
+      if (isDemoUser(currentUser)) {
+        showToast("Demo users cannot recharge doubt credits or ask doubts. Only registered students are permitted.", "error");
+        throw new Error("Demo users cannot recharge doubt credits. Only registered students can ask doubts.");
       }
 
       setIsLoading(true);

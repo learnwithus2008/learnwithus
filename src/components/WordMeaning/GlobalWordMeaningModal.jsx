@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   BookOpen,
@@ -38,6 +38,49 @@ export default function GlobalWordMeaningModal() {
 
   const [activeStage, setActiveStage] = useState(selectedStage);
   const [activeLanguage, setActiveLanguage] = useState(selectedLanguage);
+  const modalRef = useRef(null);
+
+  // Automatically close dictionary when clicking outside the window or pressing Escape
+  useEffect(() => {
+    if (!isOpen || isMinimized) return;
+
+    const handleOutsideClick = (e) => {
+      // Ignore clicks inside dictionary window
+      if (modalRef.current && modalRef.current.contains(e.target)) {
+        return;
+      }
+
+      // Ignore clicks on trigger buttons to allow them to toggle cleanly
+      if (
+        e.target &&
+        e.target.closest &&
+        (e.target.closest("#tour-floating-tools") ||
+          e.target.closest("#tour-floating-dictionary") ||
+          e.target.closest('[data-dictionary-trigger="true"]') ||
+          e.target.closest(".dictionary-trigger-btn"))
+      ) {
+        return;
+      }
+
+      closeDictionary();
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        closeDictionary();
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick, { passive: true });
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, isMinimized, closeDictionary]);
 
   useEffect(() => {
     if (isOpen) {
@@ -114,6 +157,7 @@ export default function GlobalWordMeaningModal() {
   // -------------------------------------------------------------
   return (
     <div
+      ref={modalRef}
       id="tour-floating-dictionary-window"
       className={`floating-dictionary-window animate-in ${isExpanded ? "is-expanded" : ""}`}
       role="dialog"

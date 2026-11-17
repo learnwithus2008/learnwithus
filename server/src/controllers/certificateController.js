@@ -21,9 +21,20 @@ export const certificateController = {
       const requests = await certificateRepository.getRequestsByUserId(req.user.id);
       const issued = await certificateRepository.getIssuedCertificatesByUserId(req.user.id);
 
-      // Student is eligible if they have completed topics (or full course)
-      const isEligible = completedCount > 0;
+      // Student is eligible only if they have completed at least 80% of the course
+      const completionPercentage = Math.min(100, Math.round((completedCount / TOTAL_CURRICULUM_TOPICS) * 100));
+      const requiredPercentage = 80;
+      const isEligible = completionPercentage >= requiredPercentage;
       const isFullyCompleted = completedCount >= TOTAL_CURRICULUM_TOPICS;
+      const remainingPercentage = Math.max(0, requiredPercentage - completionPercentage);
+      const requiredTopics = Math.ceil(TOTAL_CURRICULUM_TOPICS * (requiredPercentage / 100));
+      const remainingTopics = Math.max(0, requiredTopics - completedCount);
+
+      const eligibilityMessage = isEligible
+        ? "Congratulations! You are eligible to request your certificate."
+        : (remainingPercentage <= 10
+          ? `You're almost there! Complete ${remainingPercentage}% more to unlock your certificate request.`
+          : `Complete ${remainingPercentage}% more to unlock your certificate request.`);
 
       res.status(200).json({
         success: true,
@@ -32,7 +43,13 @@ export const certificateController = {
           isFullyCompleted,
           completedCount,
           totalRequired: TOTAL_CURRICULUM_TOPICS,
-          completionPercentage: Math.min(100, Math.round((completedCount / TOTAL_CURRICULUM_TOPICS) * 100)),
+          completionPercentage,
+          requiredPercentage,
+          remainingPercentage,
+          requiredTopics,
+          remainingTopics,
+          status: isEligible ? "eligible" : "locked",
+          eligibilityMessage,
           priceInr: 99,
           requests,
           issuedCertificates: issued
@@ -46,6 +63,7 @@ export const certificateController = {
   /**
    * POST /api/certificates/request
    * Student initiates certificate request (₹99)
+   * Mandatory business rule: Must complete at least 80% of the course.
    */
   async createRequest(req, res, next) {
     try {
@@ -54,6 +72,22 @@ export const certificateController = {
         [req.user.id]
       );
       const completedCount = progressRes.rows[0]?.count || 0;
+      const completionPercentage = Math.min(100, Math.round((completedCount / TOTAL_CURRICULUM_TOPICS) * 100));
+
+      // Strictly enforce 80% course completion in the backend
+      if (completionPercentage < 80) {
+        const remainingPercentage = 80 - completionPercentage;
+        return res.status(403).json({
+          success: false,
+          error: {
+            code: "INELIGIBLE_FOR_CERTIFICATE",
+            message: `Certificate eligibility requires at least 80% course completion. Current completion is ${completionPercentage}%.`,
+            currentPercentage: completionPercentage,
+            requiredPercentage: 80,
+            remainingPercentage
+          }
+        });
+      }
 
       const studentName = req.user.name || req.user.full_name || "Python Learner";
       const studentEmail = req.user.email;

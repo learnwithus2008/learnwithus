@@ -50,6 +50,83 @@ export default function FloatingNotepad() {
   const [lastSavedTime, setLastSavedTime] = useState(null);
   const saveTimeoutRef = useRef(null);
   const textareaRef = useRef(null);
+  const notepadRef = useRef(null);
+  const noteContentRef = useRef(noteContent);
+
+  useEffect(() => {
+    noteContentRef.current = noteContent;
+  }, [noteContent]);
+
+  // Automatically close notepad when clicking outside the window or pressing Escape
+  useEffect(() => {
+    if (!isOpen || isMinimized) return;
+
+    const handleOutsideClick = (e) => {
+      // Ignore clicks inside the notepad modal
+      if (notepadRef.current && notepadRef.current.contains(e.target)) {
+        return;
+      }
+
+      // Ignore clicks on trigger buttons to allow them to toggle cleanly
+      if (
+        e.target &&
+        e.target.closest &&
+        (e.target.closest("#tour-floating-notepad") ||
+          e.target.closest('[data-notepad-trigger="true"]') ||
+          e.target.closest(".notepad-trigger-btn"))
+      ) {
+        return;
+      }
+
+      // Flush any pending debounced auto-save immediately before closing
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        try {
+          const valToSave = noteContentRef.current;
+          localStorage.setItem(activeStorageKey, valToSave);
+          window.dispatchEvent(
+            new CustomEvent("py_notes_updated", {
+              detail: { key: activeStorageKey, val: valToSave }
+            })
+          );
+        } catch {
+          // ignore
+        }
+      }
+
+      closeNotepad();
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
+          try {
+            const valToSave = noteContentRef.current;
+            localStorage.setItem(activeStorageKey, valToSave);
+            window.dispatchEvent(
+              new CustomEvent("py_notes_updated", {
+                detail: { key: activeStorageKey, val: valToSave }
+              })
+            );
+          } catch {
+            // ignore
+          }
+        }
+        closeNotepad();
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick, { passive: true });
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, isMinimized, closeNotepad, activeStorageKey]);
 
   // Load content whenever active storage key changes
   useEffect(() => {
@@ -295,6 +372,7 @@ export default function FloatingNotepad() {
   // -------------------------------------------------------------
   return (
     <div
+      ref={notepadRef}
       className={`floating-notepad-window animate-in ${isExpanded ? "is-expanded" : ""}`}
     >
       {/* ============================================================ */}

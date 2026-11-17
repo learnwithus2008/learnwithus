@@ -5,6 +5,7 @@ import PageBackButton from "../components/PageBackButton";
 import HeroBookIllustration from "../components/HeroBookIllustration";
 import { PageHelpButton } from "../components/GuideTutorial/ContextualPageGuidance";
 import { AdsterraNativeBanner } from "../components/Ads";
+import DemoCertificateSection from "../components/DemoCertificateSection";
 import { LEARNING_STAGES, getStageById } from "../data/learningStages";
 import { getLanguageById } from "../data/learningLanguages";
 import { useAuth } from "../context/AuthContext";
@@ -626,6 +627,11 @@ export default function Home({
           ))}
         </div>
       </section>
+
+      {/* ========================================================
+          SECTION: COURSE COMPLETION CERTIFICATE SHOWCASE (DEMO)
+          ======================================================== */}
+      <DemoCertificateSection />
 
       {/* ========================================================
           SECTION F: LEARNING COMMUNITY (Stats & Motivation)

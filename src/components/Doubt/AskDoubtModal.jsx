@@ -19,6 +19,7 @@ import { useDoubt } from "../../context/DoubtContext";
 import { useAuth } from "../../context/AuthContext";
 import { WhatsAppIcon } from "../AskDoubtButton";
 import { WHATSAPP_DISPLAY_NUMBER, WHATSAPP_SUPPORT_NUMBER } from "../../utils/whatsappHelper";
+import { isDemoUser, isRegisteredStudent } from "../../utils/studentAuthHelper";
 
 export default function AskDoubtModal() {
   const {
@@ -35,7 +36,10 @@ export default function AskDoubtModal() {
     costPerDoubt
   } = useDoubt();
 
-  const { currentUser } = useAuth();
+  const { currentUser, isAuthenticated, openAuthModal } = useAuth();
+
+  const isDemo = isDemoUser(currentUser);
+  const isEligibleStudent = isRegisteredStudent(currentUser, isAuthenticated);
 
   const [paymentTab, setPaymentTab] = useState("instant"); // 'instant' | 'upi'
   const [selectedPack, setSelectedPack] = useState(1);
@@ -63,6 +67,12 @@ export default function AskDoubtModal() {
   const currentPack = PACKS.find((p) => p.credits === selectedPack) || PACKS[0];
 
   const handleLaunch = async () => {
+    if (!isEligibleStudent) {
+      closeDoubtModal();
+      if (openAuthModal) openAuthModal("signup");
+      else window.location.hash = "#/signup";
+      return;
+    }
     try {
       await submitAndLaunchWhatsApp(customQuery.trim() ? customQuery.trim() : null);
     } catch {
@@ -71,6 +81,12 @@ export default function AskDoubtModal() {
   };
 
   const handlePayAndLaunch = async () => {
+    if (!isEligibleStudent) {
+      closeDoubtModal();
+      if (openAuthModal) openAuthModal("signup");
+      else window.location.hash = "#/signup";
+      return;
+    }
     try {
       await rechargeAndLaunch({
         credits: currentPack.credits,
@@ -181,9 +197,95 @@ export default function AskDoubtModal() {
           </div>
 
           {/* =============================================================== */}
-          {/* 2. PROTECTED DOUBT BALANCE (Count only reduces once solved!) */}
+          {/* 2. DEMO RESTRICTION OR ACTIVE STUDENT DOUBT BALANCE */}
           {/* =============================================================== */}
-          {hasCredits ? (
+          {!isEligibleStudent ? (
+            <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-linear-to-br from-amber-500/15 via-orange-500/10 to-amber-600/15 dark:from-[#2B1B09] dark:via-[#36220B] dark:to-[#1F1305] border-2 border-amber-400 dark:border-amber-500/80 shadow-md space-y-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/25 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0 border border-amber-400/50">
+                  <Lock size={18} className="sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/25 text-amber-900 dark:text-amber-200 border border-amber-400/60 inline-block">
+                    REGISTERED STUDENTS ONLY
+                  </span>
+                  <h4 className="text-xs sm:text-base font-black text-slate-900 dark:text-white mt-0.5 truncate">
+                    Doubts are Exclusively for Registered Students
+                  </h4>
+                </div>
+              </div>
+
+              <div className="text-xs sm:text-sm text-slate-800 dark:text-slate-100 leading-relaxed font-semibold">
+                {isDemo && currentUser ? (
+                  <p>
+                    You are currently using a <strong className="text-amber-700 dark:text-amber-300">Demo Account ({currentUser.email || currentUser.name})</strong>.
+                    Doubts cannot be asked by demo users. 1-on-1 mentor guidance on WhatsApp is reserved strictly for registered students who create their own accounts.
+                  </p>
+                ) : (
+                  <p>
+                    You are currently browsing as a guest / demo visitor.
+                    Demo users cannot ask doubts. Please register or sign in to your student account to unlock doubt resolution with our mentors.
+                  </p>
+                )}
+              </div>
+
+              <div className="p-3 rounded-xl bg-white/90 dark:bg-[#132338] border border-amber-200 dark:border-sky-500/30 space-y-2 text-xs">
+                <div className="font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5 text-[11px] sm:text-xs">
+                  <Sparkles size={14} className="text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>Included for Registered LearnWithUs Students:</span>
+                </div>
+                <ul className="space-y-1.5 text-[11px] sm:text-xs text-slate-800 dark:text-slate-200 font-medium">
+                  <li className="flex items-start gap-1.5">
+                    <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">✓</span>
+                    <span><strong>10 Free Solved Doubts</strong> directly on WhatsApp with Python experts</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">✓</span>
+                    <span><strong>Fast Mentorship:</strong> Average mentor reply time under 5 minutes</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">✓</span>
+                    <span><strong>Zero Deduction Guarantee:</strong> Credits only deduct after issue is resolved</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-1 flex flex-col sm:flex-row gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeDoubtModal();
+                    if (openAuthModal) {
+                      openAuthModal("signup", "Register your student account to unlock 10 Free WhatsApp Doubts!");
+                    } else {
+                      window.location.hash = "#/signup";
+                    }
+                  }}
+                  className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-black text-white bg-blue-600 hover:bg-blue-700 active:scale-95 transition cursor-pointer shadow-md flex items-center justify-center gap-1.5"
+                >
+                  <span>Register as Student</span>
+                  <ArrowRight size={14} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeDoubtModal();
+                    if (openAuthModal) {
+                      openAuthModal("login", "Sign in to your registered student account to access doubts!");
+                    } else {
+                      window.location.hash = "#/signin";
+                    }
+                  }}
+                  className="py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-200/80 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 active:scale-95 transition cursor-pointer text-center"
+                >
+                  <span>Sign In</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {hasCredits ? (
             <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-linear-to-br from-emerald-50 via-teal-50/60 to-emerald-100/40 dark:from-[#092B1C] dark:via-[#0E3524] dark:to-[#072417] border-2 border-emerald-400 dark:border-[#10B981] shadow-md shadow-emerald-500/10 space-y-2.5 sm:space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-1.5">
                 <div className="flex items-center gap-1.5 sm:gap-2">
@@ -441,6 +543,8 @@ export default function AskDoubtModal() {
               </div>
             </div>
           )}
+            </>
+          )}
 
         </div>
 
@@ -463,7 +567,32 @@ export default function AskDoubtModal() {
               Cancel
             </button>
 
-            {hasCredits ? (
+            {!isEligibleStudent ? (
+              <button
+                type="button"
+                onClick={() => {
+                  closeDoubtModal();
+                  if (openAuthModal) {
+                    openAuthModal("signup", "Register your student account to unlock 10 Free WhatsApp Doubts!");
+                  } else {
+                    window.location.hash = "#/signup";
+                  }
+                }}
+                style={{
+                  backgroundColor: "#0756A5",
+                  color: "#FFFFFF",
+                  border: "none",
+                  boxShadow: "0 4px 16px rgba(7, 86, 165, 0.4)"
+                }}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl font-black text-xs sm:text-sm active:scale-95 transition cursor-pointer hover:opacity-95"
+              >
+                <Lock size={15} className="text-white shrink-0" />
+                <span className="text-white font-black text-xs sm:text-sm tracking-wide truncate">
+                  Register as Student to Ask
+                </span>
+                <ArrowRight size={14} className="text-white shrink-0" />
+              </button>
+            ) : hasCredits ? (
               <button
                 type="button"
                 onClick={handleLaunch}

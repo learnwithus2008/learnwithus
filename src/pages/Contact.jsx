@@ -18,6 +18,7 @@ import { WhatsAppIcon } from "../components/AskDoubtButton";
 import { openWhatsAppDoubt, WHATSAPP_DISPLAY_NUMBER } from "../utils/whatsappHelper";
 import { useAuth } from "../context/AuthContext";
 import { useDoubt } from "../context/DoubtContext";
+import { isDemoUser, isRegisteredStudent } from "../utils/studentAuthHelper";
 
 export default function Contact({ onNavigate, onBack }) {
   const { currentUser, isAuthenticated, openAuthModal } = useAuth();
@@ -103,7 +104,7 @@ export default function Contact({ onNavigate, onBack }) {
               Stuck on a lesson or coding challenge? Connect directly with our mentors on WhatsApp:
             </p>
 
-            {isAuthenticated && (
+            {isAuthenticated && isRegisteredStudent(currentUser, isAuthenticated) && (
               <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-100/70 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-850">
                 <span className="font-semibold">Doubt Balance:</span>
                 <span className="font-bold">
@@ -116,8 +117,8 @@ export default function Contact({ onNavigate, onBack }) {
               onClick={() => {
                 if (!isAuthenticated) {
                   openAuthModal(
-                    "login",
-                    "Please sign in to access your 10 Free Doubts on WhatsApp. Only registered candidates can send doubt inquiries."
+                    "signup",
+                    "Doubt clearing with 1-on-1 mentor support is exclusively reserved for registered students. Demo users cannot ask doubts. Please register or sign in."
                   );
                   return;
                 }
@@ -132,23 +133,29 @@ export default function Contact({ onNavigate, onBack }) {
             >
               <WhatsAppIcon size={16} className="shrink-0" />
               <span className="truncate">
-                {isAuthenticated
-                  ? doubtCredits > 0
-                    ? `Ask Doubt on WhatsApp (${doubtCredits} left)`
-                    : "Ask Doubt on WhatsApp (₹50)"
-                  : "Ask Doubt on WhatsApp (10 Free)"}
+                {!isRegisteredStudent(currentUser, isAuthenticated)
+                  ? isDemoUser(currentUser)
+                    ? "Ask Doubt (Registered Students Only)"
+                    : "Ask Doubt on WhatsApp (Registered Only)"
+                  : doubtCredits > 0
+                  ? `Ask Doubt on WhatsApp (${doubtCredits} left)`
+                  : "Ask Doubt on WhatsApp (₹50)"}
               </span>
-              {!isAuthenticated && <Lock size={12} className="opacity-80 shrink-0" />}
+              {!isRegisteredStudent(currentUser, isAuthenticated) && <Lock size={12} className="opacity-80 shrink-0" />}
             </button>
-            {!isAuthenticated ? (
+            {!isRegisteredStudent(currentUser, isAuthenticated) ? (
               <div className="text-[11px] text-center text-amber-600 dark:text-amber-400 font-medium flex items-center justify-center gap-1">
                 <Lock size={11} />
-                <span>Candidate sign-in required</span>
+                <span>
+                  {isDemoUser(currentUser)
+                    ? "Demo account: Only registered students can ask doubts"
+                    : "Student registration required to ask doubts"}
+                </span>
               </div>
             ) : (
               <div className="text-[11px] text-center text-emerald-600 dark:text-emerald-400 font-medium flex items-center justify-center gap-1">
                 <UserCheck size={11} />
-                <span>Signed in as verified candidate</span>
+                <span>Signed in as registered student</span>
               </div>
             )}
             <div className="text-[11px] text-center text-[#64748B] dark:text-slate-400 font-mono">

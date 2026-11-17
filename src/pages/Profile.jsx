@@ -44,10 +44,12 @@ import { LEARNING_LANGUAGES, getLanguageById } from "../data/learningLanguages";
 import { AVATAR_OPTIONS } from "../services/authService";
 import { allTopics, getTopicById } from "../data/allTopics";
 import CertificateModal from "../components/CertificateModal";
+import CertificateWorkflowSection from "../components/CertificateWorkflowSection";
 import PageBackButton from "../components/PageBackButton";
 import { certificateService, doubtService } from "../services/monetizationService";
 import { openWhatsAppCertificateRequest, openWhatsAppPaidDoubt, WHATSAPP_DISPLAY_NUMBER } from "../utils/whatsappHelper";
 import { WhatsAppIcon } from "../components/AskDoubtButton";
+import { isDemoUser } from "../utils/studentAuthHelper";
 
 export default function Profile({ onNavigate, onSelectTopic, onBack }) {
   const {
@@ -229,6 +231,10 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
   // Handler: Submit Doubt (Free if remaining, else ₹49)
   const handleSubmitDoubt = async (e) => {
     e.preventDefault();
+    if (isDemoUser(currentUser)) {
+      setDoubtErrorMsg("Demo users cannot ask doubts. Doubt clearing is exclusively reserved for registered students. Please register or sign in to a student account.");
+      return;
+    }
     if (!newDoubtText.trim()) {
       setDoubtErrorMsg("Please enter your question or doubt details.");
       return;
@@ -1030,68 +1036,8 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
       {/* 8. Tab Content: Certificate & Monetization (₹99) */}
       {activeTab === "certificate" && (
         <div className="space-y-6">
-          {/* Certificate Banner Card */}
-          <div
-            className="p-5 sm:p-7 rounded-3xl border shadow-lg relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-6"
-            style={{
-              background: isDark
-                ? "linear-gradient(135deg, rgba(7, 86, 165, 0.35) 0%, rgba(16, 43, 80, 0.85) 100%)"
-                : "linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)",
-              borderColor: isDark ? "rgba(56, 189, 248, 0.35)" : "#bfdbfe"
-            }}
-          >
-            <div className="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
-              <div className="w-16 h-16 rounded-2xl bg-[#FFB800] text-[#102B50] flex items-center justify-center shadow-lg shrink-0">
-                <Trophy size={32} />
-              </div>
-              <div>
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-400/40">
-                    Official Credential • ₹99
-                  </span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
-                    100% Free Learning
-                  </span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-black text-[#102B50] dark:text-white">
-                  Python Certificate of Achievement
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-lg mt-0.5 leading-relaxed">
-                  Learn the entire curriculum completely free! When you complete the coursework, request your verified, signed certificate with unique credential ID for <strong>₹99</strong>.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 w-full sm:w-auto shrink-0">
-              <button
-                type="button"
-                onClick={handleRequestCertificateWhatsApp}
-                disabled={requestingCert}
-                style={{
-                  backgroundColor: "#25D366",
-                  color: "#FFFFFF",
-                  border: "none",
-                  boxShadow: "0 4px 16px rgba(37, 211, 102, 0.35)"
-                }}
-                className="py-3 px-5 rounded-xl font-black text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:opacity-95 disabled:opacity-50"
-              >
-                <WhatsAppIcon size={16} className="text-white" />
-                <span>{requestingCert ? "Opening WhatsApp..." : "Request Certificate (₹99)"}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedCertToView(issuedCerts[0] || null);
-                  setShowCertificate(true);
-                }}
-                className="py-2.5 px-4 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer border-none"
-              >
-                <Award size={14} className="text-[#FFB800]" />
-                <span>{issuedCerts.length > 0 ? "View Official Certificate" : "Preview Certificate Layout"}</span>
-              </button>
-            </div>
-          </div>
+          {/* Comprehensive 5-Step Workflow, Eligibility Checker & Pure White Certificate Preview */}
+          <CertificateWorkflowSection onNavigate={onNavigate} />
 
           {/* Feedback messages */}
           {certSuccessMsg && (
@@ -1106,37 +1052,6 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
               <span>{certErrorMsg}</span>
             </div>
           )}
-
-          {/* Course Completion Eligibility Tracker */}
-          <div
-            className="p-5 sm:p-6 rounded-3xl border shadow-sm space-y-3"
-            style={{
-              background: isDark ? "rgba(16, 43, 80, 0.5)" : "#ffffff",
-              borderColor: isDark ? "rgba(56, 189, 248, 0.2)" : "#e2e8f0"
-            }}
-          >
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <h4 className="text-sm font-bold text-[#102B50] dark:text-white flex items-center gap-2">
-                  <CheckCircle2 size={16} className="text-emerald-500" />
-                  <span>Curriculum Completion Progress</span>
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Requirements: Complete all 198 self-paced Python topics
-                </p>
-              </div>
-              <div className="text-xs font-black px-3 py-1 rounded-full bg-blue-500/10 text-[#0756A5] dark:text-[#38bdf8] border border-blue-500/20">
-                {completedTopicsList.length} of 198 Lessons Completed ({Math.min(100, Math.round((completedTopicsList.length / 198) * 100))}%)
-              </div>
-            </div>
-
-            <div className="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-linear-to-r from-[#0756A5] to-emerald-400 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(100, Math.round((completedTopicsList.length / 198) * 100))}%` }}
-              />
-            </div>
-          </div>
 
           {/* Issued Certificates List */}
           {issuedCerts.length > 0 && (
@@ -1467,6 +1382,28 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
               <span>{showNewDoubtForm ? "Hide Form" : "Ask a Doubt"}</span>
             </button>
           </div>
+
+          {/* Demo Account Notice for Doubts */}
+          {isDemoUser(currentUser) && (
+            <div className="p-4 rounded-2xl bg-amber-500/15 border-2 border-amber-400 dark:border-amber-500/60 text-amber-950 dark:text-amber-100 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-start gap-2.5 min-w-0">
+                <Lock size={18} className="shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+                <div>
+                  <strong className="font-black text-amber-900 dark:text-amber-200">Demo Account Restricted:</strong>{" "}
+                  <span>Demo users cannot ask doubts. Doubt clearing and 1-on-1 WhatsApp mentorship are reserved strictly for registered students.</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.hash = "#/signup";
+                }}
+                className="py-1.5 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shrink-0 cursor-pointer shadow-xs"
+              >
+                Register as Student
+              </button>
+            </div>
+          )}
 
           {/* Feedback messages */}
           {doubtSuccessMsg && (

@@ -16,6 +16,7 @@ import {
 import BrandLogo from "../components/BrandLogo";
 import { certificateService } from "../services/monetizationService";
 import CertificateModal from "../components/CertificateModal";
+import DemoCertificateModal from "../components/DemoCertificateModal";
 
 export default function CertificateVerification({ initialCertificateId, onNavigate, onBack }) {
   const [certIdInput, setCertIdInput] = useState(initialCertificateId || "");
@@ -24,11 +25,19 @@ export default function CertificateVerification({ initialCertificateId, onNaviga
   const [certificateData, setCertificateData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
 
   const fetchVerification = async (idToVerify) => {
     if (!idToVerify || !idToVerify.trim()) {
       setErrorMessage("Please enter a valid Certificate ID.");
       setCertificateData(null);
+      return;
+    }
+
+    if (idToVerify.trim().toUpperCase() === "DEMO-LWU-0001") {
+      setErrorMessage("");
+      setCertificateData(null);
+      setShowDemoModal(true);
       return;
     }
 
@@ -125,6 +134,19 @@ export default function CertificateVerification({ initialCertificateId, onNaviga
               {loading ? "Verifying..." : "Verify Credential"}
             </button>
           </form>
+
+          {/* Quick Demo Preview Link */}
+          <div className="flex items-center justify-center gap-2 pt-2 text-xs">
+            <span className="text-slate-500 dark:text-slate-400">Want to inspect the credential format?</span>
+            <button
+              type="button"
+              onClick={() => setShowDemoModal(true)}
+              className="text-[#0756A5] dark:text-[#38BDF8] font-bold hover:underline cursor-pointer bg-transparent border-none p-0 inline-flex items-center gap-1"
+            >
+              <Award size={13} />
+              <span>View Demo Certificate (DEMO-LWU-0001)</span>
+            </button>
+          </div>
         </div>
 
         {/* Verification Result Card */}
@@ -262,6 +284,12 @@ export default function CertificateVerification({ initialCertificateId, onNaviga
           isApproved={true}
         />
       )}
+
+      {/* Render Demo Certificate Modal */}
+      <DemoCertificateModal
+        isOpen={showDemoModal}
+        onClose={() => setShowDemoModal(false)}
+      />
     </div>
   );
 }

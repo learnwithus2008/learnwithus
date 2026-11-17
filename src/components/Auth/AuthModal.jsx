@@ -853,7 +853,7 @@ export default function AuthModal({ onSelectTopic }) {
                 onClick={() => setShowCertificate(true)}
                 className="w-full py-2.5 px-3 rounded-xl bg-[#0756A5] hover:bg-[#064681] text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-2 cursor-pointer border-none"
               >
-                <Award size={15} className="text-[#FFB800]" />
+                <Award size={15} className="text-white" />
                 <span>View Official Certificate of Achievement</span>
               </button>
 

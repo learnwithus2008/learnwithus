@@ -7,6 +7,7 @@
  */
 
 import { apiClient } from "./apiClient.js";
+import { isDemoUser } from "../utils/studentAuthHelper.js";
 
 const DEFAULT_FREE_DOUBTS = 10;
 const DOUBT_COST_INR = 49;
@@ -110,6 +111,10 @@ export async function fetchMyTickets(userId) {
  * CRITICAL RULE: Count is NOT reduced! Only creates a pending ticket.
  */
 export async function submitDoubtRequest(userId, userDetails, contextData = {}) {
+  if (isDemoUser(userDetails)) {
+    throw new Error("Doubt submissions are restricted. Demo users cannot ask doubts; only registered students are permitted.");
+  }
+
   const balance = getLocalDoubtBalance(userId);
   if (balance.doubtCredits <= 0) {
     throw new Error("No free doubts remaining. Recharge for ₹50 to ask a doubt.");

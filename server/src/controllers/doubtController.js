@@ -2,6 +2,32 @@ import { rewardRepository } from "../repositories/rewardRepository.js";
 import { paymentRepository } from "../repositories/paymentRepository.js";
 import { query } from "../config/db.js";
 
+/**
+ * Checks whether a user represents a demo account.
+ * Demo users are blocked from asking doubts; only registered students can ask doubts.
+ */
+function isDemoUser(user) {
+  if (!user) return true;
+  if (user.is_demo === true || user.isDemo === true || user.role === "demo" || user.account_type === "demo") {
+    return true;
+  }
+  const email = String(user.email || "").toLowerCase().trim();
+  if (
+    email.endsWith("@example.com") ||
+    email.includes("demo") ||
+    email === "alex@example.com" ||
+    email === "priya@example.com" ||
+    email === "admin@example.com"
+  ) {
+    return true;
+  }
+  const name = String(user.name || user.full_name || user.username || "").toLowerCase().trim();
+  if (name.startsWith("demo") || name.includes("demo student") || name === "demo user") {
+    return true;
+  }
+  return false;
+}
+
 export const doubtController = {
   /**
    * GET /api/doubts/balance
@@ -89,6 +115,14 @@ export const doubtController = {
    */
   async createRequest(req, res, next) {
     try {
+      if (isDemoUser(req.user)) {
+        return res.status(403).json({
+          success: false,
+          code: "REGISTERED_STUDENTS_ONLY",
+          error: "Doubt clearing is exclusively reserved for registered students. Demo users cannot ask doubts."
+        });
+      }
+
       const {
         sectionNumber,
         sectionTitle,
@@ -438,6 +472,14 @@ export const doubtController = {
    */
   async purchaseCredits(req, res, next) {
     try {
+      if (isDemoUser(req.user)) {
+        return res.status(403).json({
+          success: false,
+          code: "REGISTERED_STUDENTS_ONLY",
+          error: "Doubt credit purchases are reserved for registered students. Demo accounts cannot purchase doubt credits."
+        });
+      }
+
       const { credits = 1, amount = 49, paymentMethod = "whatsapp_manual", paymentReference } = req.body || {};
       const count = Math.max(1, parseInt(credits, 10) || 1);
       const updated = await rewardRepository.addDoubtCredits(req.user.id, count);

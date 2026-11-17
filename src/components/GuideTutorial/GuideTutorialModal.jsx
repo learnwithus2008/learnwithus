@@ -455,11 +455,17 @@ export default function GuideTutorialModal() {
           </span>
           <button
             onClick={skipTour}
+            type="button"
+            onClick={(e) => {
+              if (e) e.stopPropagation();
+              skipTour();
+            }}
             className="guide-tour-close-btn"
             title="Close Guide (Esc)"
             aria-label="Close Guide"
           >
             <X size={14} />
+            <X size={14} className="pointer-events-none" />
           </button>
         </div>
 
