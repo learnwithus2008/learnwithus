@@ -50,12 +50,64 @@
       }
     }
     </script>
+    <!-- Anti-Inspection & Page Source Protection Shield -->
+    <script>
+      (function() {
+        // Immediate full-page right-click block
+        document.addEventListener('contextmenu', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }, true);
+        window.addEventListener('contextmenu', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }, true);
+
+        // Immediate keyboard shortcut block for Page Source & DevTools
+        window.addEventListener('keydown', function(e) {
+          var isMac = navigator.platform && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+          var mod = isMac ? e.metaKey : e.ctrlKey;
+          var k = e.key ? e.key.toUpperCase() : '';
+
+          // Block Ctrl+U / Cmd+Option+U (View Page Source)
+          if ((mod && k === 'U') || (e.metaKey && e.altKey && k === 'U')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+
+          // Block F12 (DevTools)
+          if (e.key === 'F12') {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+
+          // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C / Cmd+Option+I/J/C (Inspect / Console)
+          if ((mod && e.shiftKey && (k === 'I' || k === 'J' || k === 'C')) ||
+              (e.metaKey && e.altKey && (k === 'I' || k === 'J' || k === 'C'))) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+
+          // Block Ctrl+S / Cmd+S (Save Web Page)
+          if (mod && k === 'S') {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }, true);
+      })();
+    </script>
     <!-- Google Fonts Preconnect & Stylesheets -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
-  <body>
+  <body oncontextmenu="return false;" ondragstart="return false;">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

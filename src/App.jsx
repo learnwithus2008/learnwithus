@@ -43,6 +43,7 @@ import ContextualPageGuidance from "./components/GuideTutorial/ContextualPageGui
 import ErrorBoundary from "./components/ErrorBoundary";
 import { RefreshCw, ShieldCheck, Eye } from "lucide-react";
 import { GlobalAdManager } from "./components/Ads";
+import { initCodeProtection } from "./utils/codeProtection";
 
 // Route resolution helpers for URL hash & history synchronization
 function getRouteFromLocation() {
@@ -136,6 +137,14 @@ function MainAppShell({
   // In-session navigation stack to track previous pages
   const navHistoryRef = useRef([{ page: initialRoute.page, topicId: initialRoute.topicId }]);
   const [historyDepth, setHistoryDepth] = useState(1);
+
+  // Initialize anti-copy & intellectual property code protection safeguards
+  useEffect(() => {
+    const cleanupProtection = initCodeProtection();
+    return () => {
+      cleanupProtection();
+    };
+  }, []);
 
   // Admin App Preview mode toggles
   const handleOpenAppPreview = () => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, RotateCcw, Copy, Check, Terminal, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { Play, RotateCcw, Terminal, Loader2, Sparkles, AlertCircle, Lock } from 'lucide-react';
 import { playSuccessChime } from '../utils/audioCelebration';
 
 /**
@@ -164,7 +164,6 @@ export default function LivePythonRunner({
   const [code, setCode] = useState(initialCode);
   const [output, setOutput] = useState(expectedOutput || '');
   const [isRunning, setIsRunning] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setCode(initialCode);
@@ -186,44 +185,13 @@ export default function LivePythonRunner({
     setOutput(expectedOutput || '');
   };
 
-  const handleCopy = async () => {
-    let copiedSuccess = false;
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(code);
-        copiedSuccess = true;
-      }
-    } catch {
-      copiedSuccess = false;
-    }
-
-    if (!copiedSuccess) {
-      try {
-        const ta = document.createElement("textarea");
-        ta.value = code;
-        ta.style.position = "fixed";
-        ta.style.left = "-9999px";
-        ta.style.top = "-9999px";
-        document.body.appendChild(ta);
-        ta.focus();
-        ta.select();
-        copiedSuccess = document.execCommand("copy");
-        document.body.removeChild(ta);
-      } catch {
-        copiedSuccess = false;
-      }
-    }
-
-    if (copiedSuccess) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   return (
-    <div className="rounded-2xl border border-[#E2E8F0] dark:border-[#1B3B66] bg-white dark:bg-[#102B50] shadow-sm overflow-hidden transition-colors">
+    <div
+      className="rounded-2xl border border-[#E2E8F0] dark:border-[#1B3B66] bg-white dark:bg-[#102B50] shadow-sm overflow-hidden transition-colors live-python-runner"
+      data-code-protected="true"
+    >
       {/* Editor Top Bar */}
-      <div className="bg-[#F3F7FC] dark:bg-[#0A1E38] px-3 sm:px-4 py-2.5 sm:py-3 border-b border-[#E2E8F0] dark:border-[#1B3B66] flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-[#F3F7FC] dark:bg-[#0A1E38] px-3 sm:px-4 py-2.5 sm:py-3 border-b border-[#E2E8F0] dark:border-[#1B3B66] flex flex-wrap items-center justify-between gap-2 select-none">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-[#102B50] inline-block border border-white/20" />
           <span className="w-3 h-3 rounded-full bg-[#0756A5] inline-block" />
@@ -234,14 +202,13 @@ export default function LivePythonRunner({
         </div>
 
         <div className="flex items-center gap-1.5 flex-wrap">
-          <button
-            onClick={handleCopy}
-            className="px-2.5 py-1 text-xs font-semibold text-[#64748B] dark:text-[#CBD5E1] hover:text-[#0756A5] dark:hover:text-white bg-white dark:bg-[#102B50] hover:bg-[#F3F7FC] dark:hover:bg-[#153560] rounded-lg border border-[#E2E8F0] dark:border-[#1B3B66] transition cursor-pointer flex items-center gap-1"
-            title="Copy Code"
+          <div
+            className="px-2.5 py-1 text-xs font-semibold text-slate-400 dark:text-slate-300 bg-white dark:bg-[#102B50] rounded-lg border border-[#E2E8F0] dark:border-[#1B3B66] flex items-center gap-1 select-none"
+            title="Code copying is restricted"
           >
-            {copied ? <Check size={12} className="text-[#16A34A]" /> : <Copy size={12} />}
-            <span className="hidden sm:inline">{copied ? 'Copied' : 'Copy'}</span>
-          </button>
+            <Lock size={12} className="text-[#FFB800]" />
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-300">Protected</span>
+          </div>
 
           <button
             onClick={handleReset}
@@ -264,11 +231,24 @@ export default function LivePythonRunner({
         </div>
       </div>
 
-      {/* Code Textarea Editor - Dark Navy #102B50 background */}
+      {/* Code Textarea Editor - Dark Navy #102B50 background with copy protection */}
       <div className="relative bg-[#102B50] p-3 sm:p-4 text-white font-mono text-xs sm:text-sm">
         <textarea
           value={code}
           onChange={(e) => setCode(e.target.value)}
+          onCopy={(e) => {
+            e.preventDefault();
+            if (e.clipboardData) {
+              e.clipboardData.setData('text/plain', '');
+            }
+          }}
+          onCut={(e) => {
+            e.preventDefault();
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
           rows={Math.max(4, code.split('\n').length + 1)}
           className="w-full bg-transparent text-white font-mono text-xs sm:text-sm leading-relaxed resize-none focus:outline-none focus:ring-0 border-none p-0 selection:bg-[#0756A5]/60 placeholder-slate-400"
           placeholder="Type Python code here..."
@@ -277,7 +257,7 @@ export default function LivePythonRunner({
       </div>
 
       {/* Terminal Output Area */}
-      <div className="bg-[#0A1E38] text-slate-200 p-4 border-t border-[#1B3B66] font-mono text-xs">
+      <div className="bg-[#0A1E38] text-slate-200 p-4 border-t border-[#1B3B66] font-mono text-xs select-none">
         <div className="flex items-center justify-between text-slate-300 text-[11px] font-bold uppercase tracking-wider mb-2">
           <div className="flex items-center gap-1.5">
             <Terminal size={13} className="text-[#FFB800]" />
@@ -286,7 +266,19 @@ export default function LivePythonRunner({
           <span className="text-[10px] text-[#60A5FA] font-mono">Python 3.12 (Live Simulator)</span>
         </div>
 
-        <pre className="p-3 bg-[#071527] rounded-xl text-[#38BDF8] overflow-x-auto leading-relaxed whitespace-pre-wrap min-h-[48px] border border-[#1B3B66]">
+        <pre
+          className="p-3 bg-[#071527] rounded-xl text-[#38BDF8] overflow-x-auto leading-relaxed whitespace-pre-wrap min-h-[48px] border border-[#1B3B66] select-none"
+          onCopy={(e) => {
+            e.preventDefault();
+            if (e.clipboardData) {
+              e.clipboardData.setData('text/plain', '');
+            }
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
           {output ? (
             output.toLowerCase().includes("error") ? (
               <span className="text-[#DC2626] font-semibold">{output}</span>

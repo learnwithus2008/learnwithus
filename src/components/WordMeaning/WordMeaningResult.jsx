@@ -5,8 +5,7 @@ import {
   Lightbulb,
   Brain,
   Code2,
-  Copy,
-  Check,
+  Lock,
   ChevronRight,
   Sparkles,
   Layers,
@@ -23,7 +22,6 @@ export default function WordMeaningResult({
   onLanguageChange,
   onSearchSuggestion
 }) {
-  const [copied, setCopied] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   if (!result) return null;
@@ -65,13 +63,6 @@ export default function WordMeaningResult({
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
     window.speechSynthesis.speak(utterance);
-  };
-
-  const handleCopyCode = (code) => {
-    if (!code) return;
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -156,31 +147,37 @@ export default function WordMeaningResult({
 
       {/* 4. Python Example & How It Is Used */}
       {result.pythonExample && (
-        <div className="rounded-2xl border border-slate-200 dark:border-[#183657] overflow-hidden bg-slate-900 dark:bg-[#040913]">
-          <div className="px-4 py-2.5 bg-slate-800 dark:bg-[#07101F] border-b border-slate-700 dark:border-[#183657] flex items-center justify-between">
+        <div
+          className="rounded-2xl border border-slate-200 dark:border-[#183657] overflow-hidden bg-slate-900 dark:bg-[#040913]"
+          data-code-protected="true"
+        >
+          <div className="px-4 py-2.5 bg-slate-800 dark:bg-[#07101F] border-b border-slate-700 dark:border-[#183657] flex items-center justify-between select-none">
             <span className="text-xs font-bold text-blue-400 dark:text-[#8CC8FF] uppercase tracking-wider flex items-center gap-1.5 font-mono">
               <Code2 size={16} /> 🐍 Python Code
             </span>
-            <button
-              onClick={() => handleCopyCode(result.pythonExample)}
-              className="text-xs bg-slate-700 dark:bg-[#102541] hover:bg-slate-600 dark:hover:bg-[#183657] text-slate-200 dark:text-[#D2DEEC] hover:text-white px-3 py-1 rounded-lg flex items-center gap-1.5 border border-slate-600 dark:border-[#183657] cursor-pointer transition font-semibold"
+            <div
+              className="text-xs bg-slate-700 dark:bg-[#102541] text-slate-300 dark:text-[#D2DEEC] px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-slate-600 dark:border-[#183657] select-none"
+              title="Code copying is restricted"
             >
-              {copied ? (
-                <>
-                  <Check size={13} className="text-[#168BFF]" />
-                  <span className="text-[#168BFF] font-bold">Copied</span>
-                </>
-              ) : (
-                <>
-                  <Copy size={13} />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
+              <Lock size={12} className="text-[#FFB800]" />
+              <span className="font-semibold text-[11px]">Protected</span>
+            </div>
           </div>
 
-          <div className="p-4 bg-slate-900 dark:bg-[#040913] text-blue-300 dark:text-[#8CC8FF] font-mono text-sm overflow-x-auto leading-relaxed border-b border-slate-800 dark:border-[#183657]">
-            <pre className="m-0"><code>{result.pythonExample}</code></pre>
+          <div
+            className="p-4 bg-slate-900 dark:bg-[#040913] text-blue-300 dark:text-[#8CC8FF] font-mono text-sm overflow-x-auto leading-relaxed border-b border-slate-800 dark:border-[#183657] select-none"
+            onCopy={(e) => {
+              e.preventDefault();
+              if (e.clipboardData) {
+                e.clipboardData.setData("text/plain", "");
+              }
+            }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <pre className="m-0 select-none"><code className="select-none">{result.pythonExample}</code></pre>
           </div>
 
           {result.howUsed && (

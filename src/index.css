@@ -4328,6 +4328,53 @@ html.dark ::selection {
   font-weight: 600;
 }
 
+/* ========================================================
+   ANTI-COPY & INTELLECTUAL PROPERTY PROTECTION
+   Restricts copying, selecting, dragging, and extraction
+   ======================================================== */
+.code-block-container,
+.code-block-container *,
+.code-block-body,
+.code-block-body *,
+.live-python-runner,
+.live-python-runner pre,
+.live-python-runner textarea,
+[data-code-protected="true"],
+[data-code-protected="true"] * {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+.code-block-container *,
+.live-python-runner *,
+[data-code-protected="true"] * {
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+}
+
+/* Hide proprietary code from browser print/PDF export to prevent extraction */
+@media print {
+  .code-block-container,
+  .live-python-runner,
+  [data-code-protected="true"] {
+    display: none !important;
+  }
+}
+
+@keyframes codeToastPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 16px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -9475,7 +9522,13 @@ html.dark .navbar-auth-btn-signin:hover {
   }
 
   .navbar-context-capsule {
-    display: none !important;
+    display: flex !important;
+    padding: 0.1rem !important;
+  }
+
+  .navbar-capsule-btn {
+    padding: 0.25rem 0.35rem !important;
+    gap: 0.2rem !important;
   }
 
   .floating-notepad-window,

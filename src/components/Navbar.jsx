@@ -61,10 +61,14 @@ export default function Navbar({
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [stageDropdownOpen, setStageDropdownOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [mobileStageOpen, setMobileStageOpen] = useState(false);
+  const [mobileLangOpen, setMobileLangOpen] = useState(false);
 
   const userMenuRef = useRef(null);
   const stageMenuRef = useRef(null);
   const langMenuRef = useRef(null);
+  const mobileStageMenuRef = useRef(null);
+  const mobileLangMenuRef = useRef(null);
 
   const stageMeta = getStageById(selectedStage);
   const langMeta = getLanguageById(selectedLanguage);
@@ -125,6 +129,8 @@ export default function Navbar({
     setUserDropdownOpen(false);
     setStageDropdownOpen(false);
     setLangDropdownOpen(false);
+    setMobileStageOpen(false);
+    setMobileLangOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -134,15 +140,26 @@ export default function Navbar({
       if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
         setUserDropdownOpen(false);
       }
-      if (stageMenuRef.current && !stageMenuRef.current.contains(e.target)) {
+      const inDesktopStage = stageMenuRef.current && stageMenuRef.current.contains(e.target);
+      const inMobileStage = mobileStageMenuRef.current && mobileStageMenuRef.current.contains(e.target);
+      if (!inDesktopStage && !inMobileStage) {
         setStageDropdownOpen(false);
+        setMobileStageOpen(false);
       }
-      if (langMenuRef.current && !langMenuRef.current.contains(e.target)) {
+
+      const inDesktopLang = langMenuRef.current && langMenuRef.current.contains(e.target);
+      const inMobileLang = mobileLangMenuRef.current && mobileLangMenuRef.current.contains(e.target);
+      if (!inDesktopLang && !inMobileLang) {
         setLangDropdownOpen(false);
+        setMobileLangOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
   }, []);
 
   const userAvatarMeta = AVATAR_OPTIONS.find(
@@ -808,9 +825,198 @@ export default function Navbar({
             </button>
           )}
 
+          {/* Learner Context Capsule (Stage + Language Switcher) on Mobile / Small Screens */}
+          {!showAdminOnlyMode && (
+            <div id="tour-nav-mobile-capsule" className="navbar-context-capsule shrink-0">
+              {/* Learning Stage Dropdown Trigger */}
+              <div className="relative shrink-0" ref={mobileStageMenuRef}>
+                <button
+                  id="tour-nav-mobile-stage"
+                  onClick={() => {
+                    setMobileStageOpen(!mobileStageOpen);
+                    setMobileLangOpen(false);
+                    setUserDropdownOpen(false);
+                  }}
+                  className={`navbar-capsule-btn ${mobileStageOpen ? "open-stage" : ""}`}
+                  title={`Learning Stage: ${stageMeta.label}`}
+                  aria-expanded={mobileStageOpen}
+                  aria-haspopup="true"
+                >
+                  <span className="text-sm select-none shrink-0">{stageMeta.icon}</span>
+                  <ChevronDown
+                    size={11}
+                    className={`text-[#0756A5] dark:text-white transition-transform shrink-0 ${
+                      mobileStageOpen ? "rotate-180 text-[#0756A5]" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Mobile Stage Quick Switch Dropdown */}
+                {mobileStageOpen && (
+                  <div
+                    className="fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 mt-2 sm:w-72 max-w-[calc(100vw-1rem)] rounded-2xl bg-white dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] shadow-2xl p-2 z-50 animate-in"
+                    style={{ top: "62px" }}
+                  >
+                    <div className="px-2.5 py-1.5 mb-1.5 border-b border-slate-100 dark:border-[#23344d] flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        Learning Stage (Age)
+                      </span>
+                      <span className="text-[11px] font-bold text-blue-600 dark:text-[#60a5fa]">
+                        {stageMeta.label}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1 max-h-[60vh] overflow-y-auto">
+                      {LEARNING_STAGES.map((stg) => {
+                        const isSelected = selectedStage === stg.id;
+                        return (
+                          <button
+                            key={stg.id}
+                            onClick={() => {
+                              if (onSelectStage) onSelectStage(stg.id);
+                              setMobileStageOpen(false);
+                            }}
+                            className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
+                              isSelected
+                                ? "bg-[#FFFBEB] dark:bg-[#153560] border-[#FFB800] text-[#102B50] dark:text-white font-bold"
+                                : "bg-transparent hover:bg-[#FFB800] border-transparent hover:border-[#FFB800] text-[#102B50] dark:text-slate-200 hover:text-[#102B50] dark:hover:text-[#102B50]"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-xl shrink-0 select-none">{stg.icon}</span>
+                              <div className="min-w-0">
+                                <div className="text-xs font-bold leading-tight truncate">
+                                  {stg.label}
+                                </div>
+                                <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate">
+                                  {stg.ageRange} • {stg.shortDesc.slice(0, 30)}...
+                                </div>
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <div className="w-5 h-5 rounded-full bg-[#FFB800] text-[#102B50] flex items-center justify-center shrink-0 ml-1.5 font-bold">
+                                <Check size={12} strokeWidth={3} />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="pt-1.5 mt-1 border-t border-[#E2E8F0] dark:border-[#1E3A5F]">
+                      <button
+                        onClick={() => {
+                          setMobileStageOpen(false);
+                          if (onOpenStageModal) onOpenStageModal();
+                        }}
+                        className="w-full py-1.5 px-2 text-[11px] font-bold text-center text-[#0756A5] dark:text-[#FFB800] hover:underline cursor-pointer bg-transparent border-none"
+                      >
+                        View All Stage Details & Cards →
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="navbar-capsule-divider" />
+
+              {/* Language Dropdown Trigger */}
+              <div className="relative shrink-0" ref={mobileLangMenuRef}>
+                <button
+                  id="tour-nav-mobile-lang"
+                  onClick={() => {
+                    setMobileLangOpen(!mobileLangOpen);
+                    setMobileStageOpen(false);
+                    setUserDropdownOpen(false);
+                  }}
+                  className={`navbar-capsule-btn ${mobileLangOpen ? "open-lang" : ""}`}
+                  title={`Language: ${langMeta.label}`}
+                  aria-expanded={mobileLangOpen}
+                  aria-haspopup="true"
+                >
+                  <span className="text-sm select-none shrink-0">{langMeta.icon}</span>
+                  <ChevronDown
+                    size={11}
+                    className={`text-[#0756A5] dark:text-white transition-transform shrink-0 ${
+                      mobileLangOpen ? "rotate-180 text-[#0756A5]" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Mobile Language Quick Switch Dropdown */}
+                {mobileLangOpen && (
+                  <div
+                    className="fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 mt-2 sm:w-72 max-w-[calc(100vw-1rem)] rounded-2xl bg-white dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] shadow-2xl p-2 z-50 animate-in"
+                    style={{ top: "62px" }}
+                  >
+                    <div className="px-2.5 py-1.5 mb-1.5 border-b border-slate-100 dark:border-[#23344d] flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#102B50] dark:text-slate-300">
+                        <Globe size={13} className="text-[#0756A5] dark:text-[#38bdf8]" />
+                        <span>Learning Language</span>
+                      </div>
+                      <span className="text-[11px] font-bold text-blue-600 dark:text-[#38bdf8]">
+                        {langMeta.shortLabel}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1 max-h-[60vh] overflow-y-auto">
+                      {LEARNING_LANGUAGES.map((lang) => {
+                        const isSelected = selectedLanguage === lang.id;
+                        return (
+                          <button
+                            key={lang.id}
+                            onClick={() => {
+                              if (onSelectLanguage) onSelectLanguage(lang.id);
+                              setMobileLangOpen(false);
+                            }}
+                            className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
+                              isSelected
+                                ? "bg-[#FFFBEB] dark:bg-[#153560] border-[#FFB800] text-[#102B50] dark:text-white font-bold"
+                                : "bg-transparent hover:bg-[#FFB800] border-transparent hover:border-[#FFB800] text-[#102B50] dark:text-slate-200 hover:text-[#102B50] dark:hover:text-[#102B50]"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-xl shrink-0 select-none">{lang.icon}</span>
+                              <div className="min-w-0">
+                                <div className="text-xs font-bold leading-tight truncate">
+                                  {lang.label}
+                                </div>
+                                <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate">
+                                  {lang.shortLabel} • {lang.description.slice(0, 36)}...
+                                </div>
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <div className="w-5 h-5 rounded-full bg-[#FFB800] text-[#102B50] flex items-center justify-center shrink-0 ml-1.5 font-bold">
+                                <Check size={12} strokeWidth={3} />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="pt-1.5 mt-1 border-t border-[#E2E8F0] dark:border-[#1E3A5F]">
+                      <button
+                        onClick={() => {
+                          setMobileLangOpen(false);
+                          if (onOpenLanguageModal) onOpenLanguageModal();
+                        }}
+                        className="w-full py-1.5 px-2 text-[11px] font-bold text-center text-[#0756A5] dark:text-[#FFB800] hover:underline cursor-pointer bg-transparent border-none"
+                      >
+                        View Full Multi-Language Guide →
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Mobile Font Size Control */}
           <FontSizeControl variant="mobile" />
 
+          {/* Mobile Theme Toggle */}
           <button
             id="tour-nav-mobile-theme"
             onClick={toggleTheme}
@@ -846,31 +1052,6 @@ export default function Navbar({
             >
               <LogIn size={15} className="text-[#0756A5] dark:text-[#93c5fd]" />
             </button>
-          )}
-
-          {/* Learner only: Language and Stage quick pills */}
-          {!showAdminOnlyMode && (
-            <>
-              <button
-                id="tour-nav-mobile-lang"
-                onClick={onOpenLanguageModal}
-                className="h-8 sm:h-9 px-1.5 sm:px-2.5 hidden xs:flex items-center gap-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] text-slate-800 dark:text-slate-200 cursor-pointer shadow-2xs shrink-0"
-                title="Switch Language"
-              >
-                <span className="text-sm">{langMeta.icon}</span>
-                <span className="hidden sm:inline">{langShortLabel}</span>
-              </button>
-
-              <button
-                id="tour-nav-mobile-stage"
-                onClick={onOpenStageModal}
-                className="h-8 sm:h-9 px-1.5 sm:px-2.5 hidden xs:flex items-center gap-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] text-slate-800 dark:text-slate-200 cursor-pointer shadow-2xs shrink-0"
-                title="Switch Learning Stage"
-              >
-                <span className="text-sm">{stageMeta.icon}</span>
-                <span className="hidden sm:inline">{stageMeta.label}</span>
-              </button>
-            </>
           )}
         </div>
       </div>
