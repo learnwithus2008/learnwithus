@@ -1272,7 +1272,7 @@ export default function Profile({ onNavigate, onSelectTopic, onBack }) {
       {activeTab === "doubts" && (
         <div className="space-y-6">
           {/* Header & Balance Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-3">
             {/* Card 1: Free Doubts Left */}
             <div
               className="p-4 rounded-2xl border shadow-sm"

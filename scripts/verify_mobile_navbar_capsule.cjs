@@ -70,6 +70,11 @@ assert(!cssContent.includes(".navbar-context-capsule {\n    display: none !impor
 assert(cssContent.includes(".navbar-capsule-btn"), "index.css defines .navbar-capsule-btn");
 assert(cssContent.includes(".navbar-capsule-divider"), "index.css defines .navbar-capsule-divider");
 
+// 3. High contrast text visibility on mobile pill buttons
+assert(cssContent.includes("html.dark #tour-nav-mobile-lang span") && cssContent.includes("color: #FFFFFF !important;"), "index.css forces white text in dark mode for mobile language pill");
+assert(cssContent.includes("html.dark #tour-nav-mobile-stage span") && cssContent.includes("color: #FFFFFF !important;"), "index.css forces white text in dark mode for mobile stage pill");
+assert(navbarContent.includes("nav-mobile-pill-btn"), "Navbar attaches nav-mobile-pill-btn class for high contrast visibility");
+
 console.log("\n--------------------------------------------------");
 console.log(`Results: ${passCount} Passed, ${failCount} Failed.`);
 console.log("--------------------------------------------------\n");

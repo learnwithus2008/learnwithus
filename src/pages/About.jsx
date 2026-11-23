@@ -56,7 +56,7 @@ export default function About({ onNavigate, onBack }) {
           "The learner's age determines the teaching approach, not their coding potential."
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4 pt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
           <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] transition">
             <h3 className="text-base font-bold text-[#102B50] dark:text-white flex items-center gap-2 mb-1.5">
               <CheckCircle size={18} className="text-[#16A34A]" />

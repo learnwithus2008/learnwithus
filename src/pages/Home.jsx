@@ -637,7 +637,7 @@ export default function Home({
           SECTION F: LEARNING COMMUNITY (Stats & Motivation)
           ======================================================== */}
       <section id="tour-home-community" className="home-section home-stats-banner p-6 sm:p-10 rounded-3xl">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center">
           <div>
             <div className="home-stat-number text-2xl sm:text-4xl font-black mb-1">
               198+

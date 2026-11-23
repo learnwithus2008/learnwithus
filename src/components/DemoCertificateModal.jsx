@@ -147,7 +147,7 @@ export default function DemoCertificateModal({
               ) : (
                 <>
                   <Download size={14} />
-                  <span>Download Demo PDF</span>
+                  <span><span className="hidden xs:inline">Download Demo </span>PDF</span>
                 </>
               )}
             </button>

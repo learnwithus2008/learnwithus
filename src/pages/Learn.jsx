@@ -172,7 +172,7 @@ export default function Learn({
         </div>
 
         {/* Learning Statistics Bar (Gamification & Progress) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className="p-4 rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1B3B66] shadow-2xs flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-amber-950/60 text-[#0756A5] dark:text-[#FFB800] flex items-center justify-center shrink-0">
               <Flame size={20} />

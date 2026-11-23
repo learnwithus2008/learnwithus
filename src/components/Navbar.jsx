@@ -1053,6 +1053,31 @@ export default function Navbar({
               <LogIn size={15} className="text-[#0756A5] dark:text-[#93c5fd]" />
             </button>
           )}
+
+          {/* Learner only: Language and Stage quick pills */}
+          {!showAdminOnlyMode && (
+            <>
+              <button
+                id="tour-nav-mobile-lang"
+                onClick={onOpenLanguageModal}
+                className="nav-mobile-pill-btn h-8 sm:h-9 px-2 sm:px-2.5 hidden xs:flex items-center gap-1.5 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-[#102541] border border-slate-300 dark:border-[#1E3A5F] text-[#102B50] dark:text-white cursor-pointer shadow-2xs shrink-0 transition"
+                title="Switch Language"
+              >
+                <span className="text-sm select-none shrink-0">{langMeta.icon}</span>
+                <span className="hidden sm:inline font-extrabold text-[#102B50] dark:text-white" style={{ color: "inherit" }}>{langShortLabel}</span>
+              </button>
+
+              <button
+                id="tour-nav-mobile-stage"
+                onClick={onOpenStageModal}
+                className="nav-mobile-pill-btn h-8 sm:h-9 px-2 sm:px-2.5 hidden xs:flex items-center gap-1.5 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-[#102541] border border-slate-300 dark:border-[#1E3A5F] text-[#102B50] dark:text-white cursor-pointer shadow-2xs shrink-0 transition"
+                title="Switch Learning Stage"
+              >
+                <span className="text-sm select-none shrink-0">{stageMeta.icon}</span>
+                <span className="hidden sm:inline font-extrabold text-[#102B50] dark:text-white" style={{ color: "inherit" }}>{stageMeta.label}</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>

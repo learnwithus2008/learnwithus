@@ -551,7 +551,12 @@ html.dark .lang-card:hover .rounded-full.border {
 html.dark .notion-tag {
   background-color: #102B50;
   border: 1px solid #1E3A5F;
-  color: #F3F7FC;
+  color: #FFFFFF !important;
+}
+
+html.dark .notion-tag span,
+html.dark .notion-tag button {
+  color: #FFFFFF !important;
 }
 
 html.dark .notion-tag svg {
@@ -2421,16 +2426,45 @@ html.dark .text-slate-600,
 html.dark .dark\:text-slate-700,
 html.dark .dark\:text-slate-600,
 html.dark .text-slate-300,
-html.dark .text-slate-200,
-html.dark .dark\:text-slate-300,
-html.dark .dark\:text-slate-200,
-html.dark .dark\:text-\[\#D2DEEC\] {
-  color: #6B8097 !important;
+html.dark .dark\:text-slate-300 {
+  color: #94A3B8 !important;
 }
 
+html.dark .text-slate-200,
+html.dark .dark\:text-slate-200,
 html.dark .dark\:text-\[\#D2DEEC\],
 html.dark .dark\:text-\[\#cbd5e1\] {
   color: #E2E8F0 !important;
+}
+
+/* Mobile Quick Pills - Guarantee Maximum Visibility & Contrast */
+.nav-mobile-pill-btn,
+#tour-nav-mobile-lang,
+#tour-nav-mobile-stage {
+  color: #102B50 !important;
+  font-weight: 800 !important;
+}
+
+.nav-mobile-pill-btn span,
+#tour-nav-mobile-lang span,
+#tour-nav-mobile-stage span {
+  color: #102B50 !important;
+  font-weight: 800 !important;
+}
+
+html.dark .nav-mobile-pill-btn,
+html.dark #tour-nav-mobile-lang,
+html.dark #tour-nav-mobile-stage,
+html.dark .nav-mobile-pill-btn span,
+html.dark #tour-nav-mobile-lang span,
+html.dark #tour-nav-mobile-stage span,
+html.dark .nav-mobile-pill-btn *,
+html.dark #tour-nav-mobile-lang *,
+html.dark #tour-nav-mobile-stage * {
+  color: #FFFFFF !important;
+  background-color: #102541 !important;
+  border-color: #1E3A5F !important;
+  font-weight: 800 !important;
 }
 
 html.dark .text-slate-500,
@@ -3034,7 +3068,7 @@ html.dark .topic-notes-textarea::placeholder {
 
 html.dark .dark\:text-\[\#D2DEEC\],
 html.dark .text-\[\#D2DEEC\] {
-  color: #6B8097 !important;
+  color: #E2E8F0 !important;
 }
 
 html.dark .text-\[\#D2DEEC\] {
@@ -3043,7 +3077,7 @@ html.dark .text-\[\#D2DEEC\] {
 
 html.dark .dark\:text-\[\#cbd5e1\],
 html.dark .text-\[\#cbd5e1\] {
-  color: #6B8097 !important;
+  color: #CBD5E1 !important;
 }
 
 html.dark .text-\[\#cbd5e1\] {
@@ -3097,7 +3131,7 @@ html.dark .text-\[\#f8fafc\] {
 
 html.dark .dark\:text-\[\#91A6BF\],
 html.dark .text-\[\#91A6BF\] {
-  color: #51657B !important;
+  color: #94A3B8 !important;
 }
 
 html.dark .text-\[\#91A6BF\] {
@@ -3106,7 +3140,7 @@ html.dark .text-\[\#91A6BF\] {
 
 html.dark .dark\:text-\[\#94a3b8\],
 html.dark .text-\[\#94a3b8\] {
-  color: #51657B !important;
+  color: #94A3B8 !important;
 }
 
 html.dark .text-\[\#94a3b8\] {
@@ -5498,23 +5532,110 @@ html.dark .profile-hero-card {
    Floating Action Buttons & Study Dock System
    Guarantees 0 overlap, precise responsiveness, and clear order
    ======================================================== */
-.floating-dock-dictionary {
+.floating-dock-dictionary,
+.floating-dock-notepad {
   position: fixed;
-  z-index: 40;
-  bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
   right: max(1rem, env(safe-area-inset-right, 1rem));
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.floating-dock-dictionary {
+  bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
 }
 
 .floating-dock-notepad {
-  position: fixed;
-  z-index: 40;
   bottom: calc(7.75rem + env(safe-area-inset-bottom, 0px));
-  right: max(1rem, env(safe-area-inset-right, 1rem));
-  max-width: calc(100vw - 2rem);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
 }
 
+/* Tooltip: always anchored to the LEFT of the icon button on small screens */
+.floating-dock-tooltip {
+  position: absolute;
+  right: calc(100% + 0.65rem);
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  white-space: nowrap;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.75rem;
+  background-color: #102B50;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 10px 25px -4px rgba(16, 43, 80, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+html.dark .floating-dock-tooltip {
+  background-color: #FFFFFF;
+  color: #102B50;
+  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.floating-dock-tooltip .tooltip-badge {
+  font-family: monospace;
+  font-size: 0.65rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.35rem;
+  background-color: #0756A5;
+  color: #FFB800;
+  font-weight: 800;
+}
+
+html.dark .floating-dock-tooltip .tooltip-badge {
+  background-color: #F1F5F9;
+  color: #0756A5;
+}
+
+/* Tooltip triangle arrow pointing to the button on the right */
+.floating-dock-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: transparent transparent transparent #102B50;
+}
+
+html.dark .floating-dock-tooltip::after {
+  border-color: transparent transparent transparent #FFFFFF;
+}
+
+/* Hover & Focus reveals tooltip on small screens */
+.floating-dock-notepad:hover .floating-dock-tooltip,
+.floating-dock-dictionary:hover .floating-dock-tooltip,
+.floating-dock-notepad:focus-within .floating-dock-tooltip,
+.floating-dock-dictionary:focus-within .floating-dock-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Small screens (< 1024px): Buttons are compact 44px icon-only squares.
+   Inner text is hidden so nothing can ever overflow or be cut off! */
+@media (max-width: 1023px) {
+  .floating-dock-notepad button,
+  .floating-dock-dictionary button {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    border-radius: 1rem !important;
+  }
+
+  .floating-dock-notepad .floating-dock-text,
+  .floating-dock-dictionary .floating-dock-text {
+    display: none !important;
+  }
+}
+
+/* Desktop screens (>= 1024px): Buttons expand to full pills with icon + text.
+   Tooltip is hidden to avoid duplicate labels. */
 @media (min-width: 1024px) {
   .floating-dock-dictionary {
     bottom: max(1.25rem, env(safe-area-inset-bottom, 1.25rem));
@@ -5524,7 +5645,24 @@ html.dark .profile-hero-card {
   .floating-dock-notepad {
     bottom: max(4.5rem, calc(env(safe-area-inset-bottom, 1.25rem) + 3.25rem));
     right: max(1.25rem, env(safe-area-inset-right, 1.25rem));
-    max-width: none;
+  }
+
+  .floating-dock-notepad button,
+  .floating-dock-dictionary button {
+    width: auto !important;
+    height: auto !important;
+    padding: 0.625rem 0.875rem !important;
+  }
+
+  .floating-dock-notepad .floating-dock-text,
+  .floating-dock-dictionary .floating-dock-text {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+
+  .floating-dock-tooltip {
+    display: none !important;
   }
 }
 
@@ -8246,7 +8384,15 @@ html.dark .book-spread {
 .book-page-right {
   padding: 1.5rem;
   background-color: #F8FAFC;
-  border-left: 1px solid #E2E8F0;
+  border-top: 1px solid #E2E8F0;
+  border-left: none;
+}
+
+@media (min-width: 1024px) {
+  .book-page-right {
+    border-top: none;
+    border-left: 1px solid #E2E8F0;
+  }
 }
 
 @media (min-width: 640px) {
@@ -8259,13 +8405,28 @@ html.dark .book-spread {
   }
 }
 
+@media (max-width: 480px) {
+  .book-page-left,
+  .book-page-right {
+    padding: 1.25rem 0.85rem !important;
+  }
+}
+
 html.dark .book-page-left {
   background-color: #102B50;
 }
 
 html.dark .book-page-right {
   background-color: #0c203b;
-  border-left-color: #1B3B66;
+  border-top-color: #1B3B66;
+  border-left-color: transparent;
+}
+
+@media (min-width: 1024px) {
+  html.dark .book-page-right {
+    border-top-color: transparent;
+    border-left-color: #1B3B66;
+  }
 }
 
 /* Bookmark Ribbon */
@@ -9521,14 +9682,42 @@ html.dark .navbar-auth-btn-signin:hover {
     gap: 0.15rem !important;
   }
 
+  .navbar-brand-emblem {
+    height: 32px !important;
+    max-height: 34px !important;
+    max-width: 50px !important;
+  }
+
+  .navbar-mobile-menu {
+    gap: 0.2rem !important;
+  }
+
   .navbar-context-capsule {
     display: flex !important;
-    padding: 0.1rem !important;
+    padding: 0.08rem !important;
+    border-radius: 0.65rem !important;
   }
 
   .navbar-capsule-btn {
-    padding: 0.25rem 0.35rem !important;
-    gap: 0.2rem !important;
+    padding: 0.2rem 0.28rem !important;
+    gap: 0.15rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .font-size-control-pill {
+    padding: 0 0.15rem !important;
+    height: 30px !important;
+  }
+
+  .font-size-btn-value {
+    padding: 0 0.25rem !important;
+    font-size: 0.7rem !important;
+  }
+
+  #tour-nav-mobile-theme,
+  #tour-nav-mobile-auth {
+    width: 1.875rem !important;
+    height: 1.875rem !important;
   }
 
   .floating-notepad-window,
