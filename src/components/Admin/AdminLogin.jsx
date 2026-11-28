@@ -34,7 +34,7 @@ export default function AdminLogin({ onBackToHome, onSuccess }) {
   };
 
   const handleUseDemoAdmin = () => {
-    setEmail("ravi@gmail.com");
+    setEmail("learnwithus2008@gmail.com");
     setPassword("Ravi@123");
     setError(null);
   };
@@ -147,7 +147,7 @@ export default function AdminLogin({ onBackToHome, onSuccess }) {
             className="w-full py-2 px-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Sparkles size={14} className="text-blue-500" />
-            <span>Fill Credentials: <code className="font-mono font-bold">ravi@gmail.com</code></span>
+            <span>Fill Credentials: <code className="font-mono font-bold">learnwithus2008@gmail.com</code></span>
           </button>
         </div>
 

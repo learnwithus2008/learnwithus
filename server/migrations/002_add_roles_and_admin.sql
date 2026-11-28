@@ -11,4 +11,4 @@ CREATE INDEX IF NOT EXISTS idx_users_account_status ON users(account_status);
 -- Elevate default admin users so administrators can test the admin panel immediately
 UPDATE users 
 SET role = 'admin' 
-WHERE LOWER(email) IN ('ravi@gmail.com', 'admin@example.com', 'admin@pythonlearning.com');
+WHERE LOWER(email) IN ('learnwithus2008@gmail.com', 'ravi@gmail.com', 'admin@example.com', 'admin@pythonlearning.com', 'admin@learnwithus.com');

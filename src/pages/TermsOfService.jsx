@@ -145,8 +145,9 @@ export default function TermsOfService({ onNavigate, onBack }) {
           </p>
           <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#102541] border border-slate-200 dark:border-[#183657] text-sm text-slate-700 dark:text-slate-300">
             <p className="font-semibold text-slate-900 dark:text-white mb-1">Learn With Us Legal & Operations</p>
-            <p>Email: <a href="mailto:support@pythonlearning.vercel.app" className="text-[#0756A5] font-semibold underline">support@pythonlearning.vercel.app</a></p>
-            <p>Website: <a href="https://pythonlearning.vercel.app" className="text-[#0756A5] font-semibold underline">https://pythonlearning.vercel.app</a></p>
+            <p>Email: <a href="mailto:learnwithus2008@gmail.com" className="text-[#0756A5] dark:text-[#60B7FF] font-semibold underline">learnwithus2008@gmail.com</a></p>
+            <p>Phone: <a href="tel:+917382008413" className="text-[#0756A5] dark:text-[#60B7FF] font-semibold underline">+91 73820 08413 (7382008413)</a></p>
+            <p>Website: <a href="https://pythonlearning.vercel.app" className="text-[#0756A5] dark:text-[#60B7FF] font-semibold underline">https://pythonlearning.vercel.app</a></p>
           </div>
         </section>
       </div>

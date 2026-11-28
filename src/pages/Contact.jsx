@@ -158,8 +158,11 @@ export default function Contact({ onNavigate, onBack }) {
                 <span>Signed in as registered student</span>
               </div>
             )}
-            <div className="text-[11px] text-center text-[#64748B] dark:text-slate-400 font-mono">
-              Support Line: {WHATSAPP_DISPLAY_NUMBER}
+            <div className="text-[11px] text-center text-[#64748B] dark:text-slate-400 font-mono flex items-center justify-center gap-1.5">
+              <span>Support Line:</span>
+              <a href="tel:+917382008413" className="text-[#0756A5] dark:text-[#60B7FF] font-bold hover:underline" title="Call Support (+91 73820 08413)">
+                {WHATSAPP_DISPLAY_NUMBER}
+              </a>
             </div>
           </div>
 
@@ -172,10 +175,10 @@ export default function Contact({ onNavigate, onBack }) {
               Reach our educational support and administrative team directly:
             </p>
             <a
-              href="mailto:support@pythonlearning.vercel.app"
-              className="text-xs sm:text-sm font-bold text-[#0756A5] hover:underline block break-all"
+              href="mailto:learnwithus2008@gmail.com"
+              className="text-xs sm:text-sm font-bold text-[#0756A5] dark:text-[#60B7FF] hover:underline block break-all"
             >
-              support@pythonlearning.vercel.app
+              learnwithus2008@gmail.com
             </a>
           </div>
 

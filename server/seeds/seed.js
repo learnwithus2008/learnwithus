@@ -244,6 +244,45 @@ export async function runSeeds(dbUrl = process.env.DATABASE_URL) {
       [admin2Id]
     );
 
+    // 5. Seed Official Platform Admin (learnwithus2008@gmail.com)
+    const admin3Res = await client.query(
+      `
+      INSERT INTO users (full_name, email, password_hash, role, account_status, avatar, bio, learning_stage, preferred_language)
+      VALUES ($1, $2, $3, 'admin', 'active', $4, $5, $6, $7)
+      ON CONFLICT ((LOWER(email))) DO UPDATE
+        SET full_name = EXCLUDED.full_name,
+            password_hash = EXCLUDED.password_hash,
+            role = 'admin',
+            account_status = 'active',
+            avatar = EXCLUDED.avatar,
+            learning_stage = EXCLUDED.learning_stage,
+            preferred_language = EXCLUDED.preferred_language
+      RETURNING id;
+      `,
+      [
+        "Learn With Us Admin",
+        "learnwithus2008@gmail.com",
+        passwordHash,
+        "sparkles",
+        "Official Platform Administrator & Supervisor.",
+        "pro",
+        "english"
+      ]
+    );
+    const admin3Id = admin3Res.rows[0].id;
+
+    await client.query(
+      `
+      INSERT INTO user_rewards (user_id, total_xp, current_streak, longest_streak, doubt_credits, free_doubts_total, doubts_used)
+      VALUES ($1, 5000, 50, 50, 999, 999, 0)
+      ON CONFLICT (user_id) DO UPDATE
+        SET total_xp = EXCLUDED.total_xp,
+            current_streak = EXCLUDED.current_streak,
+            longest_streak = EXCLUDED.longest_streak;
+      `,
+      [admin3Id]
+    );
+
     await client.query("COMMIT");
     console.log("PostgreSQL seed data created/verified successfully!");
     console.log("Verified Accounts:");
@@ -251,6 +290,7 @@ export async function runSeeds(dbUrl = process.env.DATABASE_URL) {
     console.log("  2) priya@example.com / password123 (Student, Graduate, 850 XP)");
     console.log("  3) admin@learnwithus.com / password123 (Admin, 2500 XP)");
     console.log("  4) admin@example.com / password123 (Admin, 2000 XP)");
+    console.log("  5) learnwithus2008@gmail.com / Ravi@123 / password123 (Admin, 5000 XP)");
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
     throw err;

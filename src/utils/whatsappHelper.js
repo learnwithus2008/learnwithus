@@ -12,6 +12,8 @@ export const WHATSAPP_SUPPORT_NUMBER = (
 ).replace(/[^0-9]/g, "");
 
 export const WHATSAPP_DISPLAY_NUMBER = "+91 73820 08413";
+export const WHATSAPP_RAW_PHONE = "7382008413";
+export const PLATFORM_SUPPORT_EMAIL = "learnwithus2008@gmail.com";
 
 /**
  * Builds a structured, prefilled WhatsApp message for a lesson doubt.
