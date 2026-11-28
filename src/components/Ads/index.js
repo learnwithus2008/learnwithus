@@ -5,6 +5,7 @@ export { default as AbscloudAd } from "./AbscloudAd";
 export { default as GlobalAdManager } from "./GlobalAdManager";
 
 export {
+  GLOBAL_ADS_ENABLED,
   AD_UNITS,
   AD_CONFIG,
   RESTRICTED_PAGES,

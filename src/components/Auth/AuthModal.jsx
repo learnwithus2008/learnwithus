@@ -165,23 +165,6 @@ export default function AuthModal({ onSelectTopic }) {
     }
   };
 
-  // Quick Demo Login
-  const handleQuickDemo = async (demoEmail, demoPass) => {
-    setErrorMsg("");
-    setIsLoading(true);
-    try {
-      await login({
-        emailOrUsername: demoEmail,
-        password: demoPass,
-        rememberMe: true
-      });
-    } catch (err) {
-      setErrorMsg(err.message || "Demo login failed");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Submit Sign Up
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
@@ -383,7 +366,7 @@ export default function AuthModal({ onSelectTopic }) {
                     required
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
-                    placeholder="alex@example.com or Alex Johnson"
+                    placeholder="Enter your email or username"
                     className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#183657] bg-slate-50 dark:bg-[#081426] text-slate-900 dark:text-[#FFFFFF] text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3FF] transition"
                   />
                 </div>
@@ -451,42 +434,6 @@ export default function AuthModal({ onSelectTopic }) {
                   </>
                 )}
               </button>
-
-              {/* Quick Demo Test Accounts Box */}
-              <div className="pt-3 border-t border-slate-200 dark:border-[#23344d]">
-                <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 dark:text-[#94a3b8] mb-2">
-                  <Sparkles size={13} className="text-[#38bdf8]" />
-                  <span>Quick 1-Click Demo Accounts</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemo("alex@example.com", "password123")}
-                    className="p-2 rounded-xl bg-slate-50 dark:bg-[#14233a] hover:bg-slate-100 dark:hover:bg-[#1e3252] border border-slate-200 dark:border-[#23344d] text-left transition cursor-pointer"
-                  >
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900 dark:text-slate-100">
-                      <span>🐍</span>
-                      <span>Alex (College)</span>
-                    </div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                      alex@example.com
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemo("priya@example.com", "password123")}
-                    className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-left transition cursor-pointer"
-                  >
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900 dark:text-slate-100">
-                      <span>✨</span>
-                      <span>Priya (Graduate)</span>
-                    </div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                      priya@example.com
-                    </div>
-                  </button>
-                </div>
-              </div>
             </form>
           )}
 

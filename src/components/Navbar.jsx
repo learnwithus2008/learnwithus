@@ -305,7 +305,7 @@ export default function Navbar({
                                 if (onSelectStage) onSelectStage(stg.id);
                                 setStageDropdownOpen(false);
                               }}
-                              className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
+                              className={`group w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
                                 isSelected
                                   ? "bg-[#FFFBEB] dark:bg-[#153560] border-[#FFB800] text-[#102B50] dark:text-white font-bold"
                                   : "bg-transparent hover:bg-[#FFB800] border-transparent hover:border-[#FFB800] text-[#102B50] dark:text-slate-200 hover:text-[#102B50] dark:hover:text-[#102B50]"
@@ -314,10 +314,10 @@ export default function Navbar({
                               <div className="flex items-center gap-2 min-w-0">
                                 <span className="text-xl shrink-0 select-none">{stg.icon}</span>
                                 <div className="min-w-0">
-                                  <div className="text-xs font-bold leading-tight truncate">
+                                  <div className="text-xs font-bold leading-tight truncate group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">
                                     {stg.label}
                                   </div>
-                                  <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate">
+                                  <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">
                                     {stg.ageRange} • {stg.shortDesc.slice(0, 30)}...
                                   </div>
                                 </div>
@@ -398,7 +398,7 @@ export default function Navbar({
                                 if (onSelectLanguage) onSelectLanguage(lang.id);
                                 setLangDropdownOpen(false);
                               }}
-                              className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
+                              className={`group w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
                                 isSelected
                                   ? "bg-[#FFFBEB] dark:bg-[#153560] border-[#FFB800] text-[#102B50] dark:text-white font-bold"
                                   : "bg-transparent hover:bg-[#FFB800] border-transparent hover:border-[#FFB800] text-[#102B50] dark:text-slate-200 hover:text-[#102B50] dark:hover:text-[#102B50]"
@@ -407,10 +407,10 @@ export default function Navbar({
                               <div className="flex items-center gap-2 min-w-0">
                                 <span className="text-xl shrink-0 select-none">{lang.icon}</span>
                                 <div className="min-w-0">
-                                  <div className="text-xs font-bold leading-tight truncate">
+                                  <div className="text-xs font-bold leading-tight truncate group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">
                                     {lang.label}
                                   </div>
-                                  <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate">
+                                  <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">
                                     {lang.shortLabel} • {lang.description.slice(0, 36)}...
                                   </div>
                                 </div>
@@ -773,10 +773,10 @@ export default function Navbar({
               <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                 <button
                   onClick={() => setCurrentPage("signin")}
-                  className="navbar-auth-btn-signin flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold text-[#102B50] dark:text-white hover:text-[#102B50] hover:bg-[#FFB800] dark:hover:text-[#102B50] dark:hover:bg-[#FFB800] transition cursor-pointer border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] shrink-0"
+                  className="navbar-auth-btn-signin flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold text-[#102B50] dark:text-white hover:text-[#102B50] hover:bg-[#FFB800] dark:hover:text-[#102B50] dark:hover:bg-[#FFB800] transition cursor-pointer border border-[#E2E8F0] dark:border-[#1E3A5F] hover:border-[#FFB800] shrink-0 group"
                 >
-                  <LogIn size={14} className="shrink-0 text-[#0756A5] dark:text-[#FFB800]" />
-                  <span>Sign In</span>
+                  <LogIn size={14} className="shrink-0 text-[#0756A5] dark:text-[#FFB800] group-hover:text-[#102B50] dark:group-hover:text-[#102B50] transition-colors" />
+                  <span className="group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">Sign In</span>
                 </button>
                 <button
                   onClick={() => setCurrentPage("signup")}
@@ -854,8 +854,8 @@ export default function Navbar({
                 {/* Mobile Stage Quick Switch Dropdown */}
                 {mobileStageOpen && (
                   <div
-                    className="fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 mt-2 sm:w-72 max-w-[calc(100vw-1rem)] rounded-2xl bg-white dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] shadow-2xl p-2 z-50 animate-in"
-                    style={{ top: "62px" }}
+                    className="navbar-capsule-dropdown fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 mt-2 sm:w-72 max-w-[calc(100vw-1rem)] rounded-2xl bg-white dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] shadow-2xl p-2 z-50 animate-in"
+                    style={{ top: "54px" }}
                   >
                     <div className="px-2.5 py-1.5 mb-1.5 border-b border-slate-100 dark:border-[#23344d] flex items-center justify-between">
                       <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -866,7 +866,7 @@ export default function Navbar({
                       </span>
                     </div>
 
-                    <div className="space-y-1 max-h-[60vh] overflow-y-auto">
+                    <div className="space-y-1 max-h-[60vh] overflow-y-auto overscroll-contain scrollbar-thin">
                       {LEARNING_STAGES.map((stg) => {
                         const isSelected = selectedStage === stg.id;
                         return (
@@ -876,19 +876,19 @@ export default function Navbar({
                               if (onSelectStage) onSelectStage(stg.id);
                               setMobileStageOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
+                            className={`navbar-capsule-dropdown-item group w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
                               isSelected
                                 ? "bg-[#FFFBEB] dark:bg-[#153560] border-[#FFB800] text-[#102B50] dark:text-white font-bold"
                                 : "bg-transparent hover:bg-[#FFB800] border-transparent hover:border-[#FFB800] text-[#102B50] dark:text-slate-200 hover:text-[#102B50] dark:hover:text-[#102B50]"
                             }`}
                           >
-                            <div className="flex items-center gap-2 min-w-0">
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
                               <span className="text-xl shrink-0 select-none">{stg.icon}</span>
-                              <div className="min-w-0">
-                                <div className="text-xs font-bold leading-tight truncate">
+                              <div className="min-w-0 flex-1">
+                                <div className="text-xs font-bold leading-tight truncate group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">
                                   {stg.label}
                                 </div>
-                                <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate">
+                                <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">
                                   {stg.ageRange} • {stg.shortDesc.slice(0, 30)}...
                                 </div>
                               </div>
@@ -946,8 +946,8 @@ export default function Navbar({
                 {/* Mobile Language Quick Switch Dropdown */}
                 {mobileLangOpen && (
                   <div
-                    className="fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 mt-2 sm:w-72 max-w-[calc(100vw-1rem)] rounded-2xl bg-white dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] shadow-2xl p-2 z-50 animate-in"
-                    style={{ top: "62px" }}
+                    className="navbar-capsule-dropdown fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 mt-2 sm:w-72 max-w-[calc(100vw-1rem)] rounded-2xl bg-white dark:bg-[#101b2d] border border-slate-200 dark:border-[#23344d] shadow-2xl p-2 z-50 animate-in"
+                    style={{ top: "54px" }}
                   >
                     <div className="px-2.5 py-1.5 mb-1.5 border-b border-slate-100 dark:border-[#23344d] flex items-center justify-between">
                       <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#102B50] dark:text-slate-300">
@@ -959,7 +959,7 @@ export default function Navbar({
                       </span>
                     </div>
 
-                    <div className="space-y-1 max-h-[60vh] overflow-y-auto">
+                    <div className="space-y-1 max-h-[60vh] overflow-y-auto overscroll-contain scrollbar-thin">
                       {LEARNING_LANGUAGES.map((lang) => {
                         const isSelected = selectedLanguage === lang.id;
                         return (
@@ -969,19 +969,19 @@ export default function Navbar({
                               if (onSelectLanguage) onSelectLanguage(lang.id);
                               setMobileLangOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
+                            className={`group navbar-capsule-dropdown-item w-full flex items-center justify-between p-2 rounded-xl text-left transition cursor-pointer border ${
                               isSelected
                                 ? "bg-[#FFFBEB] dark:bg-[#153560] border-[#FFB800] text-[#102B50] dark:text-white font-bold"
                                 : "bg-transparent hover:bg-[#FFB800] border-transparent hover:border-[#FFB800] text-[#102B50] dark:text-slate-200 hover:text-[#102B50] dark:hover:text-[#102B50]"
                             }`}
                           >
-                            <div className="flex items-center gap-2 min-w-0">
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
                               <span className="text-xl shrink-0 select-none">{lang.icon}</span>
-                              <div className="min-w-0">
-                                <div className="text-xs font-bold leading-tight truncate">
+                              <div className="min-w-0 flex-1">
+                                <div className="text-xs font-bold leading-tight truncate group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">
                                   {lang.label}
                                 </div>
-                                <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate">
+                                <div className="text-[10px] text-[#64748B] dark:text-slate-400 leading-tight truncate group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">
                                   {lang.shortLabel} • {lang.description.slice(0, 36)}...
                                 </div>
                               </div>
@@ -1064,7 +1064,7 @@ export default function Navbar({
                 title="Switch Language"
               >
                 <span className="text-sm select-none shrink-0">{langMeta.icon}</span>
-                <span className="hidden sm:inline font-extrabold text-[#102B50] dark:text-white" style={{ color: "inherit" }}>{langShortLabel}</span>
+                <span className="hidden sm:inline font-extrabold text-[#102B50] dark:text-white">{langShortLabel}</span>
               </button>
 
               <button
@@ -1074,7 +1074,7 @@ export default function Navbar({
                 title="Switch Learning Stage"
               >
                 <span className="text-sm select-none shrink-0">{stageMeta.icon}</span>
-                <span className="hidden sm:inline font-extrabold text-[#102B50] dark:text-white" style={{ color: "inherit" }}>{stageMeta.label}</span>
+                <span className="hidden sm:inline font-extrabold text-[#102B50] dark:text-white">{stageMeta.label}</span>
               </button>
             </>
           )}

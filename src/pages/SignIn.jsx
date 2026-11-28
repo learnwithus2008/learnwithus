@@ -56,14 +56,14 @@ const SIGNIN_I18N = {
     forgotDesc: "Enter your registered email and a new password.",
     sslBadge: "256-bit SSL",
     emailLabel: "Email or Username",
-    emailPlaceholder: "alex@example.com or Alex Johnson",
+    emailPlaceholder: "student@domain.com or username",
     passwordLabel: "Password",
     passwordPlaceholder: "Enter your password",
     forgotPassword: "Forgot password?",
     rememberMe: "Keep me signed in on this device",
     signInBtn: "Sign In",
-    quickAccounts: "1-Click Quick Test Accounts",
-    instantFill: "Instant Fill",
+    quickAccounts: "",
+    instantFill: "",
     noAccount: "Don't have an account yet?",
     createAccount: "Create Account Free →",
     regEmailLabel: "Registered Account Email",
@@ -99,14 +99,14 @@ const SIGNIN_I18N = {
     forgotDesc: "Mee registered email and kotha password enter cheyandi.",
     sslBadge: "256-bit SSL",
     emailLabel: "Email ledha Username",
-    emailPlaceholder: "alex@example.com ledha Alex Johnson",
+    emailPlaceholder: "student@domain.com ledha username",
     passwordLabel: "Password",
     passwordPlaceholder: "Mee password enter cheyandi",
     forgotPassword: "Password marchipoyara?",
     rememberMe: "Ee device lo nannu signed in ga unchandi",
     signInBtn: "Sign In Avvandi",
-    quickAccounts: "1-Click Quick Test Accounts",
-    instantFill: "Instant Fill",
+    quickAccounts: "",
+    instantFill: "",
     noAccount: "Inka account ledha?",
     createAccount: "Free Account Create Cheskondi →",
     regEmailLabel: "Registered Email Address",
@@ -142,14 +142,14 @@ const SIGNIN_I18N = {
     forgotDesc: "మీ నమోదిత ఈమెయిల్ మరియు కొత్త పాస్‌వర్డ్ నమోదు చేయండి.",
     sslBadge: "256-బిట్ SSL",
     emailLabel: "ఈమెయిల్ లేదా యూజర్‌నేమ్",
-    emailPlaceholder: "alex@example.com లేదా Alex Johnson",
+    emailPlaceholder: "student@domain.com లేదా యూజర్‌నేమ్",
     passwordLabel: "పాస్‌వర్డ్",
     passwordPlaceholder: "మీ పాస్‌వర్డ్ నమోదు చేయండి",
     forgotPassword: "పాస్‌వర్డ్ మర్చిపోయారా?",
     rememberMe: "ఈ పరికరంలో నన్ను సైన్ ఇన్ చేసి ఉంచండి",
     signInBtn: "సైన్ ఇన్ చేయండి",
-    quickAccounts: "1-క్లిక్ శీఘ్ర పరీక్ష ఖాతాలు",
-    instantFill: "తక్షణ భర్తీ",
+    quickAccounts: "",
+    instantFill: "",
     noAccount: "ఇంకా ఖాతా లేదా?",
     createAccount: "ఉచిత ఖాతాను సృష్టించండి →",
     regEmailLabel: "నమోదిత ఖాతా ఈమెయిల్",
@@ -185,14 +185,14 @@ const SIGNIN_I18N = {
     forgotDesc: "अपना पंजीकृत ईमेल और नया पासवर्ड दर्ज करें।",
     sslBadge: "256-बिट SSL",
     emailLabel: "ईमेल या उपयोगकर्ता नाम",
-    emailPlaceholder: "alex@example.com या Alex Johnson",
+    emailPlaceholder: "student@domain.com या उपयोगकर्ता नाम",
     passwordLabel: "पासवर्ड",
     passwordPlaceholder: "अपना पासवर्ड दर्ज करें",
     forgotPassword: "पासवर्ड भूल गए?",
     rememberMe: "इस डिवाइस पर मुझे साइन इन रखें",
     signInBtn: "साइन इन करें",
-    quickAccounts: "1-क्लिक त्वरित परीक्षण खाते",
-    instantFill: "तुरंत भरें",
+    quickAccounts: "",
+    instantFill: "",
     noAccount: "क्या आपके पास अभी तक खाता नहीं है?",
     createAccount: "मुफ़्त खाता बनाएं →",
     regEmailLabel: "पंजीकृत खाता ईमेल",
@@ -272,56 +272,6 @@ export default function SignIn({ onNavigate, onBack }) {
     } catch (err) {
       setSuccessMsg("");
       setErrorMsg(err.message || "Failed to sign in. Please verify your credentials.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Instant Fill: directly populates demo credentials into form inputs with positive feedback
-  const handleInstantFill = (e, target = null) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    setErrorMsg("");
-
-    // Toggle between Alex and Priya, or honor explicit target
-    const usePriya = target === "priya" || (!target && emailOrUsername === "alex@example.com");
-    const demoEmail = usePriya ? "priya@example.com" : "alex@example.com";
-    const demoPass = "password123";
-    const label = usePriya ? "Priya (Graduate)" : "Alex (College)";
-
-    setEmailOrUsername(demoEmail);
-    setPassword(demoPass);
-    setSuccessMsg(`✓ Instant Fill: ${label} credentials loaded! Click "${t.signInBtn}" to proceed.`);
-  };
-
-  const handleQuickDemo = async (demoEmail, demoPass, accountLabel = "Alex") => {
-    setErrorMsg("");
-    setSuccessMsg("");
-    // 1. Instantly populate the input fields in React state
-    setEmailOrUsername(demoEmail);
-    setPassword(demoPass);
-    setIsLoading(true);
-
-    try {
-      await login({
-        emailOrUsername: demoEmail,
-        password: demoPass,
-        rememberMe: true
-      });
-      setSuccessMsg(`✓ Signed in successfully as ${accountLabel}! Redirecting...`);
-      if (onNavigate) {
-        onNavigate("home");
-      }
-    } catch (err) {
-      console.warn("Demo login error:", err);
-      setSuccessMsg("");
-      // Keep credentials visible in form and provide clear actionable feedback
-      setErrorMsg(
-        err.message ||
-        `Demo login encountered a network issue. Credentials for ${accountLabel} have been filled into the form.`
-      );
     } finally {
       setIsLoading(false);
     }
@@ -1258,123 +1208,6 @@ export default function SignIn({ onNavigate, onBack }) {
                       </>
                     )}
                   </button>
-
-                  {/* Quick Test Accounts Dock */}
-                  <div
-                    style={{
-                      paddingTop: "0.95rem",
-                      borderTop: isDark ? "1px solid rgba(56, 189, 248, 0.15)" : "1px solid #f1f5f9"
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        marginBottom: "0.65rem"
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.4rem",
-                          fontSize: "0.75rem",
-                          fontWeight: "800",
-                          color: isDark ? "#94a3b8" : "#64748b"
-                        }}
-                      >
-                        <Sparkles size={14} style={{ color: "#FFB800" }} />
-                        <span>{t.quickAccounts}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={(e) => handleInstantFill(e)}
-                        className="auth-instant-fill-btn"
-                        title="Click to instantly populate demo credentials into the form"
-                        aria-label="Instant fill demo credentials"
-                      >
-                        <Zap size={11} style={{ color: "#FFB800" }} />
-                        <span>{t.instantFill}</span>
-                      </button>
-                    </div>
-
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.6rem" }}>
-                      {/* Demo 1: Alex */}
-                      <button
-                        type="button"
-                        onClick={() => handleQuickDemo("alex@example.com", "password123", "Alex")}
-                        className={`auth-demo-card-v2 ${emailOrUsername === "alex@example.com" ? "active-account" : ""}`}
-                        title="Click to sign in with Alex (College)"
-                      >
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                          <span style={{ fontSize: "0.78rem", fontWeight: "800", color: isDark ? "#ffffff" : "#102B50" }}>
-                            🐍 Alex
-                          </span>
-                          <span
-                            style={{
-                              fontSize: "0.625rem",
-                              fontWeight: "800",
-                              padding: "0.1rem 0.4rem",
-                              borderRadius: "9999px",
-                              background: isDark ? "rgba(56, 189, 248, 0.15)" : "rgba(7, 86, 165, 0.1)",
-                              color: isDark ? "#38bdf8" : "#0756A5"
-                            }}
-                          >
-                            {emailOrUsername === "alex@example.com" ? "✓ Filled" : "College"}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "0.675rem",
-                            color: isDark ? "#94a3b8" : "#64748b",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap"
-                          }}
-                        >
-                          alex@example.com
-                        </div>
-                      </button>
-
-                      {/* Demo 2: Priya */}
-                      <button
-                        type="button"
-                        onClick={() => handleQuickDemo("priya@example.com", "password123", "Priya")}
-                        className={`auth-demo-card-v2 ${emailOrUsername === "priya@example.com" ? "active-account" : ""}`}
-                        title="Click to sign in with Priya (Graduate)"
-                      >
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                          <span style={{ fontSize: "0.78rem", fontWeight: "800", color: isDark ? "#ffffff" : "#102B50" }}>
-                            ✨ Priya
-                          </span>
-                          <span
-                            style={{
-                              fontSize: "0.625rem",
-                              fontWeight: "800",
-                              padding: "0.1rem 0.4rem",
-                              borderRadius: "9999px",
-                              background: isDark ? "rgba(255, 184, 0, 0.18)" : "rgba(255, 184, 0, 0.15)",
-                              color: isDark ? "#FFB800" : "#b45309"
-                            }}
-                          >
-                            {emailOrUsername === "priya@example.com" ? "✓ Filled" : "Graduate"}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "0.675rem",
-                            color: isDark ? "#94a3b8" : "#64748b",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap"
-                          }}
-                        >
-                          priya@example.com
-                        </div>
-                      </button>
-                    </div>
-                  </div>
                 </form>
               ) : (
                 /* FORGOT PASSWORD FORM */

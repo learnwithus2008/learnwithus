@@ -277,7 +277,7 @@ export default function StudentsManagerTab({
           </div>
 
           {/* Filter Dropdowns */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             {/* Stage */}
             <select
               value={stageFilter}
@@ -285,7 +285,7 @@ export default function StudentsManagerTab({
                 setStageFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#081220] border border-slate-200 dark:border-[#142338] text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
+              className="min-w-[110px] flex-1 sm:flex-none max-w-full px-2.5 sm:px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#081220] border border-slate-200 dark:border-[#142338] text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
             >
               <option value="all">All Stages</option>
               {LEARNING_STAGES.map((s) => (
@@ -302,7 +302,7 @@ export default function StudentsManagerTab({
                 setRoleFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#081220] border border-slate-200 dark:border-[#142338] text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
+              className="min-w-[110px] flex-1 sm:flex-none max-w-full px-2.5 sm:px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#081220] border border-slate-200 dark:border-[#142338] text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
             >
               <option value="all">All Roles</option>
               <option value="student">Students</option>
@@ -316,7 +316,7 @@ export default function StudentsManagerTab({
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#081220] border border-slate-200 dark:border-[#142338] text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
+              className="min-w-[110px] flex-1 sm:flex-none max-w-full px-2.5 sm:px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#081220] border border-slate-200 dark:border-[#142338] text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -327,7 +327,7 @@ export default function StudentsManagerTab({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#081220] border border-slate-200 dark:border-[#142338] text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
+              className="min-w-[110px] flex-1 sm:flex-none max-w-full px-2.5 sm:px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#081220] border border-slate-200 dark:border-[#142338] text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
             >
               <option value="created_at">Joined Date</option>
               <option value="xp">Total XP</option>

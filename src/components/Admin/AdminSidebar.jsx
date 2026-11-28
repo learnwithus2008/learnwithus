@@ -90,7 +90,7 @@ export default function AdminSidebar({
       )}
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 w-72 bg-white dark:bg-[#081220] border-r border-slate-200/90 dark:border-[#142338] z-50 flex flex-col overflow-y-auto overscroll-contain scrollbar-thin transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 w-72 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-[#081220] border-r border-slate-200/90 dark:border-[#142338] z-50 flex flex-col overflow-y-auto overscroll-contain scrollbar-thin transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpenMobile ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         }`}
         style={{

@@ -30,8 +30,12 @@ export default function FontSizeControl({ variant = "navbar", className = "" }) 
     };
     if (menuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
   }, [menuOpen]);
 
   // =========================================================================
@@ -135,7 +139,10 @@ export default function FontSizeControl({ variant = "navbar", className = "" }) 
         </div>
 
         {menuOpen && (
-          <div className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] shadow-2xl p-3 z-50 animate-in text-[#102B50] dark:text-white">
+          <div
+            className="font-size-mobile-dropdown fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 mt-2 sm:w-72 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white dark:bg-[#102B50] border border-[#E2E8F0] dark:border-[#1E3A5F] shadow-2xl p-2.5 sm:p-3 z-50 animate-in text-[#102B50] dark:text-white"
+            style={{ top: "54px" }}
+          >
             <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#E2E8F0] dark:border-[#1E3A5F]">
               <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-[#102B50] dark:text-white">
                 <Type size={14} className="text-[#0756A5] dark:text-[#FFB800] shrink-0" strokeWidth={2.5} />

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import BauvalSocialBar from "./BauvalSocialBar";
 import { adScriptManager } from "../../services/adScriptManager";
+import { areAdsGloballyEnabled } from "../../config/adConfig";
 
 /**
  * GlobalAdManager
@@ -16,6 +17,10 @@ export default function GlobalAdManager({ page = "home", currentStep = null, isM
   useEffect(() => {
     adScriptManager.cleanIntrusiveArtifacts();
   }, [page, currentStep]);
+
+  if (!areAdsGloballyEnabled()) {
+    return null;
+  }
 
   return <BauvalSocialBar page={page} currentStep={currentStep} isModalOpen={isModalOpen} />;
 }

@@ -342,7 +342,7 @@ export default function LessonContent({
 
             <button
               onClick={onBackToLearn}
-              className="text-xs sm:text-sm font-bold text-[#64748B] dark:text-slate-300 hover:text-[#0756A5] dark:hover:text-[#FFB800] transition flex items-center gap-1 cursor-pointer bg-transparent border-none p-0 max-w-[110px] xs:max-w-[160px] sm:max-w-[220px] md:max-w-[280px] truncate"
+              className="text-xs sm:text-sm font-bold text-[#64748B] dark:text-slate-300 hover:text-[#0756A5] dark:hover:text-[#FFB800] transition flex items-center gap-1 cursor-pointer bg-transparent border-none p-0 max-w-[85px] xs:max-w-[140px] sm:max-w-[220px] md:max-w-[280px] truncate"
               title={`Return to curriculum module: ${section.title}`}
             >
               <span className="truncate">{section.title}</span>
@@ -351,7 +351,10 @@ export default function LessonContent({
             <span className="text-slate-300 dark:text-slate-600 select-none">•</span>
 
             {/* Chapter Indicator: NEVER wrap vertically, always mono */}
-            <span className="text-xs sm:text-sm font-extrabold text-[#102B50] dark:text-white whitespace-nowrap shrink-0 font-mono tracking-tight">
+            <span
+              className="inline-block text-xs sm:text-sm font-extrabold text-[#102B50] dark:text-white whitespace-nowrap shrink-0 font-mono tracking-tight"
+              style={{ whiteSpace: "nowrap", wordBreak: "keep-all", overflowWrap: "normal" }}
+            >
               Chapter {topicIndex} of {totalTopics}
             </span>
 
@@ -363,12 +366,12 @@ export default function LessonContent({
                     if (soundEnabled) playPageFlipSound();
                     onSelectTopic(adjacent.prev.id);
                   }}
-                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold text-[#0756A5] dark:text-[#60A5FA] bg-[#F3F7FC] dark:bg-[#0A1E38] hover:bg-[#FFB800] hover:text-[#102B50] border border-[#E2E8F0] dark:border-[#1B3B66] transition cursor-pointer shrink-0"
+                  className="lesson-chapter-nav-btn inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold text-[#0756A5] dark:text-[#60A5FA] bg-[#F3F7FC] dark:bg-[#0A1E38] hover:bg-[#FFB800] hover:text-[#102B50] dark:hover:bg-[#FFB800] dark:hover:text-[#102B50] border border-[#E2E8F0] dark:border-[#1B3B66] hover:border-[#FFB800] dark:hover:border-[#FFB800] transition cursor-pointer shrink-0 group"
                   title={`Previous Chapter: ${adjacent.prev.title}`}
                 >
-                  <ArrowLeft size={12} className="text-[#0756A5] dark:text-[#60A5FA]" />
-                  <span className="hidden xs:inline">Prev Ch</span>
-                  <span className="xs:hidden">Prev</span>
+                  <ArrowLeft size={12} className="text-[#0756A5] dark:text-[#60A5FA] group-hover:text-[#102B50] dark:group-hover:text-[#102B50] transition-colors" />
+                  <span className="hidden xs:inline group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">Prev Ch</span>
+                  <span className="xs:hidden group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">Prev</span>
                 </button>
               )}
 
@@ -378,12 +381,12 @@ export default function LessonContent({
                     if (soundEnabled) playPageFlipSound();
                     onSelectTopic(adjacent.next.id);
                   }}
-                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold text-[#0756A5] dark:text-[#60A5FA] bg-[#F3F7FC] dark:bg-[#0A1E38] hover:bg-[#FFB800] hover:text-[#102B50] border border-[#E2E8F0] dark:border-[#1B3B66] transition cursor-pointer shrink-0"
+                  className="lesson-chapter-nav-btn inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold text-[#0756A5] dark:text-[#60A5FA] bg-[#F3F7FC] dark:bg-[#0A1E38] hover:bg-[#FFB800] hover:text-[#102B50] dark:hover:bg-[#FFB800] dark:hover:text-[#102B50] border border-[#E2E8F0] dark:border-[#1B3B66] hover:border-[#FFB800] dark:hover:border-[#FFB800] transition cursor-pointer shrink-0 group"
                   title={`Next Chapter: ${adjacent.next.title}`}
                 >
-                  <span className="hidden xs:inline">Next Ch</span>
-                  <span className="xs:hidden">Next</span>
-                  <ArrowRight size={12} className="text-[#0756A5] dark:text-[#60A5FA]" />
+                  <span className="hidden xs:inline group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">Next Ch</span>
+                  <span className="xs:hidden group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">Next</span>
+                  <ArrowRight size={12} className="text-[#0756A5] dark:text-[#60A5FA] group-hover:text-[#102B50] dark:group-hover:text-[#102B50] transition-colors" />
                 </button>
               )}
             </div>

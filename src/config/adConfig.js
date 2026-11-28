@@ -14,6 +14,13 @@
  * - Emergency Kill-Switch for instant site-wide or per-ad disabling
  */
 
+/**
+ * Master Platform Switch for Advertisements:
+ * Set to false to stop all advertisements platform-wide.
+ * Can be cleanly flipped back to true whenever ads are needed again.
+ */
+export const GLOBAL_ADS_ENABLED = false;
+
 export const AD_UNITS = {
   // SCRIPT 1: Native Banner Ad
   NATIVE_BANNER: {
@@ -23,6 +30,7 @@ export const AD_UNITS = {
     containerId: "container-6262f8eaf407dba385778988c358262b",
     placement: "Homepage Sponsored Showcase",
     enabled: true,
+    enabled: false,
     storageKey: "lwu_ad_native_banner"
   },
 
@@ -33,6 +41,7 @@ export const AD_UNITS = {
     url: "https://bauval.org/14/139f459964696e9529c356b58868a7f9",
     placement: "Secondary Non-Learning Area",
     enabled: true,
+    enabled: false,
     storageKey: "lwu_ad_second"
   },
 
@@ -45,6 +54,7 @@ export const AD_UNITS = {
     scriptId: "adsterra-abscloud-ad-script",
     placement: "Mid-Content (Between Learning Modules)",
     enabled: true,
+    enabled: false,
     storageKey: "lwu_ad_mid_content",
     // Timing / Refresh: Adsterra does not support client-side periodic refresh without re-injecting scripts,
     // which violates ad network anti-fraud policies. Kept static per user instructions.
@@ -71,6 +81,9 @@ export const RESTRICTED_PAGES = [
  */
 export function areAdsGloballyEnabled() {
   if (typeof window === "undefined") return true;
+  // Master switch check
+  if (!GLOBAL_ADS_ENABLED) return false;
+  if (typeof window === "undefined") return false;
 
   try {
     const fullHref = window.location.href || "";

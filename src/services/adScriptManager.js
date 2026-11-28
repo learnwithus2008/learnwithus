@@ -10,7 +10,7 @@
  * - Full protection of React Virtual DOM and application state
  */
 
-import { AD_CONFIG, isAdPlacementAllowed } from "../config/adConfig";
+import { AD_CONFIG, isAdPlacementAllowed, areAdsGloballyEnabled } from "../config/adConfig";
 
 class AdScriptManager {
   constructor() {
@@ -38,7 +38,7 @@ class AdScriptManager {
    * @returns {Promise<boolean>} Resolves true when loaded, false if blocked/failed
    */
   loadScript({ url, async = true, dataCfasync = false, scriptId = null }) {
-    if (typeof window === "undefined" || !url) {
+    if (typeof window === "undefined" || !url || !areAdsGloballyEnabled()) {
       return Promise.resolve(false);
     }
 
@@ -147,6 +147,16 @@ class AdScriptManager {
    */
   cleanIntrusiveArtifacts() {
     if (typeof document === "undefined") return;
+
+    // Remove any ad network scripts
+    const adScripts = document.querySelectorAll(
+      'script[src*="bauval.org"], script[src*="abscloud.org"], script[id*="adsterra"]'
+    );
+    adScripts.forEach((el) => {
+      try {
+        el.remove();
+      } catch (_) {}
+    });
 
     // Remove any popunder transparent click layers (transpLayerId / pu_click)
     const popunderLayers = document.querySelectorAll(

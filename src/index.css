@@ -563,14 +563,26 @@ html.dark .notion-tag svg {
   color: #FFB800;
 }
 
+.notion-tag:hover,
 html.dark .notion-tag:hover {
-  border-color: #FFB800;
-  color: #102B50;
-  background-color: #FFB800;
+  border-color: #FFB800 !important;
+  color: #102B50 !important;
+  background-color: #FFB800 !important;
 }
 
+.notion-tag:hover span,
+.notion-tag:hover button,
+.notion-tag:hover *,
+html.dark .notion-tag:hover span,
+html.dark .notion-tag:hover button,
+html.dark .notion-tag:hover * {
+  color: #102B50 !important;
+}
+
+.notion-tag:hover svg,
 html.dark .notion-tag:hover svg {
-  color: #102B50;
+  color: #102B50 !important;
+  stroke: #102B50 !important;
 }
 
 /* Animations */
@@ -2467,6 +2479,33 @@ html.dark #tour-nav-mobile-stage * {
   font-weight: 800 !important;
 }
 
+.nav-mobile-pill-btn:hover,
+#tour-nav-mobile-lang:hover,
+#tour-nav-mobile-stage:hover,
+html.dark .nav-mobile-pill-btn:hover,
+html.dark #tour-nav-mobile-lang:hover,
+html.dark #tour-nav-mobile-stage:hover {
+  background-color: #FFB800 !important;
+  border-color: #FFB800 !important;
+  color: #102B50 !important;
+}
+
+.nav-mobile-pill-btn:hover *,
+.nav-mobile-pill-btn:hover span,
+#tour-nav-mobile-lang:hover *,
+#tour-nav-mobile-lang:hover span,
+#tour-nav-mobile-stage:hover *,
+#tour-nav-mobile-stage:hover span,
+html.dark .nav-mobile-pill-btn:hover *,
+html.dark .nav-mobile-pill-btn:hover span,
+html.dark #tour-nav-mobile-lang:hover *,
+html.dark #tour-nav-mobile-lang:hover span,
+html.dark #tour-nav-mobile-stage:hover *,
+html.dark #tour-nav-mobile-stage:hover span {
+  color: #102B50 !important;
+  background-color: transparent !important;
+}
+
 html.dark .text-slate-500,
 html.dark .text-slate-400,
 html.dark .dark\:text-slate-500,
@@ -3223,7 +3262,7 @@ html.dark .text-\[\#306998\],
 /* Interactive Hover States */
 html.dark .hover\:text-white:hover,
 html.dark .dark\:hover\:text-white:hover {
-  color: #A2B6CC !important;
+  color: #FFFFFF !important;
 }
 
 html.dark .hover\:text-\[\#D2DEEC\]:hover,
@@ -5623,6 +5662,9 @@ html.dark .floating-dock-tooltip::after {
   .floating-dock-dictionary button {
     width: 44px !important;
     height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
+    overflow: hidden !important;
     padding: 0 !important;
     justify-content: center !important;
     border-radius: 1rem !important;
@@ -7562,6 +7604,12 @@ html.dark .guide-modal-completion-card {
   .contextual-guidance-footer button {
     font-size: 0.75rem !important;
     padding: 0.55rem 0.5rem !important;
+  }
+
+  /* Floating Action Buttons at 280px-360px */
+  .floating-dock-notepad,
+  .floating-dock-dictionary {
+    right: max(0.5rem, env(safe-area-inset-right, 0.5rem)) !important;
   }
 
   /* Tour Tooltip at 280px-360px */
@@ -9642,14 +9690,19 @@ html.dark .navbar-auth-btn-signin {
   color: #FFFFFF !important;
 }
 
-.navbar-auth-btn-signin:hover {
+.navbar-auth-btn-signin:hover,
+html.dark .navbar-auth-btn-signin:hover {
   background-color: #FFB800 !important;
+  border-color: #FFB800 !important;
   color: #102B50 !important;
 }
 
-html.dark .navbar-auth-btn-signin:hover {
-  background-color: #FFB800 !important;
+.navbar-auth-btn-signin:hover span,
+.navbar-auth-btn-signin:hover svg,
+html.dark .navbar-auth-btn-signin:hover span,
+html.dark .navbar-auth-btn-signin:hover svg {
   color: #102B50 !important;
+  stroke: #102B50 !important;
 }
 
 /* 3. Hero CTA Stack on Mobile / Narrow Viewports */
@@ -9770,6 +9823,149 @@ html.dark .navbar-auth-btn-signin:hover {
 
   .modern-card {
     padding: 0.75rem !important;
+  }
+
+  /* Ultra-narrow 280px-320px Dropdowns & Menus */
+  .navbar-capsule-dropdown {
+    left: 0.25rem !important;
+    right: 0.25rem !important;
+    top: 48px !important;
+    max-width: calc(100vw - 0.5rem) !important;
+    padding: 0.35rem !important;
+    border-radius: 0.875rem !important;
+  }
+
+  .navbar-capsule-dropdown-item {
+    padding: 0.35rem 0.4rem !important;
+    gap: 0.35rem !important;
+  }
+
+  .navbar-capsule-dropdown-item .text-xl {
+    font-size: 1.1rem !important;
+  }
+
+  .navbar-capsule-dropdown-item .text-xs {
+    font-size: 0.75rem !important;
+  }
+
+  .font-size-mobile-dropdown {
+    left: 0.25rem !important;
+    right: 0.25rem !important;
+    top: 48px !important;
+    max-width: calc(100vw - 0.5rem) !important;
+    padding: 0.5rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .user-menu-popover {
+    left: 0.25rem !important;
+    right: 0.25rem !important;
+    top: 48px !important;
+    max-width: calc(100vw - 0.5rem) !important;
+    padding: 0.5rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .user-menu-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.35rem !important;
+  }
+
+  .user-menu-stat-tile {
+    padding: 0.45rem 0.5rem !important;
+    gap: 0.45rem !important;
+  }
+
+  .user-menu-card-header {
+    padding: 0.625rem !important;
+  }
+
+  .user-menu-badges-row {
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
+  }
+
+  select {
+    font-size: 0.75rem !important;
+    padding-left: 0.4rem !important;
+    padding-right: 1.25rem !important;
+    height: auto !important;
+    min-height: 2rem !important;
+  }
+}
+
+/* ========================================================
+   RESPONSIVE DROPDOWNS & POPOVERS (280px to Desktop)
+   ======================================================== */
+
+/* 1. Mobile Context Capsule Dropdown (Stage & Language) */
+@media (max-width: 639px) {
+  .navbar-capsule-dropdown {
+    position: fixed !important;
+    left: 0.5rem !important;
+    right: 0.5rem !important;
+    top: 54px !important;
+    width: auto !important;
+    max-width: calc(100vw - 1rem) !important;
+    max-height: min(72vh, 460px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box !important;
+    z-index: 9999 !important;
+  }
+}
+
+/* 2. Mobile Font Size & Contrast Dropdown */
+@media (max-width: 639px) {
+  .font-size-mobile-dropdown {
+    position: fixed !important;
+    left: 0.5rem !important;
+    right: 0.5rem !important;
+    top: 54px !important;
+    width: auto !important;
+    max-width: calc(100vw - 1rem) !important;
+    max-height: min(78vh, 480px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box !important;
+    z-index: 9999 !important;
+  }
+}
+
+/* 3. User Profile Menu Popover */
+@media (max-width: 639px) {
+  .user-menu-popover {
+    position: fixed !important;
+    left: 0.5rem !important;
+    right: 0.5rem !important;
+    top: 54px !important;
+    width: auto !important;
+    max-width: calc(100vw - 1rem) !important;
+    margin-top: 0 !important;
+    max-height: min(80vh, 520px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box !important;
+    z-index: 9999 !important;
+  }
+}
+
+/* 4. Universal Native <select> Responsiveness */
+select {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 400px) {
+  select {
+    font-size: 0.8125rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 1.5rem !important;
   }
 }
 
@@ -10562,4 +10758,93 @@ html.dark .certificate-pure-white-sheet p {
 .certificate-pure-white-sheet [style*="#0756A5"],
 html.dark .certificate-pure-white-sheet [style*="#0756A5"] {
   color: #0756A5 !important;
+}
+
+/* ========================================================
+   UNIVERSAL BUTTON & LINK HOVER CONTRAST ENGINE (DARK MODE)
+   Guarantees 100% visible text whenever any button is hovered
+   ======================================================== */
+
+/* 1. Yellow Hover Background: all inner text, spans, divs, and SVGs become dark navy (#102B50) */
+html.dark button.hover\:bg-\[\#FFB800\]:hover,
+html.dark button.dark\:hover\:bg-\[\#FFB800\]:hover,
+html.dark button[class*="hover:bg-[#FFB800]"]:hover,
+html.dark button[class*="dark:hover:bg-[#FFB800]"]:hover,
+html.dark a.hover\:bg-\[\#FFB800\]:hover,
+html.dark a.dark\:hover\:bg-\[\#FFB800\]:hover,
+html.dark a[class*="hover:bg-[#FFB800]"]:hover,
+html.dark a[class*="dark:hover:bg-[#FFB800]"]:hover,
+html.dark [role="button"][class*="hover:bg-[#FFB800]"]:hover,
+html.dark [role="button"][class*="dark:hover:bg-[#FFB800]"]:hover,
+html.dark div[class*="hover:bg-[#FFB800]"]:hover,
+html.dark div[class*="dark:hover:bg-[#FFB800]"]:hover {
+  background-color: #FFB800 !important;
+  color: #102B50 !important;
+}
+
+html.dark button.hover\:bg-\[\#FFB800\]:hover *,
+html.dark button.dark\:hover\:bg-\[\#FFB800\]:hover *,
+html.dark button[class*="hover:bg-[#FFB800]"]:hover *,
+html.dark button[class*="dark:hover:bg-[#FFB800]"]:hover *,
+html.dark a.hover\:bg-\[\#FFB800\]:hover *,
+html.dark a.dark\:hover\:bg-\[\#FFB800\]:hover *,
+html.dark a[class*="hover:bg-[#FFB800]"]:hover *,
+html.dark a[class*="dark:hover:bg-[#FFB800]"]:hover *,
+html.dark [role="button"][class*="hover:bg-[#FFB800]"]:hover *,
+html.dark [role="button"][class*="dark:hover:bg-[#FFB800]"]:hover *,
+html.dark div[class*="hover:bg-[#FFB800]"]:hover *,
+html.dark div[class*="dark:hover:bg-[#FFB800]"]:hover * {
+  color: #102B50 !important;
+  stroke: #102B50 !important;
+}
+
+/* 2. When hovering elements that explicitly specify navy text on hover */
+html.dark .hover\:text-\[\#102B50\]:hover,
+html.dark .dark\:hover\:text-\[\#102B50\]:hover,
+html.dark [class*="hover:text-[#102B50]"]:hover,
+html.dark [class*="dark:hover:text-[#102B50]"]:hover {
+  color: #102B50 !important;
+}
+
+html.dark .hover\:text-\[\#102B50\]:hover *,
+html.dark .dark\:hover\:text-\[\#102B50\]:hover *,
+html.dark [class*="hover:text-[#102B50]"]:hover *,
+html.dark [class*="dark:hover:text-[#102B50]"]:hover * {
+  color: #102B50 !important;
+  stroke: #102B50 !important;
+}
+
+/* 3. Dropdown items in Stage and Language menus on hover */
+.navbar-capsule-dropdown-item:hover,
+html.dark .navbar-capsule-dropdown-item:hover {
+  background-color: #FFB800 !important;
+  border-color: #FFB800 !important;
+  color: #102B50 !important;
+}
+
+.navbar-capsule-dropdown-item:hover *,
+.navbar-capsule-dropdown-item:hover div,
+.navbar-capsule-dropdown-item:hover span,
+html.dark .navbar-capsule-dropdown-item:hover *,
+html.dark .navbar-capsule-dropdown-item:hover div,
+html.dark .navbar-capsule-dropdown-item:hover span {
+  color: #102B50 !important;
+}
+
+/* 4. Lesson chapter navigation buttons (Prev Ch / Next Ch) on hover */
+.lesson-chapter-nav-btn:hover,
+html.dark .lesson-chapter-nav-btn:hover {
+  background-color: #FFB800 !important;
+  border-color: #FFB800 !important;
+  color: #102B50 !important;
+}
+
+.lesson-chapter-nav-btn:hover *,
+.lesson-chapter-nav-btn:hover span,
+.lesson-chapter-nav-btn:hover svg,
+html.dark .lesson-chapter-nav-btn:hover *,
+html.dark .lesson-chapter-nav-btn:hover span,
+html.dark .lesson-chapter-nav-btn:hover svg {
+  color: #102B50 !important;
+  stroke: #102B50 !important;
 }

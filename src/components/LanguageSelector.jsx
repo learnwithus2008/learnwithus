@@ -85,7 +85,7 @@ export default function LanguageSelector({
                   e.stopPropagation();
                   onSelectLanguage(lang.id);
                 }}
-                className={`w-full py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border ${
+                className={`group w-full py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border ${
                   isSelected
                     ? "bg-[#0756A5] text-white shadow-sm border-transparent"
                     : "bg-[#F3F7FC] hover:bg-[#FFB800] hover:text-[#102B50] hover:border-[#FFB800] dark:bg-[#0C1B30] dark:hover:bg-[#FFB800] dark:hover:text-[#102B50] text-[#102B50] dark:text-white border-[#E2E8F0] dark:border-[#1E3A5F]"
@@ -98,8 +98,8 @@ export default function LanguageSelector({
                   </>
                 ) : (
                   <>
-                    <span>Choose Language</span>
-                    <ArrowRight size={14} />
+                    <span className="group-hover:text-[#102B50] dark:group-hover:text-[#102B50]">Choose Language</span>
+                    <ArrowRight size={14} className="group-hover:text-[#102B50] dark:group-hover:text-[#102B50]" />
                   </>
                 )}
               </button>

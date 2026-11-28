@@ -593,11 +593,11 @@ export default function MonetizationManagerTab() {
               />
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <select
                 value={certFilterStatus}
                 onChange={(e) => setCertFilterStatus(e.target.value)}
-                className="py-2 px-3 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+                className="py-2 px-2.5 sm:px-3 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white min-w-0 flex-1 sm:flex-none"
               >
                 <option value="all">All Statuses</option>
                 <option value="pending_payment">Pending Payment (₹99)</option>
@@ -758,11 +758,11 @@ export default function MonetizationManagerTab() {
               />
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <select
                 value={doubtFilterPaid}
                 onChange={(e) => setDoubtFilterPaid(e.target.value)}
-                className="py-2 px-3 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+                className="py-2 px-2.5 sm:px-3 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white min-w-0 flex-1 sm:flex-none"
               >
                 <option value="all">All Types</option>
                 <option value="free">Free Doubts (1-10)</option>
@@ -772,7 +772,7 @@ export default function MonetizationManagerTab() {
               <select
                 value={doubtFilterStatus}
                 onChange={(e) => setDoubtFilterStatus(e.target.value)}
-                className="py-2 px-3 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+                className="py-2 px-2.5 sm:px-3 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white min-w-0 flex-1 sm:flex-none"
               >
                 <option value="all">All Statuses</option>
                 <option value="pending">Pending</option>
